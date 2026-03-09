@@ -2,7 +2,7 @@
 
 namespace AsadaLisboaBackend.Models
 {
-    public class VisualSettings
+    public class VisualSetting
     {
         [Key]
         public Guid Id { get; set; }

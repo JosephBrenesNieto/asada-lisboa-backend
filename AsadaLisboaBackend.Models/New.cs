@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AsadaLisboaBackend.Models
 {
     [Index(nameof(Slug), IsUnique = true)]
-    public class News
+    public class New
     {
         [Key]
         public Guid Id { get; set; }
@@ -35,8 +35,8 @@ namespace AsadaLisboaBackend.Models
         // Foreign Key
         [ForeignKey("Status")]
         public Guid StatusId { get; set; }
-        public Statuses? Status { get; set; } = null;
+        public Status? Status { get; set; } = null;
 
-        public ICollection<Categories> Categories { get; set; } = new List<Categories>();
+        public ICollection<Category> Categories { get; set; } = new List<Category>();
     }
 }

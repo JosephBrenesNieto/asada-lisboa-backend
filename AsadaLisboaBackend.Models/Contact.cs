@@ -2,7 +2,7 @@
 
 namespace AsadaLisboaBackend.Models
 {
-    public class Contacts
+    public class Contact
     {
         [Key]
         public Guid Id { get; set; }

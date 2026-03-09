@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AsadaLisboaBackend.Models
 {
     [Index(nameof(Slug), IsUnique = true)]
-    public class Documents
+    public class Document
     {
         [Key]
         public Guid Id { get; set; }
@@ -32,12 +32,12 @@ namespace AsadaLisboaBackend.Models
         // Foreign Key
         [ForeignKey("Status")]
         public Guid StatusId { get; set; }
-        public Statuses? Status { get; set; } = null;
+        public Status? Status { get; set; } = null;
 
         [ForeignKey("DocumentType")]
         public Guid DocumentTypeId { get; set; }
-        public DocumentTypes? DocumentType { get; set; } = null;
+        public DocumentType? DocumentType { get; set; } = null;
 
-        public ICollection<Categories> Categories { get; set; } = new List<Categories>();
+        public ICollection<Category> Categories { get; set; } = new List<Category>();
     }
 }

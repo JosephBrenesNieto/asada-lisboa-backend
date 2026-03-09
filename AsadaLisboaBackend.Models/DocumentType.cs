@@ -2,7 +2,7 @@
 
 namespace AsadaLisboaBackend.Models
 {
-    public class DocumentTypes
+    public class DocumentType
     {
         [Key]
         public Guid Id { get; set; }

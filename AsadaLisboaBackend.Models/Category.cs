@@ -2,7 +2,7 @@
 
 namespace AsadaLisboaBackend.Models
 {
-    public class Categories
+    public class Category
     {
         [Key]
         public Guid Id { get; set; }
@@ -12,8 +12,8 @@ namespace AsadaLisboaBackend.Models
         public string Name { get; set; } = string.Empty;
 
         // Foreign Key
-        public ICollection<News> News { get; set; } = new List<News>();
-        public ICollection<Images> Images { get; set; } = new List<Images>();
-        public ICollection<Documents> Documents { get; set; } = new List<Documents>();
+        public ICollection<New> News { get; set; } = new List<New>();
+        public ICollection<Image> Images { get; set; } = new List<Image>();
+        public ICollection<Document> Documents { get; set; } = new List<Document>();
     }
 }

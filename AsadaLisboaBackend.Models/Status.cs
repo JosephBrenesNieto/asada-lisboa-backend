@@ -2,7 +2,7 @@
 
 namespace AsadaLisboaBackend.Models
 {
-    public class Statuses
+    public class Status
     {
         [Key]
         public Guid Id { get; set; }
