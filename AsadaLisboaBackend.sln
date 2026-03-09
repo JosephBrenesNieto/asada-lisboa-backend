@@ -1,9 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36930.0 d17.14
+VisualStudioVersion = 17.14.36930.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsadaLisboaBackend", "AsadaLisboaBackend\AsadaLisboaBackend.csproj", "{973AC1A5-9C6D-411E-943D-0EC3FF95F488}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsadaLisboaBackend.Models", "AsadaLisboaBackend.Models\AsadaLisboaBackend.Models.csproj", "{F558056D-B000-4AA9-8DB9-F0E7E5A26164}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsadaLisboaBackend.Repositories", "AsadaLisboaBackend.Repositories\AsadaLisboaBackend.Repositories.csproj", "{5984B239-F01B-4229-9C9E-427AE1348D23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsadaLisboaBackend.RepositoryContracts", "AsadaLisboaBackend.RepositoryContracts\AsadaLisboaBackend.RepositoryContracts.csproj", "{46ACC09D-A78B-4C85-8B63-6F9D147B08B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsadaLisboaBackend.Services", "AsadaLisboaBackend.Services\AsadaLisboaBackend.Services.csproj", "{754A42CA-D13A-41DA-9893-190936F4BCA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsadaLisboaBackend.ServiceContracts", "AsadaLisboaBackend.ServiceContracts\AsadaLisboaBackend.ServiceContracts.csproj", "{9C737B8D-D402-4C21-A1C5-6EA4323A3610}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsadaLisboaBackend.Tests", "AsadaLisboaBackend.Tests\AsadaLisboaBackend.Tests.csproj", "{D003431A-6B42-4303-BBCA-E74A3AF459DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +27,30 @@ Global
 		{973AC1A5-9C6D-411E-943D-0EC3FF95F488}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{973AC1A5-9C6D-411E-943D-0EC3FF95F488}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{973AC1A5-9C6D-411E-943D-0EC3FF95F488}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F558056D-B000-4AA9-8DB9-F0E7E5A26164}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F558056D-B000-4AA9-8DB9-F0E7E5A26164}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F558056D-B000-4AA9-8DB9-F0E7E5A26164}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F558056D-B000-4AA9-8DB9-F0E7E5A26164}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5984B239-F01B-4229-9C9E-427AE1348D23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5984B239-F01B-4229-9C9E-427AE1348D23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5984B239-F01B-4229-9C9E-427AE1348D23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5984B239-F01B-4229-9C9E-427AE1348D23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46ACC09D-A78B-4C85-8B63-6F9D147B08B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46ACC09D-A78B-4C85-8B63-6F9D147B08B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46ACC09D-A78B-4C85-8B63-6F9D147B08B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46ACC09D-A78B-4C85-8B63-6F9D147B08B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{754A42CA-D13A-41DA-9893-190936F4BCA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{754A42CA-D13A-41DA-9893-190936F4BCA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{754A42CA-D13A-41DA-9893-190936F4BCA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{754A42CA-D13A-41DA-9893-190936F4BCA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C737B8D-D402-4C21-A1C5-6EA4323A3610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C737B8D-D402-4C21-A1C5-6EA4323A3610}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C737B8D-D402-4C21-A1C5-6EA4323A3610}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C737B8D-D402-4C21-A1C5-6EA4323A3610}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D003431A-6B42-4303-BBCA-E74A3AF459DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D003431A-6B42-4303-BBCA-E74A3AF459DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D003431A-6B42-4303-BBCA-E74A3AF459DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D003431A-6B42-4303-BBCA-E74A3AF459DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
