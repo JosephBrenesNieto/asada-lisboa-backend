@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using AsadaLisboaBackend.Models.IdentityModels;
 
 namespace AsadaLisboaBackend.Models.DatabaseContext
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -15,6 +17,7 @@ namespace AsadaLisboaBackend.Models.DatabaseContext
         public DbSet<Document> Documents { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<New> News { get; set; }
+        public DbSet<Charge> Charges { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
