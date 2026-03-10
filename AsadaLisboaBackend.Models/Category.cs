@@ -4,11 +4,7 @@ namespace AsadaLisboaBackend.Models
 {
     public class Category
     {
-        [Key]
         public Guid Id { get; set; }
-
-        [Required(ErrorMessage = "El nombre de la categoría es requerido.")]
-        [StringLength(20, MinimumLength = 2, ErrorMessage = "El nombre de la categoría debe ser entre {1} y {0} caracteres.")]
         public string Name { get; set; } = string.Empty;
 
         // Foreign Key
