@@ -1,13 +1,13 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Resend;
 using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Services.Email;
-using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.Services.Account;
-using AsadaLisboaBackend.Models.DatabaseContext;
+using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Email;
+using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.ServiceContracts.Account;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace AsadaLisboaBackend.Models
+﻿namespace AsadaLisboaBackend.Models
 {
     public class AboutUsSection
     {

@@ -1,5 +1,4 @@
-﻿using AsadaLisboaBackend.Models.DTOs;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace AsadaLisboaBackend.ServiceContracts.Account
 {
