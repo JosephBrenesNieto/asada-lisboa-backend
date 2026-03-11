@@ -1,7 +1,11 @@
-﻿namespace AsadaLisboaBackend.ServiceContracts.Account
+﻿using AsadaLisboaBackend.Models.DTOs;
+using Microsoft.AspNetCore.Identity;
+
+namespace AsadaLisboaBackend.ServiceContracts.Account
 {
     public interface IResetPasswordService
     {
-        public Task<bool> ResetPassword(string email);
+        public Task<bool> ForgotPassword(string email);
+        public Task<IdentityResult> ResetPassword(string email, string token, string password);
     }
 }

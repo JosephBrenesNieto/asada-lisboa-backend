@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Resend;
 using AsadaLisboaBackend.Utils;
-using AsadaLisboaBackend.Services.EmailSender;
+using AsadaLisboaBackend.Services.Email;
 using AsadaLisboaBackend.Models.IdentityModels;
-using AsadaLisboaBackend.Services.ResetPassword;
+using AsadaLisboaBackend.Services.Account;
 using AsadaLisboaBackend.Models.DatabaseContext;
-using AsadaLisboaBackend.ServiceContracts.EmailSender;
-using AsadaLisboaBackend.ServiceContracts.ResetPassword;
+using AsadaLisboaBackend.ServiceContracts.Email;
+using AsadaLisboaBackend.ServiceContracts.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 
