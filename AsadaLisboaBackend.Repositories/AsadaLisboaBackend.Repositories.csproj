@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AsadaLisboaBackend.Models\AsadaLisboaBackend.Models.csproj" />
+    <ProjectReference Include="..\AsadaLisboaBackend.RepositoryContracts\AsadaLisboaBackend.RepositoryContracts.csproj" />
+  </ItemGroup>
+
 </Project>

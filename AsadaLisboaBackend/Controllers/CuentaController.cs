@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AsadaLisboaBackend.Models.DTOs;
 using AsadaLisboaBackend.ServiceContracts.Account;
+using AsadaLisboaBackend.Models.DTOs.Account;
 
 namespace AsadaLisboaBackend.Controllers
 {
     [ApiController]
-    [Route("api/cuenta")]
-    public class AccountController : ControllerBase
+    [Route("api/[controller]")]
+    public class CuentaController : ControllerBase
     {
         private readonly IResetPasswordService _resetPasswordService;
 
-        public AccountController(IResetPasswordService resetPasswordService)
+        public CuentaController(IResetPasswordService resetPasswordService)
         {
             _resetPasswordService = resetPasswordService;
         }

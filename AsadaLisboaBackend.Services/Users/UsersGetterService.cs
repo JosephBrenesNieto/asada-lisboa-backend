@@ -1,0 +1,24 @@
+﻿using AsadaLisboaBackend.Utils;
+using AsadaLisboaBackend.Models.DTOs.Users;
+using AsadaLisboaBackend.ServiceContracts.Users;
+using AsadaLisboaBackend.RepositoryContracts.Users;
+
+namespace AsadaLisboaBackend.Services.Users
+{
+    public class UsersGetterService : IUsersGetterService
+    {
+        private readonly IUsersGetterRepository _usersGetterRepository;
+
+        public UsersGetterService(IUsersGetterRepository usersGetterRepository)
+        {
+            _usersGetterRepository = usersGetterRepository;
+        }
+
+        public async Task<List<UserResponseDTO>?> GetUsers(int page)
+        {
+            int offset = (page - 1) * Constants.PAGINATION_SIZE;
+
+            return await _usersGetterRepository.GetUsers(offset, Constants.PAGINATION_SIZE);
+        }
+    }
+}

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AsadaLisboaBackend.Utils;
 
-namespace AsadaLisboaBackend.Models.DTOs
+namespace AsadaLisboaBackend.Models.DTOs.Account
 {
     public class ForgotPasswordRequestDTO
     {

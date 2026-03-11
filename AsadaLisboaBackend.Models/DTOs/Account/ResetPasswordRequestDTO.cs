@@ -1,7 +1,7 @@
 ﻿using AsadaLisboaBackend.Utils;
 using System.ComponentModel.DataAnnotations;
 
-namespace AsadaLisboaBackend.Models.DTOs
+namespace AsadaLisboaBackend.Models.DTOs.Account
 {
     public class ResetPasswordRequestDTO
     {

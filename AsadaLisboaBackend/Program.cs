@@ -3,12 +3,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Resend;
 using AsadaLisboaBackend.Utils;
-using AsadaLisboaBackend.Services.Email;
-using AsadaLisboaBackend.Services.Account;
 using AsadaLisboaBackend.Models.IdentityModels;
-using AsadaLisboaBackend.ServiceContracts.Email;
 using AsadaLisboaBackend.Models.DatabaseContext;
+using AsadaLisboaBackend.Services.Email;
+using AsadaLisboaBackend.Services.Users;
+using AsadaLisboaBackend.Services.Account;
+using AsadaLisboaBackend.ServiceContracts.Email;
+using AsadaLisboaBackend.ServiceContracts.Users;
 using AsadaLisboaBackend.ServiceContracts.Account;
+using AsadaLisboaBackend.Repositories.Users;
+using AsadaLisboaBackend.RepositoryContracts.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +24,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AsadaLisboaDB"));
 });
 
-builder.Services.AddTransient<IResetPasswordService, ResetPasswordService>();
-builder.Services.AddTransient<IEmailSenderService, EmailSenderService>();
+builder.Services.AddTransient<IUsersGetterRepository, UsersGetterRepository>();
 
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
+builder.Services.AddTransient<IUsersGetterService, UsersGetterService>();
+builder.Services.AddTransient<IEmailSenderService, EmailSenderService>();
+builder.Services.AddTransient<IResetPasswordService, ResetPasswordService>();
+
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+{
+    options.Password.RequiredLength = 8;
+    options.Password.RequiredUniqueChars = 3;
+    options.Password.RequireDigit = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, Guid>>()
     .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, Guid>>()
@@ -36,16 +51,6 @@ builder.Services.Configure<ResendClientOptions>(o =>
     o.ApiToken = Environment.GetEnvironmentVariable(Constants.RESEND_API_TOKEN.Trim())!;
 });
 builder.Services.AddTransient<IResend, ResendClient>();
-
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
-{
-    options.Password.RequiredLength = 8;
-    options.Password.RequiredUniqueChars = 3;
-    options.Password.RequireDigit = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-});
 
 var app = builder.Build();
 
