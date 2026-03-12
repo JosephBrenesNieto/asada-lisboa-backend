@@ -1,7 +1,9 @@
 ﻿using System.Text;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using AsadaLisboaBackend.Models.DTOs.Jwt;
 using AsadaLisboaBackend.ServiceContracts.Jwt;
@@ -14,9 +16,11 @@ namespace AsadaLisboaBackend.Services.Jwt
     {
         private readonly JwtOptions _jwtOptions;
         private readonly RefreshJwtOptions _refreshJwtOptions;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public JwtService(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> jwtRefreshOptions)
+        public JwtService(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> jwtRefreshOptions, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
             _refreshJwtOptions = jwtRefreshOptions.Value;
         }
@@ -57,13 +61,78 @@ namespace AsadaLisboaBackend.Services.Jwt
 
             return new AuthenticationResponseDTO()
             {
-                RefreshToken = token, // TODO: Generate refresh token.
                 Token = token,
                 Email = user.Email ?? "",
                 ExpirationToken = expirationToken,
-                ExpirationRefreshToken = expirationRefreshToken,
+                RefreshToken = GenerateRefreshToken(),
+                RefreshTokenExpiration = expirationRefreshToken,
                 FullName = $"{user.FirstName} {user.FirstLastName} {user.SecondLastName}",
             };
+        }
+
+        public ClaimsPrincipal? GetClaimsPrincipal(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateAudience = true,
+                ValidAudience = _jwtOptions.AUDIENCE,
+                ValidateIssuer = true,
+                ValidIssuer = _jwtOptions.ISSUER,
+                ValidateLifetime = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.KEY)),
+            };
+
+            JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            ClaimsPrincipal principal = jwtSecurityTokenHandler.ValidateToken(
+                token,
+                tokenValidationParameters,
+                out SecurityToken securityToken
+            );
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException("Token inválido.");
+
+            return principal;
+        }
+
+        public async Task<AuthenticationResponseDTO> ValidateRefreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO)
+        {
+            if (refreshTokenRequestDTO.Token is null)
+                throw new Exception("Token de acceso inválido.");
+
+            string token = refreshTokenRequestDTO.Token;
+            string? refreshToken = refreshTokenRequestDTO.RefreshToken;
+
+            var principal = GetClaimsPrincipal(token);
+
+            if (principal is null)
+                throw new Exception("Token de acceso inválido.");
+
+            string? email = principal.FindFirstValue(ClaimTypes.Email);
+
+            ApplicationUser? user = await _userManager.FindByEmailAsync(email ?? "");
+
+            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiration >= DateTime.UtcNow)
+                throw new Exception("Token de refrescamiento inválido.");
+
+            AuthenticationResponseDTO authenticationResponseDTO = GenerateToken(user);
+
+            user.RefreshToken = authenticationResponseDTO.RefreshToken;
+            user.RefreshTokenExpiration = authenticationResponseDTO.RefreshTokenExpiration;
+
+            await _userManager.UpdateAsync(user);
+
+            return authenticationResponseDTO;
+        }
+
+        private string GenerateRefreshToken()
+        {
+            Byte[] bytes = new Byte[64];
+            var randomNumberGenerator = RandomNumberGenerator.Create();
+
+            randomNumberGenerator.GetBytes(bytes);
+            return Convert.ToBase64String(bytes);
         }
     }
 }

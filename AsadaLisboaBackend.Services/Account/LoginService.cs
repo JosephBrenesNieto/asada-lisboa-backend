@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using AsadaLisboaBackend.Models.DTOs.Jwt;
 using AsadaLisboaBackend.Models.DTOs.Account;
 using AsadaLisboaBackend.ServiceContracts.Jwt;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Account;
-using AsadaLisboaBackend.Models.DTOs.Jwt;
 
 namespace AsadaLisboaBackend.Services.Account
 {
@@ -36,7 +36,7 @@ namespace AsadaLisboaBackend.Services.Account
             var autenticationResponse = _jwtService.GenerateToken(user);
 
             user.RefreshToken = autenticationResponse.RefreshToken;
-            user.RefreshTokenExpiration = autenticationResponse.ExpirationRefreshToken;
+            user.RefreshTokenExpiration = autenticationResponse.RefreshTokenExpiration;
 
             await _userManager.UpdateAsync(user);
 
