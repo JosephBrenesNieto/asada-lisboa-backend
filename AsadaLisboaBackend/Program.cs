@@ -1,13 +1,20 @@
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Resend;
 using AsadaLisboaBackend.Utils;
+using AsadaLisboaBackend.Services.Jwt;
 using AsadaLisboaBackend.Services.Email;
 using AsadaLisboaBackend.Services.Users;
 using AsadaLisboaBackend.Services.Account;
 using AsadaLisboaBackend.Repositories.Users;
+using AsadaLisboaBackend.Utils.OptionsPattern;
+using AsadaLisboaBackend.ServiceContracts.Jwt;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Email;
 using AsadaLisboaBackend.Models.DatabaseContext;
@@ -18,15 +25,26 @@ using AsadaLisboaBackend.RepositoryContracts.Users;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+    .RequireAuthenticatedUser()
+    .Build();
+
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("AsadaLisboaDB"));
 });
 
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+builder.Services.Configure<RefreshJwtOptions>(builder.Configuration.GetSection(nameof(RefreshJwtOptions)));
+
 builder.Services.AddTransient<IUsersGetterRepository, UsersGetterRepository>();
 
+builder.Services.AddTransient<IJwtService, JwtService>();
 builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<IUsersGetterService, UsersGetterService>();
 builder.Services.AddTransient<IUsersUpdaterService, UsersUpdaterService>();
@@ -57,12 +75,26 @@ builder.Services.Configure<ResendClientOptions>(o =>
 });
 builder.Services.AddTransient<IResend, ResendClient>();
 
-builder.Services.AddAuthorization(options =>
+builder.Services.AddAuthentication(options =>
 {
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-});
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["JwtOptions:AUDIENCE"], // Who sent the token.
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["JwtOptions:ISSUER"], // Who issues the token.
+            ValidateLifetime = true, // Check if it's up-to-date.
+            ValidateIssuerSigningKey = true, // Check if it's the signed key.
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:KEY"] ?? "")) // Obtain the key to verify the signing key.
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

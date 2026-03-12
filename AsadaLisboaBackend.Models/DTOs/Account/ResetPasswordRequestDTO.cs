@@ -10,7 +10,7 @@ namespace AsadaLisboaBackend.Models.DTOs.Account
         public string Password { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La confirmación de la contraseña es requerida.")]
-        [Compare("Password", ErrorMessage = "Ambas contraseñas deben coincidir.")]
+        [Compare(nameof(Password), ErrorMessage = "Ambas contraseñas deben coincidir.")]
         [StringLength(20, MinimumLength = 8, ErrorMessage = "La confirmación de la contraseña debe tener entre {2} y {1} caracteres.")]
         public string ConfirmPassword { get; set; } = string.Empty;
 

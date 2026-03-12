@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using AsadaLisboaBackend.Models.DTOs.Jwt;
 using AsadaLisboaBackend.Models.DTOs.Account;
 using AsadaLisboaBackend.ServiceContracts.Account;
 
 namespace AsadaLisboaBackend.Controllers
 {
     [ApiController]
+    [AllowAnonymous]
     [Route("api/[controller]")]
     public class CuentaController : ControllerBase
     {
@@ -18,10 +21,9 @@ namespace AsadaLisboaBackend.Controllers
         }
 
         [HttpPost("iniciar-sesion")]
-        public async Task<IActionResult> IniciarSesion(LoginRequestDTO loginRequestDTO)
+        public async Task<ActionResult<AuthenticationResponseDTO>> IniciarSesion(LoginRequestDTO loginRequestDTO)
         {
-            await _loginService.Login(loginRequestDTO);
-            return Ok();
+            return Ok(await _loginService.Login(loginRequestDTO));
         }
 
         [HttpPost("olvidar-contrasena")]

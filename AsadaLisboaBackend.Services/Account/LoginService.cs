@@ -1,24 +1,26 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using AsadaLisboaBackend.Models.DTOs.Account;
+using AsadaLisboaBackend.ServiceContracts.Jwt;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Account;
+using AsadaLisboaBackend.Models.DTOs.Jwt;
 
 namespace AsadaLisboaBackend.Services.Account
 {
     public class LoginService : ILoginService
     {
+        private readonly IJwtService _jwtService;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public LoginService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, SignInManager<ApplicationUser> signInManager)
+        public LoginService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtService jwtService)
         {
+            _jwtService = jwtService;
             _userManager = userManager;
-            _roleManager = roleManager;
             _signInManager = signInManager;
         }
 
-        public async Task Login(LoginRequestDTO loginRequestDTO)
+        public async Task<AuthenticationResponseDTO> Login(LoginRequestDTO loginRequestDTO)
         {
             var user = await _userManager.FindByEmailAsync(loginRequestDTO.Email);
 
@@ -30,6 +32,15 @@ namespace AsadaLisboaBackend.Services.Account
             // TODO: Add errors.
             if (!result.Succeeded)
                 throw new ArgumentException("Correo electrónico y/o contraseña incorrectos.");
+
+            var autenticationResponse = _jwtService.GenerateToken(user);
+
+            user.RefreshToken = autenticationResponse.RefreshToken;
+            user.RefreshTokenExpiration = autenticationResponse.ExpirationRefreshToken;
+
+            await _userManager.UpdateAsync(user);
+
+            return autenticationResponse;
         }
     }
 }
