@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using AsadaLisboaBackend.Models.DTOs.Users;
+using AsadaLisboaBackend.Models.DTOs.Shared;
+using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.RepositoryContracts.Users;
 
@@ -14,15 +16,44 @@ namespace AsadaLisboaBackend.Repositories.Users
             _context = context;
         }
 
-        public async Task<List<UserResponseDTO>?> GetUsers(int offset, int take)
+        public async Task<PageResponseDTO<UserResponseDTO>> GetUsers(SearchSortRequestDTO searchSortRequestDTO)
         {
-            return await _context.Users
+            IQueryable<ApplicationUser> query = _context.Users
                 .AsNoTracking()
-                .OrderBy(u => u.Id)
-                .Skip(offset)
-                .Take(take)
-                .Select(UserExtensions.MapUserResponseDTO())
-                .ToListAsync();
+                .Include(u => u.Charge);
+
+            // Search
+            if (!string.IsNullOrEmpty(searchSortRequestDTO.Search) && !string.IsNullOrWhiteSpace(searchSortRequestDTO.Search))
+            {
+                string search = searchSortRequestDTO.Search.ToLower();
+
+                query = searchSortRequestDTO.FilterBy switch
+                {
+                    "Charge" => query.Where(u => u.Charge != null && u.Charge.Name.ToLower().Contains(search)),
+                    _ => query.Where(u => u.UserName != null && u.UserName.ToLower().Contains(search)),
+                };
+            }
+
+            // Sort
+            query = (searchSortRequestDTO.SortBy.ToLower(), searchSortRequestDTO.SortDirection.ToLower()) switch
+            {
+                ("charge", "desc") => query.OrderByDescending(u => u.Charge!.Name),
+                ("charge", _) => query.OrderBy(u => u.Charge!.Name),
+                ("name", "desc") => query.OrderByDescending(u => u.UserName),
+                _ => query.OrderBy(u => u.UserName),
+            };
+
+            return new PageResponseDTO<UserResponseDTO>()
+            {
+                Total = await query.CountAsync(),
+                Data = await query
+                    .AsNoTracking()
+                    .OrderBy(u => u.Id)
+                    .Skip(searchSortRequestDTO.Offset)
+                    .Take(searchSortRequestDTO.Take)
+                    .Select(UserExtensions.MapUserResponseDTO())
+                    .ToListAsync(),
+            }; 
         }
 
         public async Task<UserDetailResponseDTO?> GetUser(Guid id)

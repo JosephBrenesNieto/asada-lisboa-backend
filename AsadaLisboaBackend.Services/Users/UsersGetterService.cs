@@ -1,5 +1,6 @@
 ﻿using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Models.DTOs.Users;
+using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.ServiceContracts.Users;
 using AsadaLisboaBackend.RepositoryContracts.Users;
 
@@ -14,11 +15,11 @@ namespace AsadaLisboaBackend.Services.Users
             _usersGetterRepository = usersGetterRepository;
         }
 
-        public async Task<List<UserResponseDTO>?> GetUsers(int page)
+        public async Task<PageResponseDTO<UserResponseDTO>> GetUsers(SearchSortRequestDTO searchSortRequestDTO)
         {
-            int offset = (Math.Max(page, 1) - 1) * Constants.PAGINATION_SIZE;
+            searchSortRequestDTO.Offset = (Math.Max(searchSortRequestDTO.Page, 1) - 1) * searchSortRequestDTO.Take;
 
-            return await _usersGetterRepository.GetUsers(offset, Constants.PAGINATION_SIZE);
+            return await _usersGetterRepository.GetUsers(searchSortRequestDTO);
         }
 
         public async Task<UserDetailResponseDTO?> GetUser(Guid id)

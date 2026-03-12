@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AsadaLisboaBackend.Models.DTOs.Users;
+using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.ServiceContracts.Users;
 
 namespace AsadaLisboaBackend.Areas.Admin.Controllers
@@ -21,9 +22,9 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         }
 
         [HttpGet("")]
-        public async Task<ActionResult<List<UserResponseDTO>?>> GetUsers([FromQuery] int page = 1)
+        public async Task<ActionResult<PageResponseDTO<UserResponseDTO>>> GetUsers([FromQuery] SearchSortRequestDTO searchSortRequestDTO)
         {
-            return Ok(await _usersGetterService.GetUsers(page));
+            return Ok(await _usersGetterService.GetUsers(searchSortRequestDTO));
         }
 
         [HttpGet("{id}")]
