@@ -1,22 +1,26 @@
-﻿using AsadaLisboaBackend.ServiceContracts.Users;
-using AsadaLisboaBackend.RepositoryContracts.Users;
+﻿using Microsoft.AspNetCore.Identity;
+using AsadaLisboaBackend.Models.IdentityModels;
+using AsadaLisboaBackend.ServiceContracts.Users;
 
 namespace AsadaLisboaBackend.Services.Users
 {
     public class UsersDeleterService : IUsersDeleterService
     {
-        private readonly IUsersGetterService _usersGetterService;
-        private readonly IUsersDeleterRepository _usersDeleterRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UsersDeleterService(IUsersGetterService usersGetterService, IUsersDeleterRepository usersDeleterRepository)
+        public UsersDeleterService(UserManager<ApplicationUser> userManager)
         {
-            _usersGetterService = usersGetterService;
-            _usersDeleterRepository = usersDeleterRepository;
+            _userManager = userManager;
         }
 
         public async Task DeleteUser(Guid id)
         {
-            await _usersDeleterRepository.DeleteUser(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            if (user is null)
+                throw new ArgumentNullException("Usuario inexistente.");
+
+            await _userManager.DeleteAsync(user);
         }
     }
 }

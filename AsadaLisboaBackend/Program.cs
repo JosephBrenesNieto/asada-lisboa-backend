@@ -1,17 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Resend;
 using AsadaLisboaBackend.Utils;
-using AsadaLisboaBackend.Models.IdentityModels;
-using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.Services.Email;
 using AsadaLisboaBackend.Services.Users;
 using AsadaLisboaBackend.Services.Account;
+using AsadaLisboaBackend.Repositories.Users;
+using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Email;
+using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.ServiceContracts.Users;
 using AsadaLisboaBackend.ServiceContracts.Account;
-using AsadaLisboaBackend.Repositories.Users;
 using AsadaLisboaBackend.RepositoryContracts.Users;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,8 +26,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddTransient<IUsersGetterRepository, UsersGetterRepository>();
-builder.Services.AddTransient<IUsersUpdaterRepository, UsersUpdaterRepository>();
-builder.Services.AddTransient<IUsersDeleterRepository, UsersDeleterRepository>();
 
 builder.Services.AddTransient<IUsersGetterService, UsersGetterService>();
 builder.Services.AddTransient<IUsersUpdaterService, UsersUpdaterService>();
@@ -57,11 +56,19 @@ builder.Services.Configure<ResendClientOptions>(o =>
 });
 builder.Services.AddTransient<IResend, ResendClient>();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

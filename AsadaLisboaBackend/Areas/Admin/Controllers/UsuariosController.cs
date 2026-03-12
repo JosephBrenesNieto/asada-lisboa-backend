@@ -42,6 +42,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] UserUpdateRequestDTO userUpdateRequestDTO)
         {
             await _usersUpdaterService.UpdateUser(id, userUpdateRequestDTO);
+
             return NoContent();
         }
 

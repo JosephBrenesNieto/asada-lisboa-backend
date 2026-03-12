@@ -1,35 +1,37 @@
 ﻿using AsadaLisboaBackend.Models.DTOs.Users;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Users;
-using AsadaLisboaBackend.RepositoryContracts.Users;
+using Microsoft.AspNetCore.Identity;
 
 namespace AsadaLisboaBackend.Services.Users
 {
     public class UsersUpdaterService : IUsersUpdaterService
     {
-        private readonly IUsersGetterService _usersGetterService;
-        private readonly IUsersUpdaterRepository _usersUpdaterRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public UsersUpdaterService(IUsersUpdaterRepository usersUpdaterRepository, IUsersGetterService usersGetterService)
+        public UsersUpdaterService(UserManager<ApplicationUser> userManager)
         {
-            _usersUpdaterRepository = usersUpdaterRepository;
-            _usersGetterService = usersGetterService;
+            _userManager = userManager;
         }
 
         public async Task UpdateUser(Guid id, UserUpdateRequestDTO userUpdateRequestDTO)
         {
-            var user = new ApplicationUser()
-            {
-                Id = id,
-                ImageUrl = userUpdateRequestDTO.ImageUrl,
-                ChargeId = userUpdateRequestDTO.ChargeId,
-                FirstName = userUpdateRequestDTO.FirstName,
-                PhoneNumber = userUpdateRequestDTO.PhoneNumber,
-                FirstLastName = userUpdateRequestDTO.FirstLastName,
-                SecondLastName = userUpdateRequestDTO.SecondLastName,
-            };
+            var user = await _userManager.FindByIdAsync(id.ToString());
 
-            await _usersUpdaterRepository.UpdateUser(user);
+            if (user is null)
+                throw new ArgumentNullException("Usuario inexistente.");
+
+            user.ImageUrl = userUpdateRequestDTO.ImageUrl;
+            user.ChargeId = userUpdateRequestDTO.ChargeId;
+            user.FirstName = userUpdateRequestDTO.FirstName;
+            user.PhoneNumber = userUpdateRequestDTO.PhoneNumber;
+            user.FirstLastName = userUpdateRequestDTO.FirstLastName;
+            user.SecondLastName = userUpdateRequestDTO.SecondLastName;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+                throw new ArgumentNullException("Error al actualizar usuario.");
         }
     }
 }

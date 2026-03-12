@@ -21,7 +21,8 @@ namespace AsadaLisboaBackend.Services.Account
         public async Task<bool> ForgotPassword(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user is null || !user.EmailConfirmed) return false;
+            if (user is null || !user.EmailConfirmed) 
+                throw new ArgumentNullException("No existe un usuario con este correo electrónico.");
 
             string resetToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(await _userManager.GeneratePasswordResetTokenAsync(user)));
 
@@ -33,7 +34,8 @@ namespace AsadaLisboaBackend.Services.Account
             token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
 
             var user = await _userManager.FindByEmailAsync(email);
-            if (user is null) throw new ArgumentNullException("No existe un usuario con este correo electrónico.");
+            if (user is null) 
+                throw new ArgumentNullException("No existe un usuario con este correo electrónico.");
 
             return await _userManager.ResetPasswordAsync(user, token, password);
         }
