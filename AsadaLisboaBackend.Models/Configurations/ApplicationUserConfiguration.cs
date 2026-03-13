@@ -1,6 +1,6 @@
-﻿using AsadaLisboaBackend.Models.IdentityModels;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using AsadaLisboaBackend.Models.IdentityModels;
 
 namespace AsadaLisboaBackend.Models.Configurations
 {

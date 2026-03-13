@@ -1,5 +1,5 @@
-﻿using AsadaLisboaBackend.Models.IdentityModels;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
+using AsadaLisboaBackend.Models.IdentityModels;
 
 namespace AsadaLisboaBackend.Models.DTOs.Users
 {

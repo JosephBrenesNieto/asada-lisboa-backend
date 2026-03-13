@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace AsadaLisboaBackend.ServiceContracts.Account
+﻿namespace AsadaLisboaBackend.ServiceContracts.Account
 {
     public interface IResetPasswordService
     {
