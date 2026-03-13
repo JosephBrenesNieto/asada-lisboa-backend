@@ -30,6 +30,14 @@ namespace AsadaLisboaBackend.Controllers
             return Ok(await _loginService.Login(loginRequestDTO));
         }
 
+        [Authorize]
+        [HttpPost("cerrar-sesion")]
+        public async Task<IActionResult> Logout()
+        {
+            await _jwtService.DeleteToken();
+            return Ok();
+        } 
+
         [HttpPost("refrescar-token")]
         public ActionResult<AuthenticationResponseDTO> RefreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO)
         {

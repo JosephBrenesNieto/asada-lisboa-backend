@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -16,12 +17,14 @@ namespace AsadaLisboaBackend.Services.Jwt
     {
         private readonly JwtOptions _jwtOptions;
         private readonly RefreshJwtOptions _refreshJwtOptions;
+        private readonly HttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public JwtService(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> jwtRefreshOptions, UserManager<ApplicationUser> userManager)
+        public JwtService(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> jwtRefreshOptions, UserManager<ApplicationUser> userManager, HttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
+            _httpContextAccessor = httpContextAccessor;
             _refreshJwtOptions = jwtRefreshOptions.Value;
         }
 
@@ -96,6 +99,24 @@ namespace AsadaLisboaBackend.Services.Jwt
             return principal;
         }
 
+        public async Task DeleteToken()
+        {
+            Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid id);
+
+            if(id == Guid.Empty)
+                throw new Exception("Error al cerrar sesión.");
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            if (user is null)
+                throw new Exception("Error al cerrar sesión.");
+
+            user.RefreshToken = null;
+            user.RefreshTokenExpiration = DateTime.MinValue;
+
+            await _userManager.UpdateAsync(user);
+        }
+
         public async Task<AuthenticationResponseDTO> ValidateRefreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO)
         {
             if (refreshTokenRequestDTO.Token is null)
@@ -113,7 +134,7 @@ namespace AsadaLisboaBackend.Services.Jwt
 
             ApplicationUser? user = await _userManager.FindByEmailAsync(email ?? "");
 
-            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiration >= DateTime.UtcNow)
+            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiration < DateTime.UtcNow)
                 throw new Exception("Token de refrescamiento inválido.");
 
             AuthenticationResponseDTO authenticationResponseDTO = GenerateToken(user);

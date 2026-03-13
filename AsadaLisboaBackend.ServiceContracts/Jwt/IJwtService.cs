@@ -8,6 +8,7 @@ namespace AsadaLisboaBackend.ServiceContracts.Jwt
     {
         public AuthenticationResponseDTO GenerateToken(ApplicationUser user);
         public ClaimsPrincipal? GetClaimsPrincipal(string token);
+        public Task DeleteToken();
         public Task<AuthenticationResponseDTO> ValidateRefreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO);
     }
 }
