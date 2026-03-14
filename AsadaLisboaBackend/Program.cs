@@ -35,6 +35,8 @@ builder.Services.AddTransient<IUsersDeleterService, UsersDeleterService>();
 builder.Services.AddTransient<IEmailSenderService, EmailSenderService>();
 builder.Services.AddTransient<IResetPasswordService, ResetPasswordService>();
 
+builder.Services.AddTransient<IRegisterUserService, RegisterUserService>();
+
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
     options.Password.RequiredLength = 8;
