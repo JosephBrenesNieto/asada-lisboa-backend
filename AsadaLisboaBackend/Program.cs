@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Resend;
 using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Services.Jwt;
+using AsadaLisboaBackend.ErrorHandling;
 using AsadaLisboaBackend.Services.Email;
 using AsadaLisboaBackend.Services.Users;
 using AsadaLisboaBackend.Services.Account;
@@ -33,6 +34,15 @@ builder.Services.AddControllers(options =>
 
     options.Filters.Add(new AuthorizeFilter(policy));
 });
+
+builder.Services.AddExceptionHandler<InvalidRefreshTokenErrorHandling>();
+builder.Services.AddExceptionHandler<InvalidAccessTokenErrorHandling>();
+builder.Services.AddExceptionHandler<InvalidCredentialsErrorHandling>();
+builder.Services.AddExceptionHandler<SecurityTokenErrorHandling>();
+builder.Services.AddExceptionHandler<NotFoundErrorHandling>();
+builder.Services.AddExceptionHandler<IdentityErrorHandling>();
+builder.Services.AddExceptionHandler<GlobalErrorHandling>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -61,6 +71,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = true;
+
+    options.SignIn.RequireConfirmedEmail = true;
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, Guid>>()
@@ -99,6 +111,8 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseExceptionHandler();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

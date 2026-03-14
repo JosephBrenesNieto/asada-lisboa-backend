@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Users;
 
@@ -18,7 +19,7 @@ namespace AsadaLisboaBackend.Services.Users
             var user = await _userManager.FindByIdAsync(id.ToString());
 
             if (user is null)
-                throw new ArgumentNullException("Usuario inexistente.");
+                throw new NotFoundException("Usuario inexistente.");
 
             await _userManager.DeleteAsync(user);
         }

@@ -30,12 +30,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDetailResponseDTO>> GetUser([FromRoute] Guid id)
         {
-            var user = await _usersGetterService.GetUser(id);
-
-            if (user is null)
-                return NotFound();
-
-            return Ok(user);
+            return Ok(await _usersGetterService.GetUser(id));
         }
 
         [HttpPut("{id}")]
