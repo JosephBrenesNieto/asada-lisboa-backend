@@ -12,10 +12,12 @@ namespace AsadaLisboaBackend.Controllers
     public class RegisterUserController : ControllerBase
     {
         private readonly IRegisterUserService _userService;
+        private readonly IVerificationCodeService _verificationCodeService;
 
-        public RegisterUserController(IRegisterUserService userService)
+        public RegisterUserController(IRegisterUserService userService, IVerificationCodeService verificationCodeService)
         {
             _userService = userService;
+            _verificationCodeService = verificationCodeService;
         }
 
         [HttpPost("registro usuario")]
@@ -31,5 +33,14 @@ namespace AsadaLisboaBackend.Controllers
 
             return Ok(new { Message = "Usuario registrado correctamente" });
         }
+
+        [HttpPost("envio de código verificación")]
+        public async Task<IActionResult> SendVerificationCode([FromBody] VerificationCodeRequestDTO request)
+        {
+            var result = await _verificationCodeService.GenerateCode(request.Email);
+            if (!result) return BadRequest("No se pudo enviar el código.");
+            return Ok("Código enviado correctamente.");
+        }
+
     }
 }

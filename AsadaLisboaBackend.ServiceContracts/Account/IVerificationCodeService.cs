@@ -8,8 +8,8 @@ using AsadaLisboaBackend.Models.DTOs.Account;
 
 namespace AsadaLisboaBackend.ServiceContracts.Account
 {
-    public  interface IRegisterUserService
+    public  interface IVerificationCodeService
     {
-        public Task<IdentityResult> RegisterUser(RegisterRequestDTO registerRequestDTO);
+        public Task<bool> GenerateCode(string email);
     }
 }
