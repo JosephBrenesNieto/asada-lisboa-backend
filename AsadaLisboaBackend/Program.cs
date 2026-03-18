@@ -59,6 +59,7 @@ builder.Services.Configure<RefreshJwtOptions>(builder.Configuration.GetSection(n
 builder.Services.AddTransient<IUsersGetterRepository, UsersGetterRepository>();
 builder.Services.AddTransient<IContactsAdderRepository, ContactsAdderRepository>();
 builder.Services.AddTransient<IContactsGetterRepository, ContactsGetterRepository>();
+builder.Services.AddTransient<IContactsUpdaterRepository, ContactsUpdaterRepository>();
 
 builder.Services.AddTransient<IJwtService, JwtService>();
 builder.Services.AddTransient<ILoginService, LoginService>();
@@ -67,6 +68,7 @@ builder.Services.AddTransient<IUsersUpdaterService, UsersUpdaterService>();
 builder.Services.AddTransient<IUsersDeleterService, UsersDeleterService>();
 builder.Services.AddTransient<IContactsAdderService, ContactsAdderService>();
 builder.Services.AddTransient<IContactsGetterService, ContactsGetterService>();
+builder.Services.AddTransient<IContactsUpdaterService, ContactsUpdaterService>();
 
 builder.Services.AddTransient<IEmailSenderService, EmailSenderService>();
 builder.Services.AddTransient<IResetPasswordService, ResetPasswordService>();

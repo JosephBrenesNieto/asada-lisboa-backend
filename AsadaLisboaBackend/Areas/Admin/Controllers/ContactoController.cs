@@ -12,11 +12,13 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
     {
         private readonly IContactsAdderService _contactsAdderService;
         private readonly IContactsGetterService _contactsGetterService;
+        private readonly IContactsUpdaterService _contactsUpdaterService;
 
-        public ContactoController(IContactsGetterService contactsGetterService, IContactsAdderService contactsAdderService)
+        public ContactoController(IContactsGetterService contactsGetterService, IContactsAdderService contactsAdderService, IContactsUpdaterService contactsUpdaterService)
         {
-            _contactsGetterService = contactsGetterService;
             _contactsAdderService = contactsAdderService;
+            _contactsGetterService = contactsGetterService;
+            _contactsUpdaterService = contactsUpdaterService;
         }
 
         [HttpGet("")]
@@ -34,7 +36,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<ContactResponseDTO>> UpdateContact([FromQuery] Guid id, [FromBody] ContactRequestDTO contactRequestDTO)
         {
-            return Ok();
+            return Ok(await _contactsUpdaterService.UpdateContact(id, contactRequestDTO));
         }
     }
 }
