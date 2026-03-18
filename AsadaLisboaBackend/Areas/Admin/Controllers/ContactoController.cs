@@ -44,7 +44,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<ContactResponseDTO>> DeleteContact([FromRoute] Guid id)
         {
-            await _contactsDeleterService.UpdateContact(id);
+            await _contactsDeleterService.DeleteContact(id);
             return NoContent();
         }
     }

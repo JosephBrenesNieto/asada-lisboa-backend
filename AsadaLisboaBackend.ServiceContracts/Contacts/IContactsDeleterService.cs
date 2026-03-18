@@ -2,6 +2,6 @@
 {
     public interface IContactsDeleterService
     {
-        public Task UpdateContact(Guid id);
+        public Task DeleteContact(Guid id);
     }
 }

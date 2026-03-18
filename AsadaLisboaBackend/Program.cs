@@ -25,7 +25,11 @@ using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.ServiceContracts.Account;
 using AsadaLisboaBackend.RepositoryContracts.Users;
 using AsadaLisboaBackend.ServiceContracts.Contacts;
+using AsadaLisboaBackend.Repositories.Configurations;
 using AsadaLisboaBackend.RepositoryContracts.Contacts;
+using AsadaLisboaBackend.RepositoryContracts.Configurations;
+using AsadaLisboaBackend.ServiceContracts.Configurations;
+using AsadaLisboaBackend.Services.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +50,7 @@ builder.Services.AddExceptionHandler<SecurityTokenErrorHandling>();
 builder.Services.AddExceptionHandler<NotFoundErrorHandling>();
 builder.Services.AddExceptionHandler<IdentityErrorHandling>();
 builder.Services.AddExceptionHandler<GlobalErrorHandling>();
+
 builder.Services.AddProblemDetails();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -58,11 +63,15 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 builder.Services.Configure<RefreshJwtOptions>(builder.Configuration.GetSection(nameof(RefreshJwtOptions)));
 
-builder.Services.AddScoped<IUsersGetterRepository, UsersGetterRepository>();
 builder.Services.AddScoped<IContactsAdderRepository, ContactsAdderRepository>();
 builder.Services.AddScoped<IContactsGetterRepository, ContactsGetterRepository>();
 builder.Services.AddScoped<IContactsUpdaterRepository, ContactsUpdaterRepository>();
 builder.Services.AddScoped<IContactsDeleterRepository, ContactsDeleterRepository>();
+
+builder.Services.AddScoped<IConfigurationsAdderRepository, ConfigurationsAdderRepository>();
+builder.Services.AddScoped<IConfigurationsGetterRepository, ConfigurationsGetterRepository>();
+builder.Services.AddScoped<IConfigurationsUpdaterRepository, ConfigurationsUpdaterRepository>();
+builder.Services.AddScoped<IConfigurationsDeleterRepository, ConfigurationsDeleterRepository>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
@@ -72,10 +81,17 @@ builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
 builder.Services.AddScoped<IUsersGetterService, UsersGetterService>();
 builder.Services.AddScoped<IUsersUpdaterService, UsersUpdaterService>();
 builder.Services.AddScoped<IUsersDeleterService, UsersDeleterService>();
+builder.Services.AddScoped<IUsersGetterRepository, UsersGetterRepository>();
+
 builder.Services.AddScoped<IContactsAdderService, ContactsAdderService>();
 builder.Services.AddScoped<IContactsGetterService, ContactsGetterService>();
 builder.Services.AddScoped<IContactsUpdaterService, ContactsUpdaterService>();
 builder.Services.AddScoped<IContactsDeleterService, ContactsDeleterService>();
+
+builder.Services.AddScoped<IConfigurationsAdderService, ConfigurationsAdderService>();
+builder.Services.AddScoped<IConfigurationsGetterService, ConfigurationsGetterService>();
+builder.Services.AddScoped<IConfigurationsUpdaterService, ConfigurationsUpdaterService>();
+builder.Services.AddScoped<IConfigurationsDeleterService, ConfigurationsDeleterService>();
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {

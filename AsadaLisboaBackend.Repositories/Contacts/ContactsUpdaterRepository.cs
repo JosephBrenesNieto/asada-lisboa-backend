@@ -1,9 +1,9 @@
-﻿using AsadaLisboaBackend.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using AsadaLisboaBackend.Models;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.DTOs.Contact;
 using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.RepositoryContracts.Contacts;
-using Microsoft.EntityFrameworkCore;
-using AsadaLisboaBackend.Services.Exceptions;
 
 namespace AsadaLisboaBackend.Repositories.Contacts
 {

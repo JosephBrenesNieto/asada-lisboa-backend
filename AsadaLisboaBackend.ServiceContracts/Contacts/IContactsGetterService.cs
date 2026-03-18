@@ -1,5 +1,5 @@
-﻿using AsadaLisboaBackend.Models.DTOs.Contact;
-using AsadaLisboaBackend.Models.DTOs.Shared;
+﻿using AsadaLisboaBackend.Models.DTOs.Shared;
+using AsadaLisboaBackend.Models.DTOs.Contact;
 
 namespace AsadaLisboaBackend.ServiceContracts.Contacts
 {

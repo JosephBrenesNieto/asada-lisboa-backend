@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using AsadaLisboaBackend.Models.DTOs.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using AsadaLisboaBackend.Models.DTOs.Account;
 using AsadaLisboaBackend.ServiceContracts.Jwt;
 using AsadaLisboaBackend.ServiceContracts.Account;

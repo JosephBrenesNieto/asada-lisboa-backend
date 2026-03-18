@@ -1,7 +1,7 @@
-﻿using AsadaLisboaBackend.Models.DatabaseContext;
-using AsadaLisboaBackend.RepositoryContracts.Contacts;
+﻿using Microsoft.EntityFrameworkCore;
 using AsadaLisboaBackend.Services.Exceptions;
-using Microsoft.EntityFrameworkCore;
+using AsadaLisboaBackend.Models.DatabaseContext;
+using AsadaLisboaBackend.RepositoryContracts.Contacts;
 
 namespace AsadaLisboaBackend.Repositories.Contacts
 {
@@ -14,7 +14,7 @@ namespace AsadaLisboaBackend.Repositories.Contacts
             _context = context;
         }
 
-        public async Task UpdateContact(Guid id)
+        public async Task DeleteContact(Guid id)
         {
             var affectedRows = await _context.Contacts
                 .Where(c => c.Id == id)

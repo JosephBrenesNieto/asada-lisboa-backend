@@ -1,7 +1,7 @@
-﻿using AsadaLisboaBackend.ServiceContracts.Contacts;
-using AsadaLisboaBackend.RepositoryContracts.Contacts;
+﻿using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DTOs.Contact;
-using AsadaLisboaBackend.Models;
+using AsadaLisboaBackend.ServiceContracts.Contacts;
+using AsadaLisboaBackend.RepositoryContracts.Contacts;
 
 namespace AsadaLisboaBackend.Services.Contacts
 {

@@ -13,9 +13,9 @@ namespace AsadaLisboaBackend.Services.Contacts
             _contactsUpdaterRepository = contactsUpdaterRepository;
         }
 
-        public async Task<ContactResponseDTO> UpdateContact(Guid id, ContactRequestDTO contactRequestDTO)
+        public async Task<ContactResponseDTO> UpdateContact(Guid id, ContactRequestDTO contactsRequestDTO)
         {
-            return (await _contactsUpdaterRepository.UpdateContact(id, contactRequestDTO))
+            return (await _contactsUpdaterRepository.UpdateContact(id, contactsRequestDTO))
                 .ToContactResponseDTO();
         }
     }

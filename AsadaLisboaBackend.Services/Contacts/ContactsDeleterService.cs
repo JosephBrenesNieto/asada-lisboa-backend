@@ -12,9 +12,9 @@ namespace AsadaLisboaBackend.Services.Contacts
             _contactsDeleterRepository = contactsDeleterRepository;
         }
 
-        public async Task UpdateContact(Guid id)
+        public async Task DeleteContact(Guid id)
         {
-            await _contactsDeleterRepository.UpdateContact(id);
+            await _contactsDeleterRepository.DeleteContact(id);
         }
     }
 }
