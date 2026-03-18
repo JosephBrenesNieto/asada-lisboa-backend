@@ -1,14 +1,15 @@
 ﻿using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.Models.DTOs.Contact;
 using AsadaLisboaBackend.ServiceContracts.Contacts;
+using AsadaLisboaBackend.RepositoryContracts.Contacts;
 
 namespace AsadaLisboaBackend.Services.Contacts
 {
     public class ContactsGetterService : IContactsGetterService
     {
-        private readonly IContactsGetterService _contactsGetterRepository;
+        private readonly IContactsGetterRepository _contactsGetterRepository;
 
-        public ContactsGetterService(IContactsGetterService contactsGetterRepository)
+        public ContactsGetterService(IContactsGetterRepository contactsGetterRepository)
         {
             _contactsGetterRepository = contactsGetterRepository;
         }

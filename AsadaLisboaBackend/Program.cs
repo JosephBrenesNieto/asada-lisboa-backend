@@ -53,25 +53,27 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AsadaLisboaDB"));
 });
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 builder.Services.Configure<RefreshJwtOptions>(builder.Configuration.GetSection(nameof(RefreshJwtOptions)));
 
-builder.Services.AddTransient<IUsersGetterRepository, UsersGetterRepository>();
-builder.Services.AddTransient<IContactsAdderRepository, ContactsAdderRepository>();
-builder.Services.AddTransient<IContactsGetterRepository, ContactsGetterRepository>();
-builder.Services.AddTransient<IContactsUpdaterRepository, ContactsUpdaterRepository>();
+builder.Services.AddScoped<IUsersGetterRepository, UsersGetterRepository>();
+builder.Services.AddScoped<IContactsAdderRepository, ContactsAdderRepository>();
+builder.Services.AddScoped<IContactsGetterRepository, ContactsGetterRepository>();
+builder.Services.AddScoped<IContactsUpdaterRepository, ContactsUpdaterRepository>();
 
-builder.Services.AddTransient<IJwtService, JwtService>();
-builder.Services.AddTransient<ILoginService, LoginService>();
-builder.Services.AddTransient<IUsersGetterService, UsersGetterService>();
-builder.Services.AddTransient<IUsersUpdaterService, UsersUpdaterService>();
-builder.Services.AddTransient<IUsersDeleterService, UsersDeleterService>();
-builder.Services.AddTransient<IContactsAdderService, ContactsAdderService>();
-builder.Services.AddTransient<IContactsGetterService, ContactsGetterService>();
-builder.Services.AddTransient<IContactsUpdaterService, ContactsUpdaterService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
+builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
 
-builder.Services.AddTransient<IEmailSenderService, EmailSenderService>();
-builder.Services.AddTransient<IResetPasswordService, ResetPasswordService>();
+builder.Services.AddScoped<IUsersGetterService, UsersGetterService>();
+builder.Services.AddScoped<IUsersUpdaterService, UsersUpdaterService>();
+builder.Services.AddScoped<IUsersDeleterService, UsersDeleterService>();
+builder.Services.AddScoped<IContactsAdderService, ContactsAdderService>();
+builder.Services.AddScoped<IContactsGetterService, ContactsGetterService>();
+builder.Services.AddScoped<IContactsUpdaterService, ContactsUpdaterService>();
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {

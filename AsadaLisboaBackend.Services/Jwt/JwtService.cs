@@ -18,10 +18,10 @@ namespace AsadaLisboaBackend.Services.Jwt
     {
         private readonly JwtOptions _jwtOptions;
         private readonly RefreshJwtOptions _refreshJwtOptions;
-        private readonly HttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public JwtService(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> jwtRefreshOptions, UserManager<ApplicationUser> userManager, HttpContextAccessor httpContextAccessor)
+        public JwtService(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> jwtRefreshOptions, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
