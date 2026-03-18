@@ -18,9 +18,9 @@ namespace AsadaLisboaBackend.Services.Email
             _resend = resend;
         }
 
-        public async Task<bool> SendVerificationCode(string name, string email, string verificationCode)
+        public async Task<bool> SendVerificationCode(string name, string email, string token)
         {
-
+            string url = $"{Constants.DOMAIN_HOST}/confirmar-correo/?token={token}&email={email}";
 
             var message = new EmailMessage();
 
@@ -74,14 +74,13 @@ namespace AsadaLisboaBackend.Services.Email
                 </head>
                 <body>
                     <div class=""container"">
-                        <h2>Hola {{{{name}}}},</h2>
-                        <p>Recibimos una solicitud para verificar tu cuenta. 
-                        Usa el siguiente código para completar el proceso:</p>
+                        <h2>Hola {{{{FirstName}}}},</h2>
+                        <p>Gracias por registrarte en <strong>TuAplicación</strong>. 
+                        Para activar tu cuenta, confirma tu correo electrónico haciendo clic en el siguiente botón:</p>
 
-                        <div class=""code"">{{{{VerificationCode}}}}</div>
+                        <a href=""{{{{ConfirmationLink}}}}"" class=""button"">Confirmar correo</a>
 
-                        <p>Este código expirará en <strong>10 minutos</strong>. 
-                        Si no solicitaste esta verificación, puedes ignorar este correo.</p>
+                        <p>Si no solicitaste esta cuenta, puedes ignorar este mensaje.</p>
 
                         <div class=""footer"">
                             © 2026 Asada Urbanización Lisboa. Todos los derechos reservados.
