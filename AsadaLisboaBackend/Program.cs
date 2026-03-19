@@ -22,14 +22,18 @@ using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Email;
 using AsadaLisboaBackend.ServiceContracts.Users;
 using AsadaLisboaBackend.Models.DatabaseContext;
+using AsadaLisboaBackend.Services.Configurations;
 using AsadaLisboaBackend.ServiceContracts.Account;
+using AsadaLisboaBackend.Services.AboutUsSections;
 using AsadaLisboaBackend.RepositoryContracts.Users;
 using AsadaLisboaBackend.ServiceContracts.Contacts;
 using AsadaLisboaBackend.Repositories.Configurations;
+using AsadaLisboaBackend.Repositories.AboutUsSections;
 using AsadaLisboaBackend.RepositoryContracts.Contacts;
-using AsadaLisboaBackend.RepositoryContracts.Configurations;
 using AsadaLisboaBackend.ServiceContracts.Configurations;
-using AsadaLisboaBackend.Services.Configurations;
+using AsadaLisboaBackend.ServiceContracts.AboutUsSections;
+using AsadaLisboaBackend.RepositoryContracts.Configurations;
+using AsadaLisboaBackend.RepositoryContracts.AboutUsSections;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +72,11 @@ builder.Services.AddScoped<IContactsGetterRepository, ContactsGetterRepository>(
 builder.Services.AddScoped<IContactsUpdaterRepository, ContactsUpdaterRepository>();
 builder.Services.AddScoped<IContactsDeleterRepository, ContactsDeleterRepository>();
 
+builder.Services.AddScoped<IAboutUsSectionsAdderRepository, AboutUsSectionsAdderRepository>();
+builder.Services.AddScoped<IAboutUsSectionsGetterRepository, AboutUsSectionsGetterRepository>();
+builder.Services.AddScoped<IAboutUsSectionsUpdaterRepository, AboutUsSectionsUpdaterRepository>();
+builder.Services.AddScoped<IAboutUsSectionsDeleterRepository, AboutUsSectionsDeleterRepository>();
+
 builder.Services.AddScoped<IConfigurationsAdderRepository, ConfigurationsAdderRepository>();
 builder.Services.AddScoped<IConfigurationsGetterRepository, ConfigurationsGetterRepository>();
 builder.Services.AddScoped<IConfigurationsUpdaterRepository, ConfigurationsUpdaterRepository>();
@@ -92,6 +101,11 @@ builder.Services.AddScoped<IConfigurationsAdderService, ConfigurationsAdderServi
 builder.Services.AddScoped<IConfigurationsGetterService, ConfigurationsGetterService>();
 builder.Services.AddScoped<IConfigurationsUpdaterService, ConfigurationsUpdaterService>();
 builder.Services.AddScoped<IConfigurationsDeleterService, ConfigurationsDeleterService>();
+
+builder.Services.AddScoped<IAboutUsSectionsAdderService, AboutUsSectionsAdderService>();
+builder.Services.AddScoped<IAboutUsSectionsGetterService, AboutUsSectionsGetterService>();
+builder.Services.AddScoped<IAboutUsSectionsUpdaterService, AboutUsSectionsUpdaterService>();
+builder.Services.AddScoped<IAboutUsSectionsDeleterService, AboutUsSectionsDeleterService>();
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
