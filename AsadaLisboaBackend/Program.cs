@@ -107,6 +107,8 @@ builder.Services.AddScoped<IAboutUsSectionsGetterService, AboutUsSectionsGetterS
 builder.Services.AddScoped<IAboutUsSectionsUpdaterService, AboutUsSectionsUpdaterService>();
 builder.Services.AddScoped<IAboutUsSectionsDeleterService, AboutUsSectionsDeleterService>();
 
+builder.Services.AddTransient<IRegisterUserService, RegisterUserService>();
+
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
     options.Password.RequiredLength = 8;

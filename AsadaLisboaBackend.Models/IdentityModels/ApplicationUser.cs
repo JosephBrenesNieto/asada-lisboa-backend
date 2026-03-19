@@ -12,5 +12,9 @@ namespace AsadaLisboaBackend.Models.IdentityModels
         public DateTime RefreshTokenExpiration { get; set; }
         public Guid ChargeId { get; set; }
         public Charge? Charge { get; set; } = null;
+
+        //Active acount 
+        public bool IsActive { get; set; } = false;
+
     }
 }
