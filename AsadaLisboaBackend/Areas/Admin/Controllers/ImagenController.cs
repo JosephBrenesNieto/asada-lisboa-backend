@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using AsadaLisboaBackend.ServiceContracts.Image;
+﻿using Microsoft.AspNetCore.Mvc;
 using AsadaLisboaBackend.Models.DTOs.Image;
+using AsadaLisboaBackend.ServiceContracts.Image;
 
-namespace AsadaLisboaBackend.Controllers
+namespace AsadaLisboaBackend.Areas.Admin.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Area("Admin")]
+    [Route("api/[area]/[controller]")]
     public class ImagenController : ControllerBase
     {
         private readonly IImageService _imageService;
@@ -18,7 +18,7 @@ namespace AsadaLisboaBackend.Controllers
         }
 
         [HttpPost]
-        [Route("creacion")]
+        [Route("")]
         public async Task<IActionResult> CreateImage([FromForm] ImageRequestDTO imageRequestDTO)
         {
             var result = await _imageService.CreateImage(imageRequestDTO);
@@ -26,8 +26,8 @@ namespace AsadaLisboaBackend.Controllers
         }
 
         [HttpPut]
-        [Route("edicion")]
-        public async Task<IActionResult> Edit([FromForm] ImageUpdateRequestDTO ImageUpdateRequestDTO)
+        [Route("")]
+        public async Task<IActionResult> EditImage([FromForm] ImageUpdateRequestDTO ImageUpdateRequestDTO)
         {
             try
             {
@@ -41,12 +41,12 @@ namespace AsadaLisboaBackend.Controllers
         }
 
         [HttpDelete]
-        [Route("delete/{id}/{slug}")]
-        public async Task<IActionResult> Delete(Guid id, string slug)
+        [Route("delete/{id}")]
+        public async Task<IActionResult> DeleteImage(Guid id)
         {
             try
             {
-                var result = await _imageService.DeleteImage(id, slug);
+                var result = await _imageService.DeleteImage(id);
                 return Ok(new { success = result, message = "Imagen eliminada correctamente" });
             }
             catch (Exception ex)

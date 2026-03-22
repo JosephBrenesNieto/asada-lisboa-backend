@@ -1,14 +1,7 @@
-﻿using AsadaLisboaBackend.Models;
-using AsadaLisboaBackend.Models.DatabaseContext;
+﻿using Microsoft.EntityFrameworkCore;
 using AsadaLisboaBackend.Models.DTOs.Image;
+using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.ServiceContracts.Image;
-using Azure.Core;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AsadaLisboaBackend.Services.Image
 {
@@ -16,19 +9,16 @@ namespace AsadaLisboaBackend.Services.Image
     {
         private readonly ApplicationDbContext _applicationDbContext;
 
-        private readonly IWebHostEnvironment _env;
-
-        public ImageService(ApplicationDbContext applicationDbContext, IWebHostEnvironment env)
+        public ImageService(ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;
-            _env = env;
         }
 
         public async Task<ImageResponseDTO> CreateImage(ImageRequestDTO imageRequestDTO)
         {
             // Guardar archivo físico
             var fileName = $"{Guid.NewGuid()}_{imageRequestDTO.File.FileName}";
-            var filePath = Path.Combine(_env.WebRootPath, "uploads", fileName);
+            var filePath = Path.Combine(AppContext.BaseDirectory, "uploads", fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
@@ -36,9 +26,9 @@ namespace AsadaLisboaBackend.Services.Image
             }
 
 
-            var newImage = new Image
+            var newImage = new Models.Image()
             { 
-                ID = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Title = imageRequestDTO.Title,
                 Description = imageRequestDTO.Description,
                 Slug = imageRequestDTO.Title.ToLower().Replace(" ", "-"),                
@@ -92,7 +82,7 @@ namespace AsadaLisboaBackend.Services.Image
             if (imageUpdateRequestDTO.File != null)
             {
                 var fileName = $"{Guid.NewGuid()}_{imageUpdateRequestDTO.File.FileName}";
-                var filePath = Path.Combine(_env.WebRootPath, "uploads", fileName);
+                var filePath = Path.Combine(AppContext.BaseDirectory, "uploads", fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -120,7 +110,7 @@ namespace AsadaLisboaBackend.Services.Image
             };
         }
 
-        public async Task<bool> DeleteImageAsync(Guid id, string slug)
+        public async Task<bool> DeleteImage(Guid id)
         {
             var image = await _applicationDbContext.Images
                 .Include(i => i.Categories)
@@ -129,12 +119,9 @@ namespace AsadaLisboaBackend.Services.Image
             if (image == null)
                 throw new Exception("Imagen no encontrada");
 
-            // Validar slug
-            if (image.Slug != slug)
-                throw new Exception("El slug no coincide con la imagen");
 
             // Eliminar archivo físico 
-            var uploadsPath = Path.Combine(_env.WebRootPath, "uploads");
+            var uploadsPath = Path.Combine(AppContext.BaseDirectory, "uploads");
             var filePattern = $"{image.Id}_*"; 
             var file = Directory.GetFiles(uploadsPath, filePattern).FirstOrDefault();
 

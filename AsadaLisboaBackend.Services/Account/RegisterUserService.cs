@@ -1,12 +1,8 @@
-﻿using AsadaLisboaBackend.Models.DTOs.Account;
+﻿using Microsoft.AspNetCore.Identity;
+using AsadaLisboaBackend.Models.DTOs.Account;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Account;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AsadaLisboaBackend.Services.Account
 {
@@ -15,12 +11,9 @@ namespace AsadaLisboaBackend.Services.Account
 
         private readonly UserManager<ApplicationUser> _userManager;
 
-        private readonly IVerificationCodeService _iVerificationCodeService;
-
-        public RegisterUserService(UserManager<ApplicationUser> userManager, IVerificationCodeService iVerificationCodeService)
+        public RegisterUserService(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
-            _iVerificationCodeService = iVerificationCodeService;
         }
 
 
@@ -30,7 +23,7 @@ namespace AsadaLisboaBackend.Services.Account
             var existinguser = await _userManager.FindByEmailAsync(registerRequestDTO.Email);
 
             if (existinguser != null)
-                return BadRequest("El correo electrónico ya esta registrado ");
+                throw new NotFoundException("El correo electrónico ya esta registrado ");
 
             //Register new user
 

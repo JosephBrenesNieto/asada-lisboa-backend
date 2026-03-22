@@ -102,7 +102,7 @@ namespace AsadaLisboaBackend.Services.Jwt
 
         public async Task DeleteToken()
         {
-            Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid id);
+            Guid.TryParse(_httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid id);
 
             if(id == Guid.Empty)
                 throw new NotFoundException("Error al cerrar sesión.");

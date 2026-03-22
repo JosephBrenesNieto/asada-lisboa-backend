@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AsadaLisboaBackend.Utils.ImageAttribute;
 
 namespace AsadaLisboaBackend.Models.DTOs.Image
@@ -25,8 +20,8 @@ namespace AsadaLisboaBackend.Models.DTOs.Image
         public IFormFile File { get; set; } = null!;
 
 
-        [Range(1, int.MaxValue, ErrorMessage ="Debe selecionar un estado válido")]
-        public int StatusId { get; set; }
+        [Required(ErrorMessage = "Debe selecionar un estado válido")]
+        public Guid StatusId { get; set; }
 
         public List<Guid> CategoryIds { get; set; } = new();
     }

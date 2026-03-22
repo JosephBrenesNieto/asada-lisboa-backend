@@ -13,7 +13,6 @@ namespace AsadaLisboaBackend.Models.DTOs.Image
     {
         public Guid Id { get; set; }
 
-
         [Required(ErrorMessage = "El titulo es requerido")]
         [StringLength(50)]
         public string Title { get; set; } = string.Empty;
