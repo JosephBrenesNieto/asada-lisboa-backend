@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using AsadaLisboaBackend.Models.DTOs.Jwt;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.Jwt;
 using AsadaLisboaBackend.Utils.OptionsPattern;
 using AsadaLisboaBackend.Models.IdentityModels;
@@ -17,10 +18,10 @@ namespace AsadaLisboaBackend.Services.Jwt
     {
         private readonly JwtOptions _jwtOptions;
         private readonly RefreshJwtOptions _refreshJwtOptions;
-        private readonly HttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public JwtService(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> jwtRefreshOptions, UserManager<ApplicationUser> userManager, HttpContextAccessor httpContextAccessor)
+        public JwtService(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> jwtRefreshOptions, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
@@ -94,7 +95,7 @@ namespace AsadaLisboaBackend.Services.Jwt
             );
 
             if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Token inválido.");
+                throw new SecurityTokenException("Token dado es inválido o expirado.");
 
             return principal;
         }
@@ -104,12 +105,12 @@ namespace AsadaLisboaBackend.Services.Jwt
             Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid id);
 
             if(id == Guid.Empty)
-                throw new Exception("Error al cerrar sesión.");
+                throw new NotFoundException("Error al cerrar sesión.");
 
             var user = await _userManager.FindByIdAsync(id.ToString());
 
             if (user is null)
-                throw new Exception("Error al cerrar sesión.");
+                throw new NotFoundException("Error al cerrar sesión.");
 
             user.RefreshToken = null;
             user.RefreshTokenExpiration = DateTime.MinValue;
@@ -120,7 +121,7 @@ namespace AsadaLisboaBackend.Services.Jwt
         public async Task<AuthenticationResponseDTO> ValidateRefreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO)
         {
             if (refreshTokenRequestDTO.Token is null)
-                throw new Exception("Token de acceso inválido.");
+                throw new InvalidAccessTokenException("Token de acceso inválido.");
 
             string token = refreshTokenRequestDTO.Token;
             string? refreshToken = refreshTokenRequestDTO.RefreshToken;
@@ -128,14 +129,17 @@ namespace AsadaLisboaBackend.Services.Jwt
             var principal = GetClaimsPrincipal(token);
 
             if (principal is null)
-                throw new Exception("Token de acceso inválido.");
+                throw new InvalidAccessTokenException("Token de acceso inválido.");
 
             string? email = principal.FindFirstValue(ClaimTypes.Email);
 
             ApplicationUser? user = await _userManager.FindByEmailAsync(email ?? "");
 
-            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiration < DateTime.UtcNow)
-                throw new Exception("Token de refrescamiento inválido.");
+            if (user is null)
+                throw new NotFoundException("Usuario inexistente.");
+
+            if (user.RefreshToken != refreshToken || user.RefreshTokenExpiration < DateTime.UtcNow)
+                throw new InvalidRefreshTokenException("Token de refrescamiento inválido.");
 
             AuthenticationResponseDTO authenticationResponseDTO = GenerateToken(user);
 

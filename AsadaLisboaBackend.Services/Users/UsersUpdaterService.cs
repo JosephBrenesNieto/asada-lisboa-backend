@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using AsadaLisboaBackend.Models.DTOs.Users;
+﻿using AsadaLisboaBackend.Models.DTOs.Error;
+using AsadaLisboaBackend.Models.DTOs.User;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Users;
+using AsadaLisboaBackend.Services.Exceptions;
+using Microsoft.AspNetCore.Identity;
 
 namespace AsadaLisboaBackend.Services.Users
 {
@@ -19,7 +21,7 @@ namespace AsadaLisboaBackend.Services.Users
             var user = await _userManager.FindByIdAsync(id.ToString());
 
             if (user is null)
-                throw new ArgumentNullException("Usuario inexistente.");
+                throw new NotFoundException("Usuario inexistente.");
 
             user.ImageUrl = userUpdateRequestDTO.ImageUrl;
             user.ChargeId = userUpdateRequestDTO.ChargeId;
@@ -30,9 +32,12 @@ namespace AsadaLisboaBackend.Services.Users
 
             var result = await _userManager.UpdateAsync(user);
 
-            // TODO: Add errors.
             if (!result.Succeeded)
-                throw new ArgumentNullException("Error al actualizar usuario.");
+                throw new IdentityErrorException(
+                    "Error al actualizar usuario.", 
+                    result.Errors.Select(e => new ErrorDetailResponseDTO(e.Code, e.Description)
+                    ).ToList()
+                );
         }
     }
 }

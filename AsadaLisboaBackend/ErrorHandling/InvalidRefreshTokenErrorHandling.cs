@@ -1,0 +1,36 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Diagnostics;
+using AsadaLisboaBackend.Services.Exceptions;
+
+namespace AsadaLisboaBackend.ErrorHandling
+{
+    internal sealed class InvalidRefreshTokenErrorHandling : IExceptionHandler
+    {
+        private readonly IProblemDetailsService _problemDetailsService;
+
+        public InvalidRefreshTokenErrorHandling(IProblemDetailsService problemDetailsService)
+        {
+            _problemDetailsService = problemDetailsService;
+        }
+
+        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+        {
+            if (exception is not InvalidRefreshTokenException invalidRefreshTokenException) 
+                return false;
+
+            httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
+            return await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext()
+            {
+                HttpContext = httpContext,
+                Exception = exception,
+                ProblemDetails = new ProblemDetails()
+                {
+                    Detail = exception.Message,
+                    Title = "Error en refrescamiento de token",
+                    Status = StatusCodes.Status401Unauthorized,
+                }
+            });
+        }
+    }
+}

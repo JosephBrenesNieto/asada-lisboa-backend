@@ -1,6 +1,6 @@
-﻿using AsadaLisboaBackend.Utils;
-using AsadaLisboaBackend.Models.DTOs.Users;
+﻿using AsadaLisboaBackend.Models.DTOs.User;
 using AsadaLisboaBackend.Models.DTOs.Shared;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.Users;
 using AsadaLisboaBackend.RepositoryContracts.Users;
 
@@ -24,7 +24,12 @@ namespace AsadaLisboaBackend.Services.Users
 
         public async Task<UserDetailResponseDTO?> GetUser(Guid id)
         {
-            return await _usersGetterRepository.GetUser(id);
+            var user = await _usersGetterRepository.GetUser(id);
+
+            if (user is null)
+                throw new NotFoundException("Usuario inexistente.");
+
+            return user;
         }
     }
 }

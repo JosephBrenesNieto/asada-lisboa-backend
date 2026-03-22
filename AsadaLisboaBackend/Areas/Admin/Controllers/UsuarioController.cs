@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AsadaLisboaBackend.Models.DTOs.Users;
+using AsadaLisboaBackend.Models.DTOs.User;
 using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.ServiceContracts.Users;
 
@@ -8,13 +8,13 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
     [ApiController]
     [Area("Admin")]
     [Route("api/[area]/[controller]")]
-    public class UsuariosController : ControllerBase
+    public class UsuarioController : ControllerBase
     {
         private readonly IUsersGetterService _usersGetterService;
         private readonly IUsersUpdaterService _usersUpdaterService;
         private readonly IUsersDeleterService _usersDeleterService;
 
-        public UsuariosController(IUsersGetterService usersGetterService, IUsersUpdaterService usersUpdaterService, IUsersDeleterService usersDeleterService)
+        public UsuarioController(IUsersGetterService usersGetterService, IUsersUpdaterService usersUpdaterService, IUsersDeleterService usersDeleterService)
         {
             _usersGetterService = usersGetterService;
             _usersUpdaterService = usersUpdaterService;
@@ -30,12 +30,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDetailResponseDTO>> GetUser([FromRoute] Guid id)
         {
-            var user = await _usersGetterService.GetUser(id);
-
-            if (user is null)
-                return NotFound();
-
-            return Ok(user);
+            return Ok(await _usersGetterService.GetUser(id));
         }
 
         [HttpPut("{id}")]

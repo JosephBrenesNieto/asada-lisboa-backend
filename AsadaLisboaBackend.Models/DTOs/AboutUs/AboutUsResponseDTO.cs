@@ -1,0 +1,37 @@
+﻿using System.Linq.Expressions;
+
+namespace AsadaLisboaBackend.Models.DTOs.AboutUs
+{
+    public class AboutUsResponseDTO
+    {
+        public Guid Id { get; set; }
+        public string SectionType { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+        public byte Order { get; set; }
+    }
+
+    public static partial class AboutUsExtensions
+    {
+        public static Expression<Func<Models.AboutUsSection, AboutUsResponseDTO>> MapAboutUsResponseDTO()
+        {
+            return aboutUs => new AboutUsResponseDTO
+            {
+                Id = aboutUs.Id,
+                Order = aboutUs.Order,
+                Content = aboutUs.Content,
+                SectionType = aboutUs.SectionType,
+            };
+        }
+
+        public static AboutUsResponseDTO ToAboutUsResponseDTO(this Models.AboutUsSection aboutUs)
+        {
+            return new AboutUsResponseDTO()
+            {
+                Id = aboutUs.Id,
+                Order = aboutUs.Order,
+                Content = aboutUs.Content,
+                SectionType = aboutUs.SectionType,
+            };
+        }
+    }
+}

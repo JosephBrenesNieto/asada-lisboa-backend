@@ -1,6 +1,8 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using AsadaLisboaBackend.Models.DTOs.Error;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Email;
 using AsadaLisboaBackend.ServiceContracts.Account;
@@ -22,7 +24,7 @@ namespace AsadaLisboaBackend.Services.Account
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user is null || !user.EmailConfirmed) 
-                throw new ArgumentNullException("No existe un usuario con este correo electrónico.");
+                throw new NotFoundException("No existe un usuario con este correo electrónico.");
 
             string resetToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(await _userManager.GeneratePasswordResetTokenAsync(user)));
 
@@ -34,14 +36,17 @@ namespace AsadaLisboaBackend.Services.Account
             token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
 
             var user = await _userManager.FindByEmailAsync(email);
-            if (user is null) 
-                throw new ArgumentNullException("No existe un usuario con este correo electrónico.");
+            if (user is null || !user.EmailConfirmed) 
+                throw new NotFoundException("No existe un usuario con este correo electrónico.");
 
             var result = await _userManager.ResetPasswordAsync(user, token, password);
 
-            // TODO: Add errors.
             if (!result.Succeeded)
-                throw new ArgumentNullException("Error al restaurar contraseña.");
+                throw new IdentityErrorException(
+                    "Error al restaurar contraseña.",
+                    result.Errors.Select(e => new ErrorDetailResponseDTO(e.Code, e.Description)
+                    ).ToList()
+                );
         }
     }
 }
