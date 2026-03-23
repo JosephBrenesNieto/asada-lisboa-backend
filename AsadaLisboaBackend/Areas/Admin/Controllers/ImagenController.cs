@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AsadaLisboaBackend.Models.DTOs.Image;
+using AsadaLisboaBackend.Utils.OptionsPattern;
 using AsadaLisboaBackend.ServiceContracts.Image;
 
 namespace AsadaLisboaBackend.Areas.Admin.Controllers
@@ -10,18 +11,25 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
     public class ImagenController : ControllerBase
     {
         private readonly IImageService _imageService;
+        private readonly IWebHostEnvironment _env;
 
-        public ImagenController(IImageService imageService)
+        public ImagenController(IImageService imageService, IWebHostEnvironment env)
         {
-
             _imageService = imageService;
+            _env = env;
         }
 
         [HttpPost]
         [Route("")]
         public async Task<IActionResult> CreateImage([FromForm] ImageRequestDTO imageRequestDTO)
         {
-            var result = await _imageService.CreateImage(imageRequestDTO);
+            var options = new FileStorageOptions
+            {
+                BasePath = Path.Combine(_env.WebRootPath, "uploads"),
+                BaseUrl = "/uploads"
+            };
+
+            var result = await _imageService.CreateImage(imageRequestDTO, options);
             return Ok(result);
         }
 
@@ -29,9 +37,15 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         [Route("")]
         public async Task<IActionResult> EditImage([FromForm] ImageUpdateRequestDTO ImageUpdateRequestDTO)
         {
+            var options = new FileStorageOptions
+            {
+                BasePath = Path.Combine(_env.WebRootPath, "uploads"),
+                BaseUrl = "/uploads"
+            };
+
             try
             {
-                var result = await _imageService.UpdateImage(ImageUpdateRequestDTO);
+                var result = await _imageService.UpdateImage(ImageUpdateRequestDTO, options);
                 return Ok(result);
             }
             catch (Exception ex)

@@ -1,11 +1,6 @@
-﻿using AsadaLisboaBackend.Utils.ImageAttribute;
+﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AsadaLisboaBackend.Utils.ImageAttribute;
 
 namespace AsadaLisboaBackend.Models.DTOs.Image
 {
@@ -23,7 +18,7 @@ namespace AsadaLisboaBackend.Models.DTOs.Image
 
         [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png" })]
         [MaxFileSize(5)] // Límite de 5 MB
-        public IFormFile File { get; set; } = null!;
+        public IFormFile? File { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Debe selecionar un estado válido")]
         public Guid StatusId { get; set; }

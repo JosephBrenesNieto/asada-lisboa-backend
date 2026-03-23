@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AsadaLisboaBackend.Models.DTOs.Image
+﻿namespace AsadaLisboaBackend.Models.DTOs.Image
 {
     public class ImageResponseDTO
     {
@@ -13,6 +7,7 @@ namespace AsadaLisboaBackend.Models.DTOs.Image
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public DateTime PublicationDate { get; set; }
+        public string Url { get; set; } = string.Empty;
 
         public long FileSize { get; set; }
 
