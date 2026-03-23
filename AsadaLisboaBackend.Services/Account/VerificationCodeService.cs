@@ -1,16 +1,9 @@
-﻿using AsadaLisboaBackend.Models.DTOs.Account;
+﻿using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.Identity;
+using AsadaLisboaBackend.Services.Email;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Account;
-using AsadaLisboaBackend.Services.Email;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AsadaLisboaBackend.Services.Account
 {
@@ -34,7 +27,6 @@ namespace AsadaLisboaBackend.Services.Account
 
             var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(generateToken));
 
-
             //Send email with code 
             return await _verificationCodeSendService.SendVerificationCode(user.FirstName, email, encodedToken);
         }
@@ -48,6 +40,11 @@ namespace AsadaLisboaBackend.Services.Account
             var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
 
             var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+
+            user.EmailConfirmed = true;
+            user.IsActive = true;
+            await _userManager.UpdateAsync(user);
+
             return result.Succeeded;
 
         }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AsadaLisboaBackend.ServiceContracts.Email;
-using Resend;
+﻿using Resend;
 using AsadaLisboaBackend.Utils;
+using AsadaLisboaBackend.ServiceContracts.Email;
 
 namespace AsadaLisboaBackend.Services.Email
 {

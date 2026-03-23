@@ -1,8 +1,7 @@
-﻿using AsadaLisboaBackend.Models.DTOs.Account;
-using AsadaLisboaBackend.ServiceContracts.Account;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using AsadaLisboaBackend.Models.DTOs.Account;
+using AsadaLisboaBackend.ServiceContracts.Account;
 
 namespace AsadaLisboaBackend.Controllers
 {
@@ -26,20 +25,9 @@ namespace AsadaLisboaBackend.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _userService.RegisterUser(dto);
+            await _userService.RegisterUser(dto);
 
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
-
-            return Ok(new { Message = "Usuario registrado correctamente" });
-        }
-
-        [HttpPost("envio-codigo")]
-        public async Task<IActionResult> SendVerificationCode([FromBody] VerificationCodeRequestDTO request)
-        {
-            var result = await _verificationCodeService.GenerateCode(request.Email);
-            if (!result) return BadRequest("No se pudo enviar el código.");
-            return Ok("Código enviado correctamente.");
+            return Created();
         }
 
         [HttpPost("confirmar-correo")]

@@ -10,23 +10,24 @@ namespace AsadaLisboaBackend.Services.Account
     {
 
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IVerificationCodeService _verificationCodeService;
 
-        public RegisterUserService(UserManager<ApplicationUser> userManager)
+        public RegisterUserService(UserManager<ApplicationUser> userManager, IVerificationCodeService verificationCodeService)
         {
             _userManager = userManager;
+            _verificationCodeService = verificationCodeService;
         }
 
 
-        public async Task<IdentityResult> RegisterUser(RegisterRequestDTO registerRequestDTO)
+        public async Task RegisterUser(RegisterRequestDTO registerRequestDTO)
         {
             //Verify if email exists
             var existinguser = await _userManager.FindByEmailAsync(registerRequestDTO.Email);
 
             if (existinguser != null)
-                throw new NotFoundException("El correo electrónico ya esta registrado ");
+                throw new NotFoundException("El correo electrónico ya esta registrado.");
 
             //Register new user
-
             var user = new ApplicationUser
             {
 
@@ -36,12 +37,13 @@ namespace AsadaLisboaBackend.Services.Account
 
             var result = await _userManager.CreateAsync(user, registerRequestDTO.Password);
 
+            if (!result.Succeeded)
+                throw new Exception("Error al registrar usuario.");
 
-            user.EmailConfirmed = true;
-            user.IsActive = true;
-            await _userManager.UpdateAsync(user);
+            var emailSent = await _verificationCodeService.GenerateCode(user.Email);
 
-            return result;
+            if (!emailSent)
+                throw new Exception("Error al enviar el correo de confirmación.");
         }
     }
 }
