@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Resend;
 using AsadaLisboaBackend.Utils;
+using AsadaLisboaBackend.Middlewares;
 using AsadaLisboaBackend.Services.Jwt;
 using AsadaLisboaBackend.ErrorHandling;
 using AsadaLisboaBackend.Services.Image;
@@ -15,6 +16,7 @@ using AsadaLisboaBackend.Services.Email;
 using AsadaLisboaBackend.Services.Users;
 using AsadaLisboaBackend.Services.Account;
 using AsadaLisboaBackend.Services.Contacts;
+using AsadaLisboaBackend.Services.ReCaptcha;
 using AsadaLisboaBackend.Repositories.Users;
 using AsadaLisboaBackend.ServiceContracts.Jwt;
 using AsadaLisboaBackend.Utils.OptionsPattern;
@@ -29,6 +31,7 @@ using AsadaLisboaBackend.ServiceContracts.Account;
 using AsadaLisboaBackend.Services.AboutUsSections;
 using AsadaLisboaBackend.RepositoryContracts.Users;
 using AsadaLisboaBackend.ServiceContracts.Contacts;
+using AsadaLisboaBackend.ServiceContracts.ReCaptcha;
 using AsadaLisboaBackend.Repositories.Configurations;
 using AsadaLisboaBackend.Repositories.AboutUsSections;
 using AsadaLisboaBackend.RepositoryContracts.Contacts;
@@ -68,6 +71,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 builder.Services.Configure<RefreshJwtOptions>(builder.Configuration.GetSection(nameof(RefreshJwtOptions)));
+builder.Services.Configure<ReCaptchaOptions>(builder.Configuration.GetSection(nameof(ReCaptchaOptions)));
 
 builder.Services.AddScoped<IContactsAdderRepository, ContactsAdderRepository>();
 builder.Services.AddScoped<IContactsGetterRepository, ContactsGetterRepository>();
@@ -109,9 +113,9 @@ builder.Services.AddScoped<IAboutUsSectionsGetterService, AboutUsSectionsGetterS
 builder.Services.AddScoped<IAboutUsSectionsUpdaterService, AboutUsSectionsUpdaterService>();
 builder.Services.AddScoped<IAboutUsSectionsDeleterService, AboutUsSectionsDeleterService>();
 
-builder.Services.AddTransient<IRegisterUserService, RegisterUserService>();
-
 builder.Services.AddTransient<IImageService, ImageService>();
+builder.Services.AddTransient<IReCaptchaService, ReCaptchaService>();
+builder.Services.AddTransient<IRegisterUserService, RegisterUserService>();
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
@@ -137,6 +141,10 @@ builder.Services.Configure<ResendClientOptions>(o =>
 });
 builder.Services.AddTransient<IResend, ResendClient>();
 
+builder.Services.AddContactRateLimiters();
+
+builder.Services.AddHttpClient();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -161,6 +169,8 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseRateLimiter();
+
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();

@@ -1,6 +1,7 @@
 ﻿using Resend;
 using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.ServiceContracts.Email;
+using AsadaLisboaBackend.Models.DTOs.InformationMessage;
 
 namespace AsadaLisboaBackend.Services.Email
 {
@@ -79,6 +80,22 @@ namespace AsadaLisboaBackend.Services.Email
             ";
 
             return (await _resend.EmailSendAsync(message)).Success;
+        }
+
+        public async Task SendContactMessage(SendEmailRequestDTO sendEmailRequestDTO)
+        {
+            var message = new EmailMessage();
+
+            message.From = "Acme <onboarding@resend.dev>";
+            message.To.Add("mi-email");
+            //message.To.Add("asadaurblisboa@gmail.com");
+            message.Subject = sendEmailRequestDTO.Subject;
+            message.ReplyTo = sendEmailRequestDTO.Email;
+
+            var result = await _resend.EmailSendAsync(message);
+
+            if (!result.Success)
+                throw new Exception("Error al enviar el mensaje de contacto.");
         }
     }
 }

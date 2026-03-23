@@ -5,9 +5,9 @@ using AsadaLisboaBackend.ServiceContracts.Account;
 
 namespace AsadaLisboaBackend.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]
+    [Route("api/[controller]")]
     public class RegistrarController : ControllerBase
     {
         private readonly IRegisterUserService _userService;
