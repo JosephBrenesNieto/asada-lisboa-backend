@@ -39,7 +39,7 @@ namespace AsadaLisboaBackend.Controllers
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> SendEmail([FromBody] SendEmailRequestDTO sendEmailRequestDTO)
+        public async Task<IActionResult> SendEmail([FromForm] SendEmailRequestDTO sendEmailRequestDTO)
         {
             await _emailSenderService.SendContactMessage(sendEmailRequestDTO);
             return NoContent();
