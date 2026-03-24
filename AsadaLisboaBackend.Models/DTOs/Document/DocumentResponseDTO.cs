@@ -44,7 +44,7 @@ namespace AsadaLisboaBackend.Models.DTOs.Document
         }
 
 
-        public static DocumentResponseDTO ToImageResponseDTO(this Models.Document document)
+        public static DocumentResponseDTO ToDocumentResponseDTO(this Models.Document document)
         {
             return new DocumentResponseDTO()
             {
