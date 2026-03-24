@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace AsadaLisboaBackend.Models.DTOs.Document
 {
@@ -24,5 +20,46 @@ namespace AsadaLisboaBackend.Models.DTOs.Document
         public string DocumentTypeName { get; set; } = string.Empty;
 
         public List<string> Categories { get; set; } = new();
+    }
+
+    public static partial class DocumentExtensions
+    {
+
+        public static Expression<Func<Models.Document, DocumentResponseDTO>> MapDocumentResponseDTO()
+        {
+            return document => new DocumentResponseDTO
+            {
+                Id = document.Id,
+                PublicationDate = document.PublicationDate,                
+                Slug = document.Slug,
+                Title = document.Title,
+                Description = document.Description,
+                FileSize = document.FileSize,
+                StatusName = document.Status!.Name ?? "Pendiente",
+                DocumentTypeName = document.DocumentType!.Name ?? "",
+                Categories = document.Categories
+                    .Select(c => c.Name)
+                    .ToList(),
+            };
+        }
+
+
+        public static DocumentResponseDTO ToImageResponseDTO(this Models.Document document)
+        {
+            return new DocumentResponseDTO()
+            {
+                Id = document.Id,
+                PublicationDate = document.PublicationDate,               
+                Slug = document.Slug,
+                Title = document.Title,
+                Description = document.Description,
+                FileSize = document.FileSize,
+                StatusName = document.Status!.Name ?? "Pendiente",
+                DocumentTypeName = document.DocumentType!.Name ?? "",
+                Categories = document.Categories
+                    .Select(c => c.Name)
+                    .ToList(),
+            };
+        }
     }
 }
