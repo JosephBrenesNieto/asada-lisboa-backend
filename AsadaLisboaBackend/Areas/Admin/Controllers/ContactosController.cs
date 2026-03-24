@@ -8,14 +8,14 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
     [ApiController]
     [Area("Admin")]
     [Route("api/[area]/[controller]")]
-    public class ContactoController : ControllerBase
+    public class ContactosController : ControllerBase
     {
         private readonly IContactsAdderService _contactsAdderService;
         private readonly IContactsGetterService _contactsGetterService;
         private readonly IContactsUpdaterService _contactsUpdaterService;
         private readonly IContactsDeleterService _contactsDeleterService;
 
-        public ContactoController(IContactsGetterService contactsGetterService, IContactsAdderService contactsAdderService, IContactsUpdaterService contactsUpdaterService, IContactsDeleterService contactsDeleterService)
+        public ContactosController(IContactsGetterService contactsGetterService, IContactsAdderService contactsAdderService, IContactsUpdaterService contactsUpdaterService, IContactsDeleterService contactsDeleterService)
         {
             _contactsAdderService = contactsAdderService;
             _contactsGetterService = contactsGetterService;

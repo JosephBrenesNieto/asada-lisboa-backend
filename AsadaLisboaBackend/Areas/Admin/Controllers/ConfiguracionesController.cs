@@ -8,14 +8,14 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
     [ApiController]
     [Area("Admin")]
     [Route("api/[area]/[controller]")]
-    public class ConfiguracionController : ControllerBase
+    public class ConfiguracionesController : ControllerBase
     {
         private readonly IConfigurationsAdderService _configurationsAdderService;
         private readonly IConfigurationsGetterService _configurationsGetterService;
         private readonly IConfigurationsUpdaterService _configurationsUpdaterService;
         private readonly IConfigurationsDeleterService _configurationsDeleterService;
 
-        public ConfiguracionController(IConfigurationsGetterService configurationsGetterService, IConfigurationsAdderService configurationsAdderService, IConfigurationsUpdaterService configurationsUpdaterService, IConfigurationsDeleterService configurationsDeleterService)
+        public ConfiguracionesController(IConfigurationsGetterService configurationsGetterService, IConfigurationsAdderService configurationsAdderService, IConfigurationsUpdaterService configurationsUpdaterService, IConfigurationsDeleterService configurationsDeleterService)
         {
             _configurationsAdderService = configurationsAdderService;
             _configurationsGetterService = configurationsGetterService;

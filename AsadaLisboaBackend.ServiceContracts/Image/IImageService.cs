@@ -7,7 +7,7 @@ namespace AsadaLisboaBackend.ServiceContracts.Image
     {
         public Task<ImageResponseDTO> CreateImage(ImageRequestDTO imageRequestDTO, FileStorageOptions fileStorageOptions);
 
-        public Task<ImageResponseDTO> UpdateImage(ImageUpdateRequestDTO imageUpdateRequestDTO, FileStorageOptions fileStorageOptions);
+        public Task<ImageResponseDTO> UpdateImage(Guid id, ImageUpdateRequestDTO imageUpdateRequestDTO, FileStorageOptions fileStorageOptions);
 
         public Task<bool> DeleteImage(Guid id);
 

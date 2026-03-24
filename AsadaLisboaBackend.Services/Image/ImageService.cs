@@ -76,11 +76,11 @@ namespace AsadaLisboaBackend.Services.Image
             }
         }
 
-        public async Task<ImageResponseDTO> UpdateImage(ImageUpdateRequestDTO imageUpdateRequestDTO, FileStorageOptions fileStorageOptions)
+        public async Task<ImageResponseDTO> UpdateImage(Guid id, ImageUpdateRequestDTO imageUpdateRequestDTO, FileStorageOptions fileStorageOptions)
         {
             var image = await _applicationDbContext.Images
                 .Include(i => i.Categories)
-                .FirstOrDefaultAsync(i => i.Id == imageUpdateRequestDTO.Id);
+                .FirstOrDefaultAsync(i => i.Id == id);
 
             if (image is null)
                 throw new NotFoundException("Imagen no encontrada.");

@@ -9,13 +9,13 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
     [ApiController]
     [Area("Admin")]
     [Route("api/[area]/[controller]")]
-    public class ImagenController : ControllerBase
+    public class ImagenesController : ControllerBase
     {
         private readonly IWebHostEnvironment _env;
         private readonly IImageService _imageService;
         private readonly IImagesGetterService _imagesGetterService;
 
-        public ImagenController(IImageService imageService, IWebHostEnvironment env, IImagesGetterService imagesGetterService)
+        public ImagenesController(IImageService imageService, IWebHostEnvironment env, IImagesGetterService imagesGetterService)
         {
             _env = env;
             _imageService = imageService;
@@ -47,8 +47,8 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
             return Ok(result);
         }
 
-        [HttpPut("")]
-        public async Task<IActionResult> EditImage([FromForm] ImageUpdateRequestDTO ImageUpdateRequestDTO)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditImage([FromRoute] Guid id, [FromForm] ImageUpdateRequestDTO ImageUpdateRequestDTO)
         {
             var options = new FileStorageOptions
             {
@@ -56,7 +56,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
                 BaseUrl = "/uploads"
             };
 
-            var result = await _imageService.UpdateImage(ImageUpdateRequestDTO, options);
+            var result = await _imageService.UpdateImage(id, ImageUpdateRequestDTO, options);
             return Ok(result);
         }
 
