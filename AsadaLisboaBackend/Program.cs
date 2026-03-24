@@ -130,7 +130,6 @@ builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IReCaptchaService, ReCaptchaService>();
 builder.Services.AddScoped<IRegisterUserService, RegisterUserService>();
 builder.Services.AddScoped<IVerificationCodeService, VerificationCodeService>();
-builder.Services.AddScoped<IVerificationCodeSendService, VerificationCodeSendService>();
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {

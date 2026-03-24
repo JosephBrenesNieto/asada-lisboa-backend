@@ -75,5 +75,34 @@ namespace AsadaLisboaBackend.Services.Email
             if (!response.Success)
                 throw new SendEmailException("Error al enviar el mensaje de contacto.");
         }
+
+        public async Task SendVerificationCode(string name, string email, string token)
+        {
+            string url = $"{Constants.DOMAIN_HOST}/api/registrar/confirmar-correo/?token={token}&email={email}";
+
+            var variables = new Dictionary<string, object>()
+            {
+                { "USER_NAME", name },
+                { "RESET_LINK", url },
+                { "USER_EMAIL", email },
+            };
+
+            var response = await _resend.EmailSendAsync(
+                new EmailMessage()
+                {
+                    From = "Acme <onboarding@resend.dev>",
+                    To = new[] { email },
+                    Subject = "Token confirmación correo electrónico",
+                    Template = new EmailMessageTemplate()
+                    {
+                        TemplateId = new Guid("a807f333-12ae-4b12-9e00-e5e3ecb02f2b"),
+                        Variables = variables,
+                    }
+                }
+            );
+
+            if (!response.Success)
+                throw new SendEmailException("Error al enviar el mensaje de contacto.");
+        }
     }
 }

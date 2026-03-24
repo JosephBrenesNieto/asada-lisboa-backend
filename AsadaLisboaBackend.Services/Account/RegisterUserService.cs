@@ -38,10 +38,7 @@ namespace AsadaLisboaBackend.Services.Account
             if (!result.Succeeded)
                 throw new RegisterUserException("Error al registrar usuario.");
 
-            var emailSent = await _verificationCodeService.GenerateCode(user.Email);
-
-            if (!emailSent)
-                throw new SendEmailException("Error al enviar el correo de confirmación.");
+            await _verificationCodeService.GenerateCode(user.Email);
         }
     }
 }
