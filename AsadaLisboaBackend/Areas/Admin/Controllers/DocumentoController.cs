@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using AsadaLisboaBackend.ServiceContracts.Document;
 using AsadaLisboaBackend.Models.DTOs.Document;
+using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.Utils.OptionsPattern;
+
 
 namespace AsadaLisboaBackend.Areas.Admin.Controllers
 {
@@ -13,17 +15,29 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
     {
         private readonly IWebHostEnvironment _env;
         private readonly IDocumentService _documentService;
+        private readonly IDocumentGetterService _documentGetterService;
 
-        public DocumentoController(IWebHostEnvironment env, IDocumentService documentService)
+        public DocumentoController(IWebHostEnvironment env, IDocumentService documentService, IDocumentGetterService documentGetterService)
         {
             _env = env;
             _documentService = documentService;
+            _documentGetterService = documentGetterService;
         }
 
+        [HttpGet("")]
+        public async Task<ActionResult<PageResponseDTO<DocumentResponseDTO>>> GetDocument([FromQuery] SearchSortRequestDTO searchSortRequestDTO)
+        {
+            return Ok(await _documentGetterService.GetDocument(searchSortRequestDTO));
+        }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PageResponseDTO<DocumentResponseDTO>>> GetDocument([FromRoute] Guid id)
+        {
+            return Ok(await _documentGetterService.GetDocument(id));
+        }
 
         [HttpPost("")]
-        public async Task<IActionResult> CreateImage([FromForm] DocumentRequestDTO documentRequestDTO)
+        public async Task<IActionResult> CreateDocument([FromForm] DocumentRequestDTO documentRequestDTO)
         {
             var options = new FileStorageOptions
             {
@@ -45,14 +59,14 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
                 BaseUrl = "/uploads"
             };
 
-            var result = await _documentService.UpdateImage(id, DocumentUpdateRequestDTO, options);
+            var result = await _documentService.UpdateDocument(id, DocumentUpdateRequestDTO, options);
             return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDocument(Guid id)
         {
-            await _documentService.DeleteImage(id);
+            await _documentService.DeleteDocument(id);
             return NoContent();
         }
 
