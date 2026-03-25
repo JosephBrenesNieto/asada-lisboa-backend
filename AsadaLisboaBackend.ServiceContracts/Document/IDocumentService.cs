@@ -9,6 +9,6 @@ namespace AsadaLisboaBackend.ServiceContracts.Document
 
         public Task<DocumentResponseDTO> UpdateDocument(Guid id, DocumentUpdateRequestDTO documentUpdateRequestDTO, FileStorageOptions fileStorageOptions);
 
-        public Task<bool> DeleteImage(Guid id);
+        public Task<bool> DeleteDocument(Guid id);
     }
 }
