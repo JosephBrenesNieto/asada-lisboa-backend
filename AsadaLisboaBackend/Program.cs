@@ -38,6 +38,9 @@ using AsadaLisboaBackend.RepositoryContracts.Configurations;
 using AsadaLisboaBackend.RepositoryContracts.AboutUsSections;
 using AsadaLisboaBackend.ServiceContracts.Document;
 using AsadaLisboaBackend.Services.Document;
+using AsadaLisboaBackend.RepositoryContracts.Document;
+using AsadaLisboaBackend.Repositories.Document;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -116,6 +119,8 @@ builder.Services.AddTransient<IRegisterUserService, RegisterUserService>();
 builder.Services.AddTransient<IImageService, ImageService>();
 
 builder.Services.AddTransient<IDocumentService, DocumentService>();
+
+builder.Services.AddTransient<IDocumentGetterRepository, DocumentGetterRepository>();
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
