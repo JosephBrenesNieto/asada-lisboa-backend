@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AsadaLisboaBackend.Models;
-using AsadaLisboaBackend.Models.DTOs.New;
-using AsadaLisboaBackend.Utils.SlugGeneration;
-using AsadaLisboaBackend.ServiceContracts.News;
+﻿using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DatabaseContext;
+using AsadaLisboaBackend.Models.DTOs.New;
 using AsadaLisboaBackend.RepositoryContracts.News;
+using AsadaLisboaBackend.ServiceContracts.Editor;
 using AsadaLisboaBackend.ServiceContracts.FileSystem;
+using AsadaLisboaBackend.ServiceContracts.News;
+using AsadaLisboaBackend.Services.Exceptions;
+using AsadaLisboaBackend.Utils.SlugGeneration;
+using Microsoft.EntityFrameworkCore;
 
 namespace AsadaLisboaBackend.Services.News
 {
@@ -13,44 +15,72 @@ namespace AsadaLisboaBackend.Services.News
     {
         private readonly ApplicationDbContext _context;
         private readonly IFileSystemManager _fileSystem;
+        private readonly IEditorUpdaterService _editorUpdaterService;
+        private readonly INewsGetterRepository _newsGetterRepository;
+        private readonly IEditorDeleterService _editorDeleterService;
         private readonly INewsUpdaterRepository _newsUpdaterRepository;
 
-        public NewsUpdaterService(INewsUpdaterRepository newsUpdaterRepository, ApplicationDbContext context, IFileSystemManager fileSystem)
+        public NewsUpdaterService(INewsUpdaterRepository newsUpdaterRepository, INewsGetterRepository newsGetterRepository, IEditorUpdaterService editorUpdaterService, IEditorDeleterService editorDeleterService, ApplicationDbContext context, IFileSystemManager fileSystem)
         {
             _context = context;
             _fileSystem = fileSystem;
+            _editorDeleterService = editorDeleterService;
+            _editorUpdaterService = editorUpdaterService;
+            _newsGetterRepository = newsGetterRepository;
             _newsUpdaterRepository = newsUpdaterRepository;
         }
 
         public async Task<NewResponseDTO> UpdateNew(Guid id, NewRequestDTO newRequestDTO)
         {
-            // TODO: Update images and add principal
-            //var imageUrl = Path.Combine(options.BasePath, id.ToString());
+            var existingNew = await _newsGetterRepository.GetNew(id);
 
-            //_imageService.UpdateImage
+            if(existingNew is null)
+                throw new Exception("Noticia no encontrada.");
+
+            var imageUrl = existingNew.ImageUrl;
+            var fileName = existingNew.FileName;
+            var filePath = existingNew.FilePath;
+
+            if (newRequestDTO.File is not null)
+            {
+                var newImageUrl = await _fileSystem.SaveAsync(newRequestDTO.File, "news");
+
+                if (!string.IsNullOrEmpty(existingNew.FileName))
+                    await _fileSystem.DeleteAsync(existingNew.FileName, "news");
+
+                imageUrl = newImageUrl;
+                fileName = Path.GetFileName(imageUrl);
+                filePath = $"news/{fileName}";
+            }
+
+            var content = await _editorUpdaterService.ChangeHtmlImagesFolder(newRequestDTO.Description);
+            await _editorDeleterService.DeleteUnusedImages(existingNew.Description, newRequestDTO.Description);
 
             var categories = await _context.Categories
                 .Where(c => newRequestDTO.CategoryIds.Contains(c.Id))
                 .ToListAsync();
 
-            var slug = GenerateSlug.New(newRequestDTO.Title, id);
-            //var filePath =
-            //var fileName = 
-            //var imageUrl = 
-
             var newModel = new New()
             {
                 Id = id,
-                Slug = slug,
+                ImageUrl = imageUrl,
+                FileName = fileName,
+                FilePath = filePath,
+                Description = content,
+                Categories = categories,
+                Slug = existingNew.Slug,
                 Title = newRequestDTO.Title,
                 StatusId = newRequestDTO.StatusId,
-                PublicationDate = DateTime.UtcNow,
                 LastEditionDate = DateTime.UtcNow,
-                Description = newRequestDTO.Description,
+                PublicationDate = existingNew.PublicationDate,
             };
 
-            return (await _newsUpdaterRepository.UpdateNew(id, newModel))
-                .ToNewResponseDTO();
+            var created = await _newsUpdaterRepository.UpdateNew(id, newModel);
+
+            if (created is null)
+                throw new CreateObjectException("Error al crear la noticia.");
+
+            return created.ToNewResponseDTO();
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AsadaLisboaBackend.Models.DTOs.New;
-using AsadaLisboaBackend.Utils.OptionsPattern;
 using AsadaLisboaBackend.ServiceContracts.News;
 
 namespace AsadaLisboaBackend.Areas.Admin.Controllers
@@ -10,14 +9,12 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
     [Route("api/[area]/[controller]")]
     public class NoticiasController : ControllerBase
     {
-        private readonly IWebHostEnvironment _env;
         private readonly INewsAdderService _newsAdderService;
         private readonly INewsUpdaterService _newsUpdaterService;
         private readonly INewsDeleterService _newsDeleterService;
 
-        public NoticiasController(INewsAdderService newsAdderService, INewsUpdaterService newsUpdaterService, INewsDeleterService newsDeleterService, IWebHostEnvironment env)
+        public NoticiasController(INewsAdderService newsAdderService, INewsUpdaterService newsUpdaterService, INewsDeleterService newsDeleterService)
         {
-            _env = env;
             _newsAdderService = newsAdderService;
             _newsUpdaterService = newsUpdaterService;
             _newsDeleterService = newsDeleterService;

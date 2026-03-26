@@ -1,23 +1,22 @@
-﻿using AsadaLisboaBackend.Models.DatabaseContext;
-using AsadaLisboaBackend.RepositoryContracts.News;
-using AsadaLisboaBackend.ServiceContracts.FileSystem;
-using AsadaLisboaBackend.ServiceContracts.News;
+﻿using Microsoft.EntityFrameworkCore;
 using AsadaLisboaBackend.Services.Exceptions;
-using HtmlAgilityPack;
-using Microsoft.EntityFrameworkCore;
+using AsadaLisboaBackend.ServiceContracts.News;
+using AsadaLisboaBackend.Models.DatabaseContext;
+using AsadaLisboaBackend.ServiceContracts.Editor;
+using AsadaLisboaBackend.RepositoryContracts.News;
 
 namespace AsadaLisboaBackend.Services.News
 {
     public class NewsDeleterService : INewsDeleterService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IFileSystemManager _fileSystem;
+        private readonly IEditorDeleterService _editorDeleterService;
         private readonly INewsDeleterRepository _newsDeleterRepository;
 
-        public NewsDeleterService(INewsDeleterRepository newsDeleterRepository, IFileSystemManager fileSystem, ApplicationDbContext context)
+        public NewsDeleterService(INewsDeleterRepository newsDeleterRepository, ApplicationDbContext context, IEditorDeleterService editorDeleterService)
         {
             _context = context;
-            _fileSystem = fileSystem;
+            _editorDeleterService = editorDeleterService;
             _newsDeleterRepository = newsDeleterRepository;
         }
 
@@ -30,39 +29,11 @@ namespace AsadaLisboaBackend.Services.News
             if (existingNew is null)
                 throw new NotFoundException("La noticia no fue encontrada.");
 
-            await DeletePrincipalImage(existingNew.FileName);
+            await _editorDeleterService.DeletePrincipalImage(existingNew.FileName);
 
-            await DeleteContentImages(existingNew.Description);
+            await _editorDeleterService.DeleteContentImages(existingNew.Description);
 
             await _newsDeleterRepository.DeleteNew(id);
-        }
-
-        private async Task DeletePrincipalImage(string fileName)
-        {
-            await _fileSystem.DeleteAsync(fileName, "news");
-        }
-
-        private async Task DeleteContentImages(string html)
-        {
-            var doc = new HtmlDocument();
-            doc.LoadHtml(html);
-
-            var nodeCollection = doc.DocumentNode
-                .SelectNodes("//img[contains(@src, '/news/')]");
-
-            if (nodeCollection is null)
-                return;
-
-            var fileNames = nodeCollection
-                .Select(node => node.GetAttributeValue("src", null!))
-                .Where(src => !string.IsNullOrEmpty(src))
-                .Select(src => Path.GetFileName(src!))
-                .ToList();
-
-            foreach (var fileName in fileNames)
-            {
-                await _fileSystem.DeleteAsync(fileName, "news");
-            }
         }
     }
 }

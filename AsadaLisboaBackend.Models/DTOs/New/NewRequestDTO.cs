@@ -18,7 +18,7 @@ namespace AsadaLisboaBackend.Models.DTOs.New
 
         [MaxFileSize(5, ErrorMessage = "El tamaño máximo de imagen de la noticia es {0} MB.")] // Límite de 5 MB
         [AllowedExtensions(new string[] { ".jpg", ".jpeg", ".png" }, ErrorMessage = "La extensión de la imagen de la noticia no es válida.")]
-        public IFormFile File { get; set; } = null!;
+        public IFormFile? File { get; set; }
 
 
         [Required(ErrorMessage = "El estado de la noticia es requerido.")]

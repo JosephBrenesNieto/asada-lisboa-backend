@@ -106,12 +106,15 @@ builder.Services.AddScoped<IConfigurationsUpdaterRepository, ConfigurationsUpdat
 builder.Services.AddScoped<IConfigurationsDeleterRepository, ConfigurationsDeleterRepository>();
 
 builder.Services.AddScoped<IEditorAdderService, EditorAdderService>();
+builder.Services.AddScoped<IEditorUpdaterService, EditorUpdaterService>();
+builder.Services.AddScoped<IEditorDeleterService, EditorDeleterService>();
 
 builder.Services.AddScoped<IFileSystemManager, FileSystemManager>();
 
 builder.Services.AddScoped<IImagesGetterRepository, ImagesGetterRepository>();
 
 builder.Services.AddScoped<INewsAdderRepository, NewsAdderRepository>();
+builder.Services.AddScoped<INewsGetterRepository, NewsGetterRepository>();
 builder.Services.AddScoped<INewsUpdaterRepository, NewsUpdaterRepository>();
 builder.Services.AddScoped<INewsDeleterRepository, NewsDeleterRepository>();
 
