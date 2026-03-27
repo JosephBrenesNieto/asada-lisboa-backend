@@ -71,6 +71,8 @@ namespace AsadaLisboaBackend.Repositories.Images
         {
             var image = await _context.Images
                 .AsNoTracking()
+                .Include(i => i.Status)
+                .Include(i => i.Categories)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (image is null)

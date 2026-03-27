@@ -61,6 +61,7 @@ namespace AsadaLisboaBackend.Repositories.Users
         {
             return await _context.Users
                 .AsNoTracking()
+                .Include(u => u.Charge)
                 .Where(u => u.Id == id)
                 .Select(UserExtensions.MapUserDetailResponseDTO())
                 .FirstOrDefaultAsync();

@@ -21,6 +21,8 @@ namespace AsadaLisboaBackend.Repositories.News
         {
             var newModel = await _context.News
                 .AsNoTracking()
+                .Include(n => n.Status)
+                .Include(n => n.Categories)
                 .FirstOrDefaultAsync(n => n.Id == id);
 
             if (newModel is null)
@@ -33,8 +35,8 @@ namespace AsadaLisboaBackend.Repositories.News
         {
             IQueryable<New> query = _context.News
                 .AsNoTracking()
-                .Include(i => i.Status)
-                .Include(i => i.Categories);
+                .Include(n => n.Status)
+                .Include(n => n.Categories);
 
             // Search
             if (!string.IsNullOrEmpty(searchSortRequestDTO.Search) && !string.IsNullOrWhiteSpace(searchSortRequestDTO.Search))

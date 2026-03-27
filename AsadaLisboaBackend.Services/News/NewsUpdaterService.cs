@@ -1,13 +1,12 @@
-﻿using AsadaLisboaBackend.Models;
-using AsadaLisboaBackend.Models.DatabaseContext;
+﻿using Microsoft.EntityFrameworkCore;
+using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DTOs.New;
-using AsadaLisboaBackend.RepositoryContracts.News;
-using AsadaLisboaBackend.ServiceContracts.Editor;
-using AsadaLisboaBackend.ServiceContracts.FileSystem;
-using AsadaLisboaBackend.ServiceContracts.News;
 using AsadaLisboaBackend.Services.Exceptions;
-using AsadaLisboaBackend.Utils.SlugGeneration;
-using Microsoft.EntityFrameworkCore;
+using AsadaLisboaBackend.ServiceContracts.News;
+using AsadaLisboaBackend.Models.DatabaseContext;
+using AsadaLisboaBackend.ServiceContracts.Editor;
+using AsadaLisboaBackend.RepositoryContracts.News;
+using AsadaLisboaBackend.ServiceContracts.FileSystem;
 
 namespace AsadaLisboaBackend.Services.News
 {
@@ -33,9 +32,6 @@ namespace AsadaLisboaBackend.Services.News
         public async Task<NewResponseDTO> UpdateNew(Guid id, NewRequestDTO newRequestDTO)
         {
             var existingNew = await _newsGetterRepository.GetNew(id);
-
-            if(existingNew is null)
-                throw new Exception("Noticia no encontrada.");
 
             var imageUrl = existingNew.ImageUrl;
             var fileName = existingNew.FileName;
