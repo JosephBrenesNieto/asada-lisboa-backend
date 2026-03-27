@@ -3,7 +3,6 @@ using AsadaLisboaBackend.Models.Enums;
 using AsadaLisboaBackend.Models.DTOs.Image;
 using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.Models.DTOs.Status;
-using AsadaLisboaBackend.Utils.OptionsPattern;
 using AsadaLisboaBackend.ServiceContracts.Image;
 using AsadaLisboaBackend.ServiceContracts.Statuses;
 
@@ -14,16 +13,18 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
     [Route("api/[area]/[controller]")]
     public class ImagenesController : ControllerBase
     {
-        private readonly IWebHostEnvironment _env;
-        private readonly IImageService _imageService;
+        private readonly IImagesAdderService _imagesAdderService;
         private readonly IImagesGetterService _imagesGetterService;
+        private readonly IImagesDeleterService _imagesDeleterService;
+        private readonly IImagesUpdaterService _imagesUpdaterService;
         private readonly IStatusesUpdaterService _statusesUpdaterService;
 
-        public ImagenesController(IImageService imageService, IWebHostEnvironment env, IImagesGetterService imagesGetterService, IStatusesUpdaterService statusesUpdaterService)
+        public ImagenesController(IImagesAdderService imagesAdderService, IImagesGetterService imagesGetterService, IImagesDeleterService imagesDeleterService, IImagesUpdaterService imagesUpdaterService, IStatusesUpdaterService statusesUpdaterService)
         {
-            _env = env;
-            _imageService = imageService;
+            _imagesAdderService = imagesAdderService;
             _imagesGetterService = imagesGetterService;
+            _imagesDeleterService = imagesDeleterService;
+            _imagesUpdaterService = imagesUpdaterService;
             _statusesUpdaterService = statusesUpdaterService;
         }
 
@@ -42,30 +43,16 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         [HttpPost("")]
         public async Task<IActionResult> CreateImage([FromForm] ImageRequestDTO imageRequestDTO)
         {
-            var options = new FileStorageOptions
-            {
-                BasePath = Path.Combine(_env.WebRootPath, "uploads"),
-                BaseUrl = "/uploads"
-            };
-
-            var result = await _imageService.CreateImage(imageRequestDTO, options);
-            return Ok(result);
+            return Created("~/api/admin/imagenes", await _imagesAdderService.CreateImage(imageRequestDTO));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> EditImage([FromRoute] Guid id, [FromForm] ImageUpdateRequestDTO ImageUpdateRequestDTO)
         {
-            var options = new FileStorageOptions
-            {
-                BasePath = Path.Combine(_env.WebRootPath, "uploads"),
-                BaseUrl = "/uploads"
-            };
-
-            var result = await _imageService.UpdateImage(id, ImageUpdateRequestDTO, options);
-            return Ok(result);
+            return Ok(await _imagesUpdaterService.UpdateImage(id, ImageUpdateRequestDTO));
         }
 
-        [HttpPut("cambiar-estado/{id}")]
+        [HttpPatch("cambiar-estado/{id}")]
         public async Task<IActionResult> ChangeImageStatus([FromRoute] Guid id, [FromBody] StatusChangeRequestDTO statusChangeRequestDTO)
         {
             await _statusesUpdaterService.ChangeStatus(id, statusChangeRequestDTO.StatusId, ObjectTypeEnum.Image);
@@ -75,7 +62,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteImage(Guid id)
         {
-            await _imageService.DeleteImage(id);
+            await _imagesDeleterService.DeleteImage(id);
             return NoContent();
         }
 
