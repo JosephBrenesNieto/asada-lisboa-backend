@@ -14,7 +14,7 @@ namespace AsadaLisboaBackend.Models.DTOs.Account
         [Required(ErrorMessage = "Segundo apellido es requerido.")]
         public string SecondLastName { get; set; } = string.Empty;
         
-        [Required(ErrorMessage = "Id del cargo es requerido.")]
+        [Required(ErrorMessage = "El cargo es requerido.")]
         public Guid ChargeId { get; set; }
 
         [Required(ErrorMessage = "Email es requerido.")]
