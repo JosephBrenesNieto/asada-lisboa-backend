@@ -4,6 +4,6 @@ namespace AsadaLisboaBackend.ServiceContracts.Document
 {
     public interface IDocumentAdderService
     {
-        public Task<DocumentResponseDTO> CreateDocument(DocumentRequestDTO documentRequestDTO)
+        public Task<DocumentResponseDTO> CreateDocument(DocumentRequestDTO documentRequestDTO);
     }
 }
