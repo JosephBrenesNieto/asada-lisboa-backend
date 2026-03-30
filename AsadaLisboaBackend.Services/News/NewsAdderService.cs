@@ -1,14 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AsadaLisboaBackend.Models;
+﻿using AsadaLisboaBackend.Models;
+using AsadaLisboaBackend.Models.DatabaseContext;
+using AsadaLisboaBackend.Models.DTOs.Image;
 using AsadaLisboaBackend.Models.DTOs.New;
+using AsadaLisboaBackend.RepositoryContracts.News;
+using AsadaLisboaBackend.RepositoryContracts.Statuses;
+using AsadaLisboaBackend.ServiceContracts.Editors;
+using AsadaLisboaBackend.ServiceContracts.FileSystems;
+using AsadaLisboaBackend.ServiceContracts.News;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Utils.SlugGeneration;
-using AsadaLisboaBackend.ServiceContracts.News;
-using AsadaLisboaBackend.Models.DatabaseContext;
-using AsadaLisboaBackend.ServiceContracts.Editors;
-using AsadaLisboaBackend.RepositoryContracts.News;
-using AsadaLisboaBackend.ServiceContracts.FileSystems;
-using AsadaLisboaBackend.RepositoryContracts.Statuses;
+using Microsoft.EntityFrameworkCore;
 
 namespace AsadaLisboaBackend.Services.News
 {
@@ -37,7 +38,7 @@ namespace AsadaLisboaBackend.Services.News
             string fileName = string.Empty;
             string filePath = string.Empty;
 
-            if (newRequestDTO.File is not null)
+            if (newRequestDTO.File is not null && newRequestDTO.File.Length > 0)
             {
                 imageUrl = await _fileSystems.SaveAsync(newRequestDTO.File, "news");
                 fileName = Path.GetFileName(imageUrl);

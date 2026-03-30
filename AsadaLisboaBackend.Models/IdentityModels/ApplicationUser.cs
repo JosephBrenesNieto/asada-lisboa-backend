@@ -7,7 +7,6 @@ namespace AsadaLisboaBackend.Models.IdentityModels
         public string FirstName { get; set; } = string.Empty;
         public string FirstLastName { get; set; } = string.Empty;
         public string SecondLastName { get; set; } = string.Empty;
-        public string ImageUrl { get; set; } = string.Empty;
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiration { get; set; }
         public Guid ChargeId { get; set; }

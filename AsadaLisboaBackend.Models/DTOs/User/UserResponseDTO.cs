@@ -8,7 +8,6 @@ namespace AsadaLisboaBackend.Models.DTOs.User
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Charge { get; set; } = string.Empty;
-        public string ImageUrl { get; set; } = string.Empty;
     }
 
     public static partial class UserExtensions
@@ -18,7 +17,6 @@ namespace AsadaLisboaBackend.Models.DTOs.User
             return user => new UserResponseDTO
             {
                 Id = user.Id,
-                ImageUrl = user.ImageUrl,
                 Charge = user.Charge!.Name,
                 Name = $"{user.FirstName} {user.FirstLastName} {user.SecondLastName}",
             };

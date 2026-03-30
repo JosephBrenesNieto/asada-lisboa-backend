@@ -5,8 +5,7 @@ namespace AsadaLisboaBackend.RepositoryContracts.Documents
 {
     public interface IDocumentsGetterRepository
     {
-        public Task<PageResponseDTO<DocumentResponseDTO>> GetDocument(SearchSortRequestDTO searchSortRequestDTO);
-
-        public Task<DocumentResponseDTO> GetDocument(Guid id);
+        public Task<PageResponseDTO<DocumentResponseDTO>> GetDocuments(SearchSortRequestDTO searchSortRequestDTO);
+        public Task<Models.Document> GetDocument(Guid id);
     }
 }

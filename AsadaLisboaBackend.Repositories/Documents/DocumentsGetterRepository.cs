@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.DTOs.Document;
@@ -17,9 +18,8 @@ namespace AsadaLisboaBackend.Repositories.Documents
             _context = context;
         }
 
-        public async Task<PageResponseDTO<DocumentResponseDTO>> GetDocument(SearchSortRequestDTO searchSortRequestDTO)
+        public async Task<PageResponseDTO<DocumentResponseDTO>> GetDocuments(SearchSortRequestDTO searchSortRequestDTO)
         {
-
             IQueryable<Models.Document> query = _context.Documents
                    .AsNoTracking()
                    .Include(i => i.Status)
@@ -73,7 +73,7 @@ namespace AsadaLisboaBackend.Repositories.Documents
             };
         }
 
-        public async Task<DocumentResponseDTO> GetDocument(Guid id)
+        public async Task<Document> GetDocument(Guid id)
         {
             var document = await _context.Documents
                     .AsNoTracking()
@@ -82,8 +82,7 @@ namespace AsadaLisboaBackend.Repositories.Documents
             if (document is null)
                 throw new NotFoundException("El documento seleccionada no existe.");
 
-            return document.ToDocumentResponseDTO();
+            return document;
         }
-
     }
 }

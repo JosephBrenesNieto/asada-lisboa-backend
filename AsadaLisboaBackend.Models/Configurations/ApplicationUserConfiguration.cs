@@ -20,10 +20,6 @@ namespace AsadaLisboaBackend.Models.Configurations
                 .IsRequired()
                 .HasMaxLength(20);
 
-            builder.Property(x => x.ImageUrl)
-                .IsRequired()
-                .HasMaxLength(200);
-
             builder.HasOne(x => x.Charge)
                 .WithMany()
                 .HasForeignKey(x => x.ChargeId)

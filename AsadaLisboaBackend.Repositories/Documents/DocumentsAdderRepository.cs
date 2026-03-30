@@ -17,7 +17,6 @@ namespace AsadaLisboaBackend.Repositories.Documents
         public async Task<Document> CreateDocument(Document newDocument)
         {
             _context.Documents.Add(newDocument);
-
             var affectedRow = await _context.SaveChangesAsync();
 
             if (affectedRow < 1)

@@ -31,13 +31,6 @@ builder.Services.AddContactRateLimiters();
 
 builder.Services.AddHttpClient();
 
-// Add to service extensions
-builder.Services.AddTransient<IImageService, ImageService>();
-
-builder.Services.AddTransient<IDocumentService, DocumentService>();
-
-builder.Services.AddTransient<IDocumentGetterRepository, DocumentGetterRepository>();
-
 builder.Services.AuthenticationsRegistration(builder.Configuration);
 
 builder.Services.AddAuthorization();

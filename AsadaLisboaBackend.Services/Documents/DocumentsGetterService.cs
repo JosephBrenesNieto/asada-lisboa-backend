@@ -14,17 +14,17 @@ namespace AsadaLisboaBackend.Services.Documents
             _documentGetterRepository = documentGetterRepository;
         }
 
-        public async Task<PageResponseDTO<DocumentResponseDTO>> GetDocument(SearchSortRequestDTO searchSortRequestDTO)
+        public async Task<PageResponseDTO<DocumentResponseDTO>> GetDocuments(SearchSortRequestDTO searchSortRequestDTO)
         {
             searchSortRequestDTO.Offset = (Math.Max(searchSortRequestDTO.Page, 1) - 1) * searchSortRequestDTO.Take;
 
-            return await _documentGetterRepository.GetDocument(searchSortRequestDTO);
-
+            return await _documentGetterRepository.GetDocuments(searchSortRequestDTO);
         }
 
         public async Task<DocumentResponseDTO> GetDocument(Guid id) 
         {
-            return await _documentGetterRepository.GetDocument(id);
+            return (await _documentGetterRepository.GetDocument(id))
+                .ToDocumentResponseDTO();
 
         }
     }

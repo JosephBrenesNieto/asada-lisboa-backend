@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using AsadaLisboaBackend.Services.Exceptions;
-using AsadaLisboaBackend.Utils.SlugGeneration;
 using AsadaLisboaBackend.Models.DTOs.Document;
+using AsadaLisboaBackend.Utils.SlugGeneration;
 using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.ServiceContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
@@ -20,7 +20,6 @@ namespace AsadaLisboaBackend.Services.Documents
             _fileSystems = fileSystems;
             _applicationDbContext = applicationDbContext;
             _documentAdderRepository = documentAdderRepository;
-
         }
 
         public async Task<DocumentResponseDTO> CreateDocument(DocumentRequestDTO documentRequestDTO)
@@ -29,55 +28,52 @@ namespace AsadaLisboaBackend.Services.Documents
                 throw new ArgumentException("Archivo inválido.");
 
             var documentId = Guid.NewGuid();
-            var extension = Path.GetExtension(documentRequestDTO.File.FileName).ToLowerInvariant();
 
-            var fileName = $"{documentId}{extension}";
-            var filePath = Path.Combine(fileStorageOptions.BasePath, fileName);
-
-            if (!Directory.Exists(fileStorageOptions.BasePath))
-                Directory.CreateDirectory(fileStorageOptions.BasePath);
+            string? url = string.Empty;
 
             try
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await documentRequestDTO.File.CopyToAsync(stream);
-                }
+                url = await _fileSystems.SaveAsync(documentRequestDTO.File, "documents");
 
+                var fileName = Path.GetFileName(url);
+                var filePath = $"documents/{fileName}";
 
                 var slug = GenerateSlug.New(documentRequestDTO.Title, documentId);
 
                 var status = await _applicationDbContext.Statuses
-                     .FirstOrDefaultAsync(c => c.Id == documentRequestDTO.StatusId);
+                    .FirstOrDefaultAsync(c => c.Id == documentRequestDTO.StatusId);
 
                 var categories = await _applicationDbContext.Categories
                     .Where(c => documentRequestDTO.CategoryIds.Contains(c.Id))
                     .ToListAsync();
 
-                var newDocument = new Models.Document()
+                var document = new Models.Document()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = documentId,
+                    Url = url,
+                    Slug = slug,
+                    Status = status,
+                    FileName = fileName,
+                    FilePath = filePath,
+                    Categories = categories,
                     Title = documentRequestDTO.Title,
-                    Description = documentRequestDTO.Description,
-                    Slug = documentRequestDTO.Title.ToLower().Replace(" ", "-"),
                     PublicationDate = DateTime.UtcNow,
-                    FileSize = documentRequestDTO.File.Length,
                     StatusId = documentRequestDTO.StatusId,
+                    FileSize = documentRequestDTO.File.Length,
+                    Description = documentRequestDTO.Description,
                     DocumentTypeId = documentRequestDTO.DocumentTypeId,
-                    Categories = _applicationDbContext.Categories
-                    .Where(c => documentRequestDTO.CategoryIds.Contains(c.Id))
-                    .ToList()
                 };
 
-
-                return  (await _documentAdderRepository.CreateDocument(newDocument))
+                return (await _documentAdderRepository.CreateDocument(document))
                     .ToDocumentResponseDTO();
             }
             catch
             {
-                if (File.Exists(filePath))
-                    
-                    await _fileSystems.DeleteAsync(filePath, "documento");
+                if (!string.IsNullOrEmpty(url))
+                {
+                    var fileName = Path.GetFileName(url);
+                    await _fileSystems.DeleteAsync(fileName, "documents");
+                }
 
                 throw new CreateObjectException("Error al crear el documento.");
             }

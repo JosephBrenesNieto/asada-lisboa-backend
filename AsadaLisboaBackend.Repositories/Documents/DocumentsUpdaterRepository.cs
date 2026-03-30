@@ -17,14 +17,13 @@ namespace AsadaLisboaBackend.Repositories.Documents
         {
             _context.Attach(document);
 
-            _context.Entry(document).Property(n => n.Title).IsModified = false;
-            _context.Entry(document).Property(n => n.Description).IsModified = false;
-            _context.Entry(document).Property(n => n.Slug).IsModified = false;
-            _context.Entry(document).Property(n => n.StatusId).IsModified = false;
-            _context.Entry(document).Property(n => n.FileSize).IsModified = false;
-            _context.Entry(document).Property(n => n.DocumentTypeId).IsModified = false;
-            _context.Entry(document).Property(n => n.Categories).IsModified = false;
-
+            _context.Entry(document).Property(n => n.Title).IsModified = true;
+            _context.Entry(document).Property(n => n.Description).IsModified = true;
+            _context.Entry(document).Property(n => n.Slug).IsModified = true;
+            _context.Entry(document).Property(n => n.StatusId).IsModified = true;
+            _context.Entry(document).Property(n => n.FileSize).IsModified = true;
+            _context.Entry(document).Property(n => n.DocumentTypeId).IsModified = true;
+            _context.Entry(document).Property(n => n.Categories).IsModified = true;
 
             var affectedRows = await _context.SaveChangesAsync();
 
@@ -33,20 +32,20 @@ namespace AsadaLisboaBackend.Repositories.Documents
 
             return new Models.Document()
             {
-
                 Id = document.Id,
-                Title = document.Title,
-                Description = document.Description,
+                Url = document.Url,
                 Slug = document.Slug,
+                Title = document.Title,
                 Status = document.Status,
-                StatusId = document.StatusId,
                 FileSize = document.FileSize,
+                StatusId = document.StatusId,
+                FileName = document.FileName,
+                FilePath = document.FilePath,
                 Categories = document.Categories,
-                PublicationDate = document.PublicationDate
+                Description = document.Description,
+                DocumentTypeId = document.DocumentTypeId,
+                PublicationDate = document.PublicationDate,
             };
-
-
         }
-
     }
 }

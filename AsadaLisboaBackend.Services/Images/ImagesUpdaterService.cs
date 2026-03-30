@@ -45,7 +45,7 @@ namespace AsadaLisboaBackend.Services.Images
             image.Categories = categories;
 
             if (imageUpdateRequestDTO.File is null || imageUpdateRequestDTO.File.Length <= 0)
-                throw new ArgumentNullException("Error al actualizar la imagen principal.");
+                throw new ArgumentNullException("Error al actualizar la imagen.");
 
             string? newUrl = string.Empty;
 
@@ -55,8 +55,8 @@ namespace AsadaLisboaBackend.Services.Images
 
                 var newFileName = Path.GetFileName(newUrl);
 
-                if(!string.IsNullOrEmpty(image.FileName))
-                    await _fileSystems.DeleteAsync(image.FileName, "images");
+                if (!string.IsNullOrEmpty(image.FilePath) && File.Exists(image.FilePath) && image.FilePath != newUrl)
+                    File.Delete(image.FilePath);
 
                 image.Url = newUrl;
                 image.FileName = newFileName;

@@ -32,7 +32,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         [HttpGet("")]
         public async Task<ActionResult<PageResponseDTO<DocumentResponseDTO>>> GetDocument([FromQuery] SearchSortRequestDTO searchSortRequestDTO)
         {
-            return Ok(await _documentsGetterService.GetDocument(searchSortRequestDTO));
+            return Ok(await _documentsGetterService.GetDocuments(searchSortRequestDTO));
         }
 
         [HttpGet("{id}")]

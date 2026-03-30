@@ -8,10 +8,6 @@ namespace AsadaLisboaBackend.Models.DTOs.User
         [Required(ErrorMessage = "El cargo es requerido.")]
         public Guid ChargeId { get; set; }
 
-        [Required(ErrorMessage = "La ubicación de la imagen del usuario es requerido.")]
-        [StringLength(200, MinimumLength = 2, ErrorMessage = "La ubicación de la imagen del usuario debe ser entre {1} y {0} caracteres.")]
-        public string ImageUrl { get; set; } = string.Empty;
-
         [Required(ErrorMessage = "El nombre del usuario es requerido.")]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "El nombre del usuario debe ser entre {1} y {0} caracteres.")]
         public string FirstName { get; set; } = string.Empty;

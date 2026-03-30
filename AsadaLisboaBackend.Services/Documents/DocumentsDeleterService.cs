@@ -8,23 +8,24 @@ namespace AsadaLisboaBackend.Services.Documents
     public class DocumentsDeleterService: IDocumentsDeleterService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly IDocumentsGetterRepository _documentsGetterRespository;
         private readonly IDocumentsDeleterRepository _documentsDeleterRespository;
 
-      public DocumentsDeleterService(IFileSystemsManager fileSystems, IDocumentsDeleterRepository documentsDeleterRespository)
+      public DocumentsDeleterService(IFileSystemsManager fileSystems, IDocumentsDeleterRepository documentsDeleterRespository, IDocumentsGetterRepository documentsGetterRespository)
         {
             _fileSystems = fileSystems;
+            _documentsGetterRespository = documentsGetterRespository;
             _documentsDeleterRespository = documentsDeleterRespository;
         }
 
         public async Task DeleterDocument(Guid id)
         {
-            var document = await _documentsDeleterRespository.DeleteDocument(id);
+            var document = await _documentsGetterRespository.GetDocument(id);
 
             if (document is null)
                 throw new NotFoundException("Documento no encontrado.");
 
             if (!string.IsNullOrEmpty(document.FilePath) && File.Exists(document.FilePath))
-
                 await _fileSystems.DeleteAsync(document.FileName, "document");
 
             await _documentsDeleterRespository.DeleteDocument(id);

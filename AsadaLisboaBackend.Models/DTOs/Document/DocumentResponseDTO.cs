@@ -24,7 +24,6 @@ namespace AsadaLisboaBackend.Models.DTOs.Document
 
     public static partial class DocumentExtensions
     {
-
         public static Expression<Func<Models.Document, DocumentResponseDTO>> MapDocumentResponseDTO()
         {
             return document => new DocumentResponseDTO
@@ -42,7 +41,6 @@ namespace AsadaLisboaBackend.Models.DTOs.Document
                     .ToList(),
             };
         }
-
 
         public static DocumentResponseDTO ToDocumentResponseDTO(this Models.Document document)
         {

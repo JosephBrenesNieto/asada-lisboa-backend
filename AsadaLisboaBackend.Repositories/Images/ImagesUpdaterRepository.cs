@@ -18,15 +18,15 @@ namespace AsadaLisboaBackend.Repositories.Images
         {
             _context.Attach(image);
 
-            _context.Entry(image).Property(n => n.Url).IsModified = false;
-            _context.Entry(image).Property(n => n.Slug).IsModified = false;
-            _context.Entry(image).Property(n => n.Title).IsModified = false;
-            _context.Entry(image).Property(n => n.StatusId).IsModified = false;
-            _context.Entry(image).Property(n => n.FileName).IsModified = false;
-            _context.Entry(image).Property(n => n.FilePath).IsModified = false;
-            _context.Entry(image).Property(n => n.FileSize).IsModified = false;
-            _context.Entry(image).Property(n => n.Categories).IsModified = false;
-            _context.Entry(image).Property(n => n.Description).IsModified = false;
+            _context.Entry(image).Property(n => n.Url).IsModified = true;
+            _context.Entry(image).Property(n => n.Slug).IsModified = true;
+            _context.Entry(image).Property(n => n.Title).IsModified = true;
+            _context.Entry(image).Property(n => n.StatusId).IsModified = true;
+            _context.Entry(image).Property(n => n.FileName).IsModified = true;
+            _context.Entry(image).Property(n => n.FilePath).IsModified = true;
+            _context.Entry(image).Property(n => n.FileSize).IsModified = true;
+            _context.Entry(image).Property(n => n.Categories).IsModified = true;
+            _context.Entry(image).Property(n => n.Description).IsModified = true;
 
             var affectedRows = await _context.SaveChangesAsync();
 

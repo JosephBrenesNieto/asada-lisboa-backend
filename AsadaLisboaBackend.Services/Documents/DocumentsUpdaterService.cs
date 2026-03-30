@@ -45,43 +45,37 @@ namespace AsadaLisboaBackend.Services.Documents
             document.Categories = categories;
 
             if (documentUpdateRequestDTO.File is null || documentUpdateRequestDTO.File.Length <= 0)
-                throw new NotFoundException("Documento no encontrado.");
+                throw new NotFoundException("Error al actualizar el documento.");
 
-            var extension = Path.GetExtension(documentUpdateRequestDTO.File.FileName).ToLowerInvariant();
-            var newFileName = $"{document.Id}{extension}";
-            var newFilePath = Path.Combine(fileStorageOptions.BasePath, newFileName);
+            string? newUrl = string.Empty;
 
             try
             {
-                using (var stream = new FileStream(newFilePath, FileMode.Create))
-                {
-                    await documentUpdateRequestDTO.File.CopyToAsync(stream);
-                }
+                newUrl = await _fileSystems.SaveAsync(documentUpdateRequestDTO.File, "documents");
 
-                if (!string.IsNullOrEmpty(document.FilePath) && File.Exists(document.FilePath) && document.FilePath != newFilePath)
+                var newFileName = Path.GetFileName(newUrl);
+
+                if (!string.IsNullOrEmpty(document.FilePath) && File.Exists(document.FilePath) && document.FilePath != newUrl)
                     File.Delete(document.FilePath);
 
+                document.Url = newUrl;
                 document.FileName = newFileName;
-                document.FilePath = newFilePath;
+                document.FilePath = $"documents/{newFileName}";
                 document.FileSize = documentUpdateRequestDTO.File.Length;
             }
             catch
             {
-                if (File.Exists(newFilePath))
-                    File.Delete(newFilePath);
+                if (!string.IsNullOrEmpty(newUrl))
+                {
+                    var fileName = Path.GetFileName(newUrl);
+                    await _fileSystems.DeleteAsync(fileName, "documents");
+                }
 
-                throw new UpdateObjectException("Error al actualizar el documento.");
+                throw new CreateObjectException("Error al actualizar el documento.");
             }
 
             return (await _documentUpdateRespository.UpdateDocument(document))
                 .ToDocumentResponseDTO();
         }
-
     }
-
 }
-
-    
-
-
-    

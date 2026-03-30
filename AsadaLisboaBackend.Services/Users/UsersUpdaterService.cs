@@ -29,7 +29,6 @@ namespace AsadaLisboaBackend.Services.Users
             var charge = await _chargesGetterRepository.GetCharge(userUpdateRequestDTO.ChargeId);
 
             user.ChargeId = charge.Id;
-            user.ImageUrl = userUpdateRequestDTO.ImageUrl;
             user.FirstName = userUpdateRequestDTO.FirstName;
             user.PhoneNumber = userUpdateRequestDTO.PhoneNumber;
             user.FirstLastName = userUpdateRequestDTO.FirstLastName;
