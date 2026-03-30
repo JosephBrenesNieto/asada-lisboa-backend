@@ -30,13 +30,13 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         }
 
         [HttpPost("")]
-        public async Task<ActionResult<AboutUsResponseDTO>> CreateAboutUsSection([FromBody] AboutUsRequestDTO aboutUsSectionRequestDTO)
+        public async Task<ActionResult<AboutUsResponseDTO>> CreateAboutUsSection([FromForm] AboutUsRequestDTO aboutUsSectionRequestDTO)
         {
             return Created("~/api/admin/nosotros", await _aboutUsSectionsAdderService.CreateAboutUsSection(aboutUsSectionRequestDTO));
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<AboutUsResponseDTO>> UpdateAboutUsSection([FromRoute] Guid id, [FromBody] AboutUsRequestDTO aboutUsSectionRequestDTO)
+        public async Task<ActionResult<AboutUsResponseDTO>> UpdateAboutUsSection([FromRoute] Guid id, [FromForm] AboutUsRequestDTO aboutUsSectionRequestDTO)
         {
             return Ok(await _aboutUsSectionsUpdaterService.UpdateAboutUsSection(id, aboutUsSectionRequestDTO));
         }

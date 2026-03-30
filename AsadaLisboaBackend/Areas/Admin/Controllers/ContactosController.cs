@@ -30,13 +30,13 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         }
 
         [HttpPost("")]
-        public async Task<ActionResult<ContactResponseDTO>> CreateContact([FromBody] ContactRequestDTO contactRequestDTO)
+        public async Task<ActionResult<ContactResponseDTO>> CreateContact([FromForm] ContactRequestDTO contactRequestDTO)
         {
             return Created("~/api/admin/contacto", await _contactsAdderService.CreateContact(contactRequestDTO));
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ContactResponseDTO>> UpdateContact([FromRoute] Guid id, [FromBody] ContactRequestDTO contactRequestDTO)
+        public async Task<ActionResult<ContactResponseDTO>> UpdateContact([FromRoute] Guid id, [FromForm] ContactRequestDTO contactRequestDTO)
         {
             return Ok(await _contactsUpdaterService.UpdateContact(id, contactRequestDTO));
         }

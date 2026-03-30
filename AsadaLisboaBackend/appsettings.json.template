@@ -16,7 +16,7 @@
     "EXPIRATION_MINUTES": 1440
   },
   "ConnectionStrings": {
-    "AsadaLisboaDB": "Server=localhost;Database=AsadaLisboaDb;User Id=sa;Password=your_password;"
+    "AsadaLisboaDB": "Server=localhost;Database=AsadaLisboaDB;User Id=sa;Password=your_password;"
   },
   "ContactEmailOptions": {
     "CONTACT_EMAIL": "example@email.com"

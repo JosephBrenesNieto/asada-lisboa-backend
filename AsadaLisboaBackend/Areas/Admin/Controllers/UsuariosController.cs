@@ -34,7 +34,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] UserUpdateRequestDTO userUpdateRequestDTO)
+        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromForm] UserUpdateRequestDTO userUpdateRequestDTO)
         {
             await _usersUpdaterService.UpdateUser(id, userUpdateRequestDTO);
 

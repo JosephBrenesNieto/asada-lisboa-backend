@@ -47,12 +47,12 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<NewResponseDTO>> UpdateNew([FromRoute] Guid id, [FromBody] NewRequestDTO newRequestDTO)
+        public async Task<ActionResult<NewResponseDTO>> UpdateNew([FromRoute] Guid id, [FromForm] NewRequestDTO newRequestDTO)
         {
             return Ok(await _newsUpdaterService.UpdateNew(id, newRequestDTO));
         }
 
-        [HttpPut("cambiar-estado/{id}")]
+        [HttpPatch("cambiar-estado/{id}")]
         public async Task<IActionResult> ChangeNewStatus([FromRoute] Guid id, [FromBody] StatusChangeRequestDTO statusChangeRequestDTO)
         {
             await _statusesUpdaterService.ChangeStatus(id, statusChangeRequestDTO.StatusId, ObjectTypeEnum.New);

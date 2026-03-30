@@ -30,13 +30,13 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         }
 
         [HttpPost("")]
-        public async Task<ActionResult<ConfigurationResponseDTO>> CreateConfiguration([FromBody] ConfigurationsRequestDTO ConfigurationRequestDTO)
+        public async Task<ActionResult<ConfigurationResponseDTO>> CreateConfiguration([FromForm] ConfigurationsRequestDTO ConfigurationRequestDTO)
         {
             return Created("~/api/admin/configuracion", await _configurationsAdderService.CreateConfiguration(ConfigurationRequestDTO));
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ConfigurationResponseDTO>> UpdateConfiguration([FromRoute] Guid id, [FromBody] ConfigurationsRequestDTO configurationRequestDTO)
+        public async Task<ActionResult<ConfigurationResponseDTO>> UpdateConfiguration([FromRoute] Guid id, [FromForm] ConfigurationsRequestDTO configurationRequestDTO)
         {
             return Ok(await _configurationsUpdaterService.UpdateConfiguration(id, configurationRequestDTO));
         }

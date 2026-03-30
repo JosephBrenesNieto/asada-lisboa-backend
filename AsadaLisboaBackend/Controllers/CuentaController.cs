@@ -38,20 +38,20 @@ namespace AsadaLisboaBackend.Controllers
         } 
 
         [HttpPost("refrescar-token")]
-        public ActionResult<AuthenticationResponseDTO> RefreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO)
+        public ActionResult<AuthenticationResponseDTO> RefreshToken([FromBody] RefreshTokenRequestDTO refreshTokenRequestDTO)
         {
             return Ok(_jwtsService.ValidateRefreshToken(refreshTokenRequestDTO));
         }
 
         [HttpPost("olvidar-contrasena")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDTO resetPasswordDTO)
+        public async Task<IActionResult> ForgotPassword([FromForm] ForgotPasswordRequestDTO resetPasswordDTO)
         {
             await _resetPasswordService.ForgotPassword(resetPasswordDTO.Email);
             return NoContent();
         }
 
         [HttpPost("restaurar-contrasena")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDTO resetPasswordRequestDTO)
+        public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordRequestDTO resetPasswordRequestDTO)
         {
             await _resetPasswordService.ResetPassword(resetPasswordRequestDTO.Email, resetPasswordRequestDTO.Token, resetPasswordRequestDTO.Password);
             return NoContent();

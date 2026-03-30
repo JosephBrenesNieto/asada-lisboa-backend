@@ -27,7 +27,7 @@ namespace AsadaLisboaBackend.Controllers
         }
 
         [HttpGet("re-captcha")]
-        public async Task<bool> GetReCaptcha(string reCaptchaResponse)
+        public async Task<bool> GetReCaptcha([FromBody] string reCaptchaResponse)
         {
             if (string.IsNullOrEmpty(reCaptchaResponse) && string.IsNullOrWhiteSpace(reCaptchaResponse))
                 throw new ArgumentNullException("El reCaptcha ha sido nulo.");

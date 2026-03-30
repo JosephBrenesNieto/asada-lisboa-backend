@@ -20,7 +20,7 @@ namespace AsadaLisboaBackend.Controllers
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> RegisterUser([FromBody] RegisterRequestDTO registerRequestDTO)
+        public async Task<IActionResult> RegisterUser([FromForm] RegisterRequestDTO registerRequestDTO)
         {
             await _userService.RegisterUser(registerRequestDTO);
             return Created();
