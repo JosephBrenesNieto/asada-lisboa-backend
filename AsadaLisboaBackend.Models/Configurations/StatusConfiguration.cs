@@ -17,8 +17,8 @@ namespace AsadaLisboaBackend.Models.Configurations
                 .IsUnique();
 
             builder.HasData(
-                new Status { Id = Guid.NewGuid(), Name = "Draft" },
-                new Status { Id = Guid.NewGuid(), Name = "Active" });
+                new Status { Id = Guid.NewGuid(), Name = "Borrador" },
+                new Status { Id = Guid.NewGuid(), Name = "Publicado" });
         }
     }
 }

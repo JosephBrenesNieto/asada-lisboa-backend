@@ -15,6 +15,23 @@ namespace AsadaLisboaBackend.Models.Configurations
 
             builder.HasIndex(x => x.Name)
                 .IsUnique();
+
+            builder.HasData(
+                new Category { Id = Guid.NewGuid(), Name = "Proyectos Ejecutados" },
+                new Category { Id = Guid.NewGuid(), Name = "Estados Financieros" }, 
+                new Category { Id = Guid.NewGuid(), Name = "Tanque Principal" },
+                new Category { Id = Guid.NewGuid(), Name = "Pozo Principal" },
+                new Category { Id = Guid.NewGuid(), Name = "Lineamientos" },
+                new Category { Id = Guid.NewGuid(), Name = "Sugerencias" },
+                new Category { Id = Guid.NewGuid(), Name = "Solicitudes" },
+                new Category { Id = Guid.NewGuid(), Name = "Reglamentos" },
+                new Category { Id = Guid.NewGuid(), Name = "Colindancia" },
+                new Category { Id = Guid.NewGuid(), Name = "Hidrantes" },
+                new Category { Id = Guid.NewGuid(), Name = "Convenios" },
+                new Category { Id = Guid.NewGuid(), Name = "Informes" },
+                new Category { Id = Guid.NewGuid(), Name = "Exámenes" },
+                new Category { Id = Guid.NewGuid(), Name = "Estudios" },
+                new Category { Id = Guid.NewGuid(), Name = "Dudas" });
         }
     }
 }
