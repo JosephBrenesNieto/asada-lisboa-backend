@@ -15,6 +15,8 @@ builder.Services.AddControllers(options =>
     options.Filters.Add(new AuthorizeFilter(policy));
 });
 
+builder.Services.AddSwaggerGen();
+
 builder.Services.ErrorsHandlersRegistration();
 
 builder.Services.AddProblemDetails();
@@ -43,6 +45,12 @@ app.UseRateLimiter();
 app.UseExceptionHandler();
 
 app.UseStaticFiles();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 
