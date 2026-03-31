@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +12,7 @@ namespace AsadaLisboaBackend.Controllers
 {
     [ApiController]
     [AllowAnonymous]
+    [ApiVersion("1.0")]
     [Route("api/[controller]")]
     [EnableRateLimiting("contact-limiter")]
     public class EmailController : ControllerBase

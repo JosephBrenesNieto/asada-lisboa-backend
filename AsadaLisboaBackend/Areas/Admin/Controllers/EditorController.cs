@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using AsadaLisboaBackend.Models.DTOs.Editor;
 using AsadaLisboaBackend.ServiceContracts.Editors;
 
@@ -6,6 +7,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
 {
     [ApiController]
     [Area("Admin")]
+    [ApiVersion("1.0")]
     [Route("api/[area]/[controller]")]
     public class EditorController : ControllerBase
     {

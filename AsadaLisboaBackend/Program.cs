@@ -15,7 +15,8 @@ builder.Services.AddControllers(options =>
     options.Filters.Add(new AuthorizeFilter(policy));
 });
 
-builder.Services.AddSwaggerGen();
+builder.Services.SwaggerRegistration();
+builder.Services.VersioningRegistration();
 
 builder.Services.ErrorsHandlersRegistration();
 

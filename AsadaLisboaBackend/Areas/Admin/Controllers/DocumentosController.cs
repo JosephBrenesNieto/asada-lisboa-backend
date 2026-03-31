@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using AsadaLisboaBackend.Models.Enums;
-using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.Models.DTOs.Status;
+using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.Models.DTOs.Category;
 using AsadaLisboaBackend.Models.DTOs.Document;
 using AsadaLisboaBackend.ServiceContracts.Statuses;
@@ -12,6 +13,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
 {
     [ApiController]
     [Area("Admin")]
+    [ApiVersion("1.0")]
     [Route("api/[area]/[controller]")]
     public class DocumentosController : ControllerBase
     {
