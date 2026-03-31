@@ -18,6 +18,7 @@ namespace AsadaLisboaBackend.ServicesExtension
             services.AddExceptionHandler<ArgumentErrorHandling>();
             services.AddExceptionHandler<NotFoundErrorHandling>();
             services.AddExceptionHandler<IdentityErrorHandling>();
+            services.AddExceptionHandler<InUsedErrorHandling>();
             services.AddExceptionHandler<GlobalErrorHandling>();
 
             return services;
