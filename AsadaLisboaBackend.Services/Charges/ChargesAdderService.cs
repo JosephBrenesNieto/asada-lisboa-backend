@@ -21,7 +21,7 @@ namespace AsadaLisboaBackend.Services.Charges
             var existsCharge = await _chargesGetterService.ExistsCharge(nameCharge);
 
             if (existsCharge)
-                throw new Exception("El nombre del cargo ya existe.");
+                throw new Exception("El nombre del cargo ya existe."); // TODO
 
             var charge = new Charge { Name = nameCharge };
 

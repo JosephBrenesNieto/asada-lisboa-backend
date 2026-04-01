@@ -23,6 +23,14 @@ namespace AsadaLisboaBackend.Models.Configurations
 
             builder.HasIndex(x => x.Extension)
                 .IsUnique();
+
+            builder.HasData(
+                new DocumentType { Id = Guid.NewGuid(), Name = "PDF", Extension = ".pdf", MimeType = "application/pdf" },
+                new DocumentType { Id = Guid.NewGuid(), Name = "Word", Extension = ".docx", MimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+                new DocumentType { Id = Guid.NewGuid(), Name = "Excel", Extension = ".xlsx", MimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+                new DocumentType { Id = Guid.NewGuid(), Name = "CSV", Extension = ".csv", MimeType = "text/csv" },
+                new DocumentType { Id = Guid.NewGuid(), Name = "Texto", Extension = ".txt", MimeType = "text/plain" },
+                new DocumentType { Id = Guid.NewGuid(), Name = "ZIP", Extension = ".zip", MimeType = "application/octet-stream" });
         }
     }
 }
