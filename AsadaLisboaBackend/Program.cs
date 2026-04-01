@@ -18,6 +18,8 @@ builder.Services.AddControllers(options =>
 builder.Services.SwaggerRegistration();
 builder.Services.VersioningRegistration();
 
+builder.Services.OptionsPatternRegistration(builder.Configuration);
+
 builder.Services.ErrorsHandlersRegistration();
 
 builder.Services.AddProblemDetails();

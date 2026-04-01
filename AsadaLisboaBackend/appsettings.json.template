@@ -6,12 +6,12 @@
     }
   },
   "AllowedHosts": "*",
-  "JwtOptions": {
-    "EXPIRATION_MINUTES": 20,
-    "KEY": "Private-Key (256 bits)",
-    "ISSUER": "https://localhost:5199",
-    "AUDIENCE": "https://localhost:4200"
-  },
+  //"JwtOptions": {
+  //  "EXPIRATION_MINUTES": 20,
+  //  "KEY": "Private-Key (256 bits)",
+  //  "ISSUER": "http://localhost:5199",
+  //  "AUDIENCE": "http://localhost:4200"
+  //},
   "RefreshJwtOptions": {
     "EXPIRATION_MINUTES": 1440
   },
