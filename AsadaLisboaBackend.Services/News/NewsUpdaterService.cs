@@ -43,7 +43,7 @@ namespace AsadaLisboaBackend.Services.News
             {
                 var newImageUrl = await _fileSystems.SaveAsync(newRequestDTO.File, "news");
 
-                if (!string.IsNullOrEmpty(existingNew.FileName))
+                if (!string.IsNullOrEmpty(existingNew.FileName) && !string.IsNullOrWhiteSpace(existingNew.FileName))
                     await _fileSystems.DeleteAsync(existingNew.FileName, "news");
 
                 imageUrl = newImageUrl;

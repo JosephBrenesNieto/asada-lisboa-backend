@@ -120,7 +120,7 @@ namespace AsadaLisboaBackend.Services.Jwts
 
         public async Task<AuthenticationResponseDTO> ValidateRefreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO)
         {
-            if (refreshTokenRequestDTO.Token is null)
+            if (refreshTokenRequestDTO.Token is null || string.IsNullOrEmpty(refreshTokenRequestDTO.Token) || string.IsNullOrWhiteSpace(refreshTokenRequestDTO.Token))
                 throw new InvalidAccessTokenException("Token de acceso inválido.");
 
             string token = refreshTokenRequestDTO.Token;
@@ -133,7 +133,7 @@ namespace AsadaLisboaBackend.Services.Jwts
 
             string? email = principal.FindFirstValue(ClaimTypes.Email);
 
-            if (email is null)
+            if (email is null || string.IsNullOrEmpty(email) || string.IsNullOrWhiteSpace(email))
                 throw new InvalidAccessTokenException("Token de acceso inválido.");
 
             ApplicationUser? user = await _userManager.FindByEmailAsync(email);
@@ -141,7 +141,7 @@ namespace AsadaLisboaBackend.Services.Jwts
             if (user is null)
                 throw new NotFoundException("Usuario inexistente.");
 
-            if (user.RefreshToken != refreshToken || user.RefreshTokenExpiration < DateTime.UtcNow)
+            if (user.RefreshToken != refreshToken || user.RefreshTokenExpiration < DateTime.UtcNow || string.IsNullOrEmpty(user.RefreshToken) || string.IsNullOrWhiteSpace(user.RefreshToken))
                 throw new InvalidRefreshTokenException("Token de refrescamiento inválido.");
 
             AuthenticationResponseDTO authenticationResponseDTO = GenerateToken(user);

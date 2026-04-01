@@ -62,7 +62,7 @@ namespace AsadaLisboaBackend.Services.Documents
             }
             catch
             {
-                if (!string.IsNullOrEmpty(newUrl))
+                if (!string.IsNullOrEmpty(newUrl) && string.IsNullOrWhiteSpace(newUrl))
                 {
                     var fileName = Path.GetFileName(newUrl);
                     await _fileSystems.DeleteAsync(fileName, "documents");
@@ -74,7 +74,7 @@ namespace AsadaLisboaBackend.Services.Documents
             var extension = Path.GetExtension(newUrl);
             var documentTypeId = _documentTypesGetterRepository.GetDocumentTypeIdByExtension(extension);
 
-            if (documentTypeId is null)
+            if (documentTypeId is null || !documentTypeId.HasValue)
                 throw new NotFoundException("Tipo de documento no soportado.");
 
             document.DocumentTypeId = documentTypeId.Value;

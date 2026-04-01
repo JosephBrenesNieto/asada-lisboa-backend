@@ -50,7 +50,7 @@ namespace AsadaLisboaBackend.Services.Images
 
                 var newFileName = Path.GetFileName(newUrl);
 
-                if (!string.IsNullOrEmpty(image.FilePath) && File.Exists(image.FilePath) && image.FilePath != newUrl)
+                if (!string.IsNullOrEmpty(image.FilePath) && !string.IsNullOrWhiteSpace(image.FilePath) && File.Exists(image.FilePath) && image.FilePath != newUrl)
                     File.Delete(image.FilePath);
 
                 image.Url = newUrl;
@@ -60,7 +60,7 @@ namespace AsadaLisboaBackend.Services.Images
             }
             catch
             {
-                if (!string.IsNullOrEmpty(newUrl))
+                if (!string.IsNullOrEmpty(newUrl) && !string.IsNullOrWhiteSpace(newUrl))
                 {
                     var fileName = Path.GetFileName(newUrl);
                     await _fileSystems.DeleteAsync(fileName, "images");

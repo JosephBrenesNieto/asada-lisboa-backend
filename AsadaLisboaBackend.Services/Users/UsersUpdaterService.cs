@@ -55,7 +55,7 @@ namespace AsadaLisboaBackend.Services.Users
 
             var currentRole = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
-            if(currentRole is not null)
+            if(!string.IsNullOrEmpty(currentRole) && !string.IsNullOrWhiteSpace(currentRole))
             {
                 if (!role.Name!.Equals(currentRole, StringComparison.InvariantCultureIgnoreCase))
                     await _userManager.RemoveFromRoleAsync(user, currentRole);

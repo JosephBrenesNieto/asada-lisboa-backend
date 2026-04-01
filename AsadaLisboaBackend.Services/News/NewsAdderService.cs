@@ -42,7 +42,7 @@ namespace AsadaLisboaBackend.Services.News
                 fileName = Path.GetFileName(imageUrl);
             }
 
-            if(imageUrl != string.Empty && fileName != string.Empty)
+            if(!string.IsNullOrEmpty(imageUrl) && !string.IsNullOrWhiteSpace(imageUrl) && !string.IsNullOrEmpty(fileName) && !string.IsNullOrWhiteSpace(fileName))
                 filePath = $"news/{fileName}";
 
             var content = await _editorsUpdaterService.ChangeHtmlImagesFolder(newRequestDTO.Description);

@@ -25,7 +25,7 @@ namespace AsadaLisboaBackend.Services.Images
             if (image is null)
                 throw new NotFoundException("Imagen no encontrada.");
 
-            if (!string.IsNullOrEmpty(image.FileName))
+            if (!string.IsNullOrEmpty(image.FileName) && !string.IsNullOrWhiteSpace(image.FileName))
                 await _fileSystems.DeleteAsync(image.FileName, "images");
 
             await _imagesDeleterRepository.DeleteImage(id);

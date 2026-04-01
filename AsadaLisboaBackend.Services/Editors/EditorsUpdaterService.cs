@@ -28,7 +28,7 @@ namespace AsadaLisboaBackend.Services.Editors
             {
                 var src = node.GetAttributeValue("src", null!);
 
-                if (src is null || string.IsNullOrEmpty(src))
+                if (src is null || string.IsNullOrEmpty(src) || string.IsNullOrWhiteSpace(src))
                     continue;
 
                 var fileName = Path.GetFileName(src);

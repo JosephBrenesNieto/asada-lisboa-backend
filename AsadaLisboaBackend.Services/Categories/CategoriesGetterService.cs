@@ -1,5 +1,4 @@
 ﻿using AsadaLisboaBackend.Models;
-using AsadaLisboaBackend.Models.Enums;
 using AsadaLisboaBackend.Models.DTOs.Category;
 using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.RepositoryContracts.Categories;

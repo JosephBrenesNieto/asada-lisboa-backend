@@ -66,7 +66,7 @@ namespace AsadaLisboaBackend.Services.Images
             }
             catch
             {
-                if (!string.IsNullOrEmpty(url))
+                if (!string.IsNullOrEmpty(url) && !string.IsNullOrWhiteSpace(url))
                 {
                     var fileName = Path.GetFileName(url);
                     await _fileSystems.DeleteAsync(fileName, "images");
