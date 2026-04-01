@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using AsadaLisboaBackend.Middlewares;
 using AsadaLisboaBackend.ServicesExtension;
+using AsadaLisboaBackend.Utils.OptionsPattern;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,14 @@ if (app.Environment.IsDevelopment())
         c.InjectStylesheet("/css/swagger-styles.css");
     });
 }
+
+var config = app.Services
+    .GetRequiredService<IConfiguration>()
+    .GetSection("DefaultUserOptions")
+    .Get<DefaultUserOptions>();
+
+if (config is not null && config.RUN)
+    await app.Services.SeedAdminUserAsync();
 
 app.UseHttpsRedirection();
 

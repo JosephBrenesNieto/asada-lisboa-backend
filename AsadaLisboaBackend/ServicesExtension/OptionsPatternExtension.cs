@@ -9,6 +9,7 @@ namespace AsadaLisboaBackend.ServicesExtension
             services.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
             services.Configure<ReCaptchaOptions>(configuration.GetSection("ReCaptchaOptions"));
             services.Configure<RefreshJwtOptions>(configuration.GetSection("RefreshJwtOptions"));
+            services.Configure<DefaultUserOptions>(configuration.GetSection("DefaultUserOptions"));
             services.Configure<ContactEmailOptions>(configuration.GetSection("ContactEmailOptions"));
 
             return services;

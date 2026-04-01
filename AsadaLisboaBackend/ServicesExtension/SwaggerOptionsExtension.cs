@@ -29,7 +29,7 @@ namespace AsadaLisboaBackend.ServicesExtension
             {
                 Version = ".NET Core 8 - API v1",
                 Title = "ASADA de Urbanización Lisboa - Web API",
-                Description = "Versioning Web Api to ASADA de Urbanización Lisboa",
+                Description = "Versioning Web API to ASADA de Urbanización Lisboa",
             };
             if (description.IsDeprecated)
             {
