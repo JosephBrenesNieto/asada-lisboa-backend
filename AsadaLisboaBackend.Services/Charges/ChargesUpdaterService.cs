@@ -1,4 +1,5 @@
 ﻿using AsadaLisboaBackend.Models.DTOs.Charge;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.Charges;
 using AsadaLisboaBackend.RepositoryContracts.Charges;
 
@@ -20,7 +21,7 @@ namespace AsadaLisboaBackend.Services.Charges
             var existsCharge = await _chargesGetterService.ExistsCharge(chargeRequest);
 
             if(existsCharge)
-                throw new Exception("El nombre del cargo ya existe."); // TODO
+                throw new ExistingValueException("El nombre del cargo ya existe.");
 
             return await _chargesUpdaterRepository.UpdateCharge(id, chargeRequest);
         }

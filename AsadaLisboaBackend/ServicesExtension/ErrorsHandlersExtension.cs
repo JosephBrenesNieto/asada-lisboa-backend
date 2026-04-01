@@ -10,6 +10,7 @@ namespace AsadaLisboaBackend.ServicesExtension
             services.AddExceptionHandler<InvalidAccessTokenErrorHandling>();
             services.AddExceptionHandler<InvalidCredentialsErrorHandling>();
             services.AddExceptionHandler<SecurityTokenErrorHandling>();
+            services.AddExceptionHandler<ExistingValueErrorHandling>();
             services.AddExceptionHandler<CreateObjectErrorHandling>();
             services.AddExceptionHandler<RegisterUserErrorHandling>();
             services.AddExceptionHandler<UpdateObjectErrorHandling>();
