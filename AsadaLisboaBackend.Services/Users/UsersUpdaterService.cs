@@ -28,6 +28,9 @@ namespace AsadaLisboaBackend.Services.Users
 
             var charge = await _chargesGetterRepository.GetCharge(userUpdateRequestDTO.ChargeId);
 
+            if (charge is null)
+                throw new NotFoundException("Cargo seleccionado no encontrado.");
+
             user.ChargeId = charge.Id;
             user.FirstName = userUpdateRequestDTO.FirstName;
             user.PhoneNumber = userUpdateRequestDTO.PhoneNumber;

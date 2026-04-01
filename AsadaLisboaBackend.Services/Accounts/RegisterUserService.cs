@@ -30,7 +30,9 @@ namespace AsadaLisboaBackend.Services.Accounts
                 throw new NotFoundException("El correo electrónico ya esta registrado.");
 
             var charge = await _chargesGetterRepository.GetCharge(registerRequestDTO.ChargeId);
-
+            
+            if (charge is null)
+                throw new NotFoundException("Cargo seleccionado no encontrado.");
             //Register new user
             var user = new ApplicationUser
             {
