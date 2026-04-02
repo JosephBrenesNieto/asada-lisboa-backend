@@ -37,7 +37,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PageResponseDTO<NewResponseDTO>>> GetNew([FromRoute] Guid id)
+        public async Task<ActionResult<NewResponseDTO>> GetNew([FromRoute] Guid id)
         {
             return Ok(await _newsGetterService.GetNew(id));
         }

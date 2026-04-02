@@ -31,13 +31,13 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         }
 
         [HttpGet("")]
-        public async Task<ActionResult<PageResponseDTO<DocumentResponseDTO>>> GetDocument([FromQuery] SearchSortRequestDTO searchSortRequestDTO)
+        public async Task<ActionResult<PageResponseDTO<DocumentResponseDTO>>> GetDocuments([FromQuery] SearchSortRequestDTO searchSortRequestDTO)
         {
             return Ok(await _documentsGetterService.GetDocuments(searchSortRequestDTO));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PageResponseDTO<DocumentResponseDTO>>> GetDocument([FromRoute] Guid id)
+        public async Task<ActionResult<DocumentResponseDTO>> GetDocument([FromRoute] Guid id)
         {
             return Ok(await _documentsGetterService.GetDocument(id));
         }

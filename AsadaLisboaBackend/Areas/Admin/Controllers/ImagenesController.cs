@@ -37,7 +37,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<PageResponseDTO<ImageResponseDTO>>> GetImage([FromRoute] Guid id)
+        public async Task<ActionResult<ImageResponseDTO>> GetImage([FromRoute] Guid id)
         {
             return Ok(await _imagesGetterService.GetImage(id));
         }
