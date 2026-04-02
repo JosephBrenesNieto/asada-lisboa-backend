@@ -27,5 +27,11 @@ namespace AsadaLisboaBackend.Services.Documents
                 .ToDocumentResponseDTO();
 
         }
+
+        public async Task<DocumentResponseDTO> GetDocumentBySlug(string slug)
+        {
+            return (await _documentGetterRepository.GetDocumentBySlug(slug))
+                .ToDocumentResponseDTO();
+        }
     }
 }

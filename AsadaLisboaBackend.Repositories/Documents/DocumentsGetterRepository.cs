@@ -84,5 +84,17 @@ namespace AsadaLisboaBackend.Repositories.Documents
 
             return document;
         }
+
+        public async Task<Document> GetDocumentBySlug(string slug)
+        {
+            var document = await _context.Documents
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(i => i.Slug == slug);
+
+            if (document is null)
+                throw new NotFoundException("El documento seleccionada no existe.");
+
+            return document;
+        }
     }
 }
