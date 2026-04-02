@@ -6,12 +6,13 @@ using AsadaLisboaBackend.Models.DTOs.Account;
 using AsadaLisboaBackend.ServiceContracts.Jwts;
 using AsadaLisboaBackend.ServiceContracts.Accounts;
 
-namespace AsadaLisboaBackend.Controllers
+namespace AsadaLisboaBackend.Areas.Auth.Controllers
 {
     [ApiController]
     [AllowAnonymous]
+    [Area("Auth")]
     [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+    [Route("api/[area]/[controller]")]
     public class CuentaController : ControllerBase
     {
         private readonly IJwtsService _jwtsService;

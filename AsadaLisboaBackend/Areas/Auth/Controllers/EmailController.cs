@@ -8,13 +8,14 @@ using AsadaLisboaBackend.ServiceContracts.Emails;
 using AsadaLisboaBackend.ServiceContracts.ReCaptchas;
 using AsadaLisboaBackend.Models.DTOs.InformationMessage;
 
-namespace AsadaLisboaBackend.Controllers
+namespace AsadaLisboaBackend.Areas.Auth.Controllers
 {
     [ApiController]
     [AllowAnonymous]
-    [ApiVersion("1.0")]
-    [Route("api/[controller]")]
     [EnableRateLimiting("contact-limiter")]
+    [Area("Auth")]
+    [ApiVersion("1.0")]
+    [Route("api/[area]/[controller]")]
     public class EmailController : ControllerBase
     {
         private readonly ReCaptchaOptions _reCaptchaOptions;

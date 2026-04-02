@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AsadaLisboaBackend.Models.DTOs.Principal;
 using AsadaLisboaBackend.ServiceContracts.Principals;
 
-namespace AsadaLisboaBackend.Controllers
+namespace AsadaLisboaBackend.Areas.Cliente.Controllers
 {
     [ApiController]
     [AllowAnonymous]
-    [Route("api/[controller]")]
+    [Area("Cliente")]
+    [ApiVersion("1.0")]
+    [Route("api/[area]/[controller]")]
     public class PrincipalController : ControllerBase
     {
         private readonly IPrincipalsGetterService _principalsGetterService;

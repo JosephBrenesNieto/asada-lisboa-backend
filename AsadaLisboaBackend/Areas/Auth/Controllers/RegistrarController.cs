@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using AsadaLisboaBackend.Models.DTOs.Account;
 using AsadaLisboaBackend.ServiceContracts.Accounts;
 
-namespace AsadaLisboaBackend.Controllers
+namespace AsadaLisboaBackend.Areas.Auth.Controllers
 {
     [ApiController]
+    [Area("Auth")]
     [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+    [Route("api/[area]/[controller]")]
     public class RegistrarController : ControllerBase
     {
         private readonly IRegisterUserService _userService;
