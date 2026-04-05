@@ -1,4 +1,5 @@
-﻿using AsadaLisboaBackend.Services.Exceptions;
+﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.DTOs.Document;
 using AsadaLisboaBackend.Utils.SlugGeneration;
 using AsadaLisboaBackend.ServiceContracts.Documents;
@@ -13,13 +14,15 @@ namespace AsadaLisboaBackend.Services.Documents
     public class DocumentsAdderService: IDocumentsAdderService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly ILogger<DocumentsAdderService> _logger;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IDocumentsAdderRepository _documentAdderRepository;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
         private readonly IDocumentTypesGetterRepository _documentTypesGetterRepository;
 
-        public DocumentsAdderService(ICategoriesGetterService categoriesGetterService, IDocumentsAdderRepository documentAdderRepository, IStatusesGetterRepository statusesGetterRepository, IDocumentTypesGetterRepository documentTypesGetterRepository, IFileSystemsManager fileSystems)
+        public DocumentsAdderService(ICategoriesGetterService categoriesGetterService, IDocumentsAdderRepository documentAdderRepository, IStatusesGetterRepository statusesGetterRepository, IDocumentTypesGetterRepository documentTypesGetterRepository, IFileSystemsManager fileSystems, ILogger<DocumentsAdderService> logger)
         {
+            _logger = logger;
             _fileSystems = fileSystems;
             _categoriesGetterService = categoriesGetterService;
             _documentAdderRepository = documentAdderRepository;
@@ -71,8 +74,10 @@ namespace AsadaLisboaBackend.Services.Documents
                     Description = documentRequestDTO.Description,
                 };
 
-                return (await _documentAdderRepository.CreateDocument(document))
-                    .ToDocumentResponseDTO();
+                var documentCreated = await _documentAdderRepository.CreateDocument(document);
+                _logger.LogInformation("Documento creado exitosamente con id: {DocumentId}", documentCreated.Id);
+
+                return documentCreated.ToDocumentResponseDTO();
             }
             catch
             {
@@ -82,6 +87,7 @@ namespace AsadaLisboaBackend.Services.Documents
                     await _fileSystems.DeleteAsync(fileName, "documents");
                 }
 
+                _logger.LogError("Error al crear el documento. Se eliminó el archivo subido con éxito.");
                 throw new CreateObjectException("Error al crear el documento.");
             }
         }

@@ -6,10 +6,12 @@ namespace AsadaLisboaBackend.ErrorHandling
 {
     public class InUsedErrorHandling : IExceptionHandler
     {
+        private readonly ILogger<InUsedErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
 
-        public InUsedErrorHandling(IProblemDetailsService problemDetailsService)
+        public InUsedErrorHandling(IProblemDetailsService problemDetailsService, ILogger<InUsedErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -17,6 +19,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not InUsedException inUsedException)
                 return false;
+
+            _logger.LogError(exception, "Error Global - Elemento al eliminar una categoría en uso.");
 
             httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
 

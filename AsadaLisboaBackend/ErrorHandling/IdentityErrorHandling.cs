@@ -6,10 +6,12 @@ namespace AsadaLisboaBackend.ErrorHandling
 {
     internal sealed class IdentityErrorHandling : IExceptionHandler
     {
+        private readonly ILogger<IdentityErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
 
-        public IdentityErrorHandling(IProblemDetailsService problemDetailsService)
+        public IdentityErrorHandling(IProblemDetailsService problemDetailsService, ILogger<IdentityErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -17,6 +19,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not IdentityErrorException identityErrorException) 
                 return false;
+
+            _logger.LogError(exception, "Error Global - Error al realizar cambios de un usuario.");
 
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 

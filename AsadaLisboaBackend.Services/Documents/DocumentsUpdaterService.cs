@@ -1,4 +1,5 @@
-﻿using AsadaLisboaBackend.Services.Exceptions;
+﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.DTOs.Document;
 using AsadaLisboaBackend.Utils.SlugGeneration;
 using AsadaLisboaBackend.ServiceContracts.Documents;
@@ -12,13 +13,15 @@ namespace AsadaLisboaBackend.Services.Documents
     public class DocumentsUpdaterService : IDocumentsUpdaterService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly ILogger<DocumentsUpdaterService> _logger;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IDocumentsGetterRepository _documentGetterRepository;
         private readonly IDocumentsUpdaterRepository _documentUpdateRespository;
         private readonly IDocumentTypesGetterRepository _documentTypesGetterRepository;
 
-        public DocumentsUpdaterService(IFileSystemsManager fileSystems, IDocumentsGetterRepository documentGetterRepository, IDocumentsUpdaterRepository documentUpdateRespository, ICategoriesGetterService categoriesGetterService, IDocumentTypesGetterRepository documentTypesGetterRepository)
+        public DocumentsUpdaterService(IFileSystemsManager fileSystems, IDocumentsGetterRepository documentGetterRepository, IDocumentsUpdaterRepository documentUpdateRespository, ICategoriesGetterService categoriesGetterService, IDocumentTypesGetterRepository documentTypesGetterRepository, ILogger<DocumentsUpdaterService> logger)
         {
+            _logger = logger;
             _fileSystems = fileSystems;
             _categoriesGetterService = categoriesGetterService;
             _documentGetterRepository = documentGetterRepository;
@@ -68,6 +71,7 @@ namespace AsadaLisboaBackend.Services.Documents
                     await _fileSystems.DeleteAsync(fileName, "documents");
                 }
 
+                _logger.LogError("Error al actualizar el documento con id {DocumentId}.", id);
                 throw new CreateObjectException("Error al actualizar el documento.");
             }
 
@@ -79,8 +83,10 @@ namespace AsadaLisboaBackend.Services.Documents
 
             document.DocumentTypeId = documentTypeId.Value;
 
-            return (await _documentUpdateRespository.UpdateDocument(document))
-                .ToDocumentResponseDTO();
+            var documentUpdated = await _documentUpdateRespository.UpdateDocument(document);
+            _logger.LogInformation("Documento con id {DocumentId} actualizado correctamente.", documentUpdated.Id);
+
+            return documentUpdated.ToDocumentResponseDTO();
         }
     }
 }

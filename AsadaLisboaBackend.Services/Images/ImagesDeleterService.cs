@@ -1,4 +1,5 @@
-﻿using AsadaLisboaBackend.Services.Exceptions;
+﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.Images;
 using AsadaLisboaBackend.RepositoryContracts.Images;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
@@ -8,11 +9,13 @@ namespace AsadaLisboaBackend.Services.Images
     public class ImagesDeleterService : IImagesDeleterService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly ILogger<ImagesDeleterService> _logger;
         private readonly IImagesGetterRepository _imagesGetterRepository;
         private readonly IImagesDeleterRepository _imagesDeleterRepository;
 
-        public ImagesDeleterService(IFileSystemsManager fileSystems, IImagesDeleterRepository imagesDeleterRepository, IImagesGetterRepository imagesGetterRepository)
+        public ImagesDeleterService(IFileSystemsManager fileSystems, IImagesDeleterRepository imagesDeleterRepository, IImagesGetterRepository imagesGetterRepository, ILogger<ImagesDeleterService> logger)
         {
+            _logger = logger;
             _fileSystems = fileSystems;
             _imagesGetterRepository = imagesGetterRepository;
             _imagesDeleterRepository = imagesDeleterRepository;
@@ -29,6 +32,8 @@ namespace AsadaLisboaBackend.Services.Images
                 await _fileSystems.DeleteAsync(image.FileName, "images");
 
             await _imagesDeleterRepository.DeleteImage(id);
+
+            _logger.LogInformation("Imagen con id {Id} eliminada correctamente.", id);
         }
     }
 }

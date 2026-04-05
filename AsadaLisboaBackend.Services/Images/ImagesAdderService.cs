@@ -1,4 +1,5 @@
-﻿using AsadaLisboaBackend.Models.DTOs.Image;
+﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Models.DTOs.Image;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Utils.SlugGeneration;
 using AsadaLisboaBackend.ServiceContracts.Images;
@@ -12,12 +13,14 @@ namespace AsadaLisboaBackend.Services.Images
     public class ImagesAdderService : IImagesAdderService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly ILogger<ImagesAdderService> _logger;
         private readonly IImagesAdderRepository _imagesAdderRepository;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
 
-        public ImagesAdderService(IImagesAdderRepository imagesAdderRepository, IFileSystemsManager fileSystems, ICategoriesGetterService categoriesGetterService, IStatusesGetterRepository statusesGetterRepository)
+        public ImagesAdderService(IImagesAdderRepository imagesAdderRepository, IFileSystemsManager fileSystems, ICategoriesGetterService categoriesGetterService, IStatusesGetterRepository statusesGetterRepository, ILogger<ImagesAdderService> logger)
         {
+            _logger = logger;
             _fileSystems = fileSystems;
             _imagesAdderRepository = imagesAdderRepository;
             _categoriesGetterService = categoriesGetterService;
@@ -61,8 +64,10 @@ namespace AsadaLisboaBackend.Services.Images
                     Description = imageRequestDTO.Description,
                 };
 
-                return (await _imagesAdderRepository.CreateImage(image))
-                    .ToImageResponseDTO();
+                var imageCreated = await _imagesAdderRepository.CreateImage(image);
+                _logger.LogInformation("Imagen creada exitosamente con id: {ImageId}", imageCreated.Id);
+
+                return imageCreated.ToImageResponseDTO();
             }
             catch
             {
@@ -72,6 +77,7 @@ namespace AsadaLisboaBackend.Services.Images
                     await _fileSystems.DeleteAsync(fileName, "images");
                 }
 
+                _logger.LogError("Error al crear la imagen. Se eliminó la imagen subida con éxito.");
                 throw new CreateObjectException("Error al crear la imagen.");
             }
         }

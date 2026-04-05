@@ -7,9 +7,11 @@ namespace AsadaLisboaBackend.ErrorHandling
     internal sealed class InvalidRefreshTokenErrorHandling : IExceptionHandler
     {
         private readonly IProblemDetailsService _problemDetailsService;
+        private readonly ILogger<InvalidRefreshTokenErrorHandling> _logger;
 
-        public InvalidRefreshTokenErrorHandling(IProblemDetailsService problemDetailsService)
+        public InvalidRefreshTokenErrorHandling(IProblemDetailsService problemDetailsService, ILogger<InvalidRefreshTokenErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -17,6 +19,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not InvalidRefreshTokenException invalidRefreshTokenException) 
                 return false;
+
+            _logger.LogError(exception, "Error Global - Error al refrescar un token.");
 
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
 

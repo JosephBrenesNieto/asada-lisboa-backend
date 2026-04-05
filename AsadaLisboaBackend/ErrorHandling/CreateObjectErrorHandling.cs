@@ -6,10 +6,12 @@ namespace AsadaLisboaBackend.ErrorHandling
 {
     internal sealed class CreateObjectErrorHandling : IExceptionHandler
     {
+        private readonly ILogger<CreateObjectErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
 
-        public CreateObjectErrorHandling(IProblemDetailsService problemDetailsService)
+        public CreateObjectErrorHandling(IProblemDetailsService problemDetailsService, ILogger<CreateObjectErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -17,6 +19,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not CreateObjectException createObjectException)
                 return false;
+
+            _logger.LogError(exception, "Error Global - Error no al crear un elemento en el sistema.");
 
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 

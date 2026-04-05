@@ -6,10 +6,12 @@ namespace AsadaLisboaBackend.ErrorHandling
 {
     internal sealed class NotFoundErrorHandling : IExceptionHandler
     {
+        private readonly ILogger<NotFoundErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
 
-        public NotFoundErrorHandling(IProblemDetailsService problemDetailsService)
+        public NotFoundErrorHandling(IProblemDetailsService problemDetailsService, ILogger<NotFoundErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -17,6 +19,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not NotFoundException notFoundException) 
                 return false;
+
+            _logger.LogError(exception, "Error Global - Elemento buscado no encontrado.");
 
             httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 

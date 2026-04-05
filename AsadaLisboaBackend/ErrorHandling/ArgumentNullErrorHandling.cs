@@ -5,10 +5,12 @@ namespace AsadaLisboaBackend.ErrorHandling
 {
     internal sealed class ArgumentNullErrorHandling : IExceptionHandler
     {
+        private readonly ILogger<ArgumentNullErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
 
-        public ArgumentNullErrorHandling(IProblemDetailsService problemDetailsService)
+        public ArgumentNullErrorHandling(IProblemDetailsService problemDetailsService, ILogger<ArgumentNullErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -16,6 +18,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not ArgumentNullException argumentNullException)
                 return false;
+
+            _logger.LogError(exception, "Error Global - Error al enviar un valor nulo.");
 
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 

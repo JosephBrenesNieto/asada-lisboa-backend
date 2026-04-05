@@ -6,10 +6,12 @@ namespace AsadaLisboaBackend.ErrorHandling
 {
     internal sealed class UpdateObjectErrorHandling : IExceptionHandler
     {
+        private readonly ILogger<UpdateObjectErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
 
-        public UpdateObjectErrorHandling(IProblemDetailsService problemDetailsService)
+        public UpdateObjectErrorHandling(IProblemDetailsService problemDetailsService, ILogger<UpdateObjectErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -17,6 +19,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not UpdateObjectException updateObjectException)
                 return false;
+
+            _logger.LogError(exception, "Error Global - Error al actualizar un valor.");
 
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 

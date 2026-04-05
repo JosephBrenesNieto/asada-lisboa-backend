@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Resend;
 using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Services.Exceptions;
@@ -11,10 +12,12 @@ namespace AsadaLisboaBackend.Services.Emails
     public class EmailsSenderService : IEmailsSenderService
     {
         private readonly IResend _resend;
+        private readonly ILogger<EmailsSenderService> _logger;
         private readonly ContactEmailOptions _contactEmailOptions;
 
-        public EmailsSenderService(IResend resend, IOptions<ContactEmailOptions> options)
+        public EmailsSenderService(IResend resend, IOptions<ContactEmailOptions> options, ILogger<EmailsSenderService> logger)
         {
+            _logger = logger;
             _resend = resend;
             _contactEmailOptions = options.Value;
         }
@@ -45,7 +48,10 @@ namespace AsadaLisboaBackend.Services.Emails
             );
 
             if (!response.Success)
+            {
+                _logger.LogError("Error al enviar el token de restauración de contraseña a {Email}. Response: {Response}", email, response);
                 throw new SendEmailException("Error al enviar el token.");
+            }
         }
 
         public async Task SendContactMessage(SendEmailRequestDTO sendEmailRequestDTO)
@@ -73,7 +79,10 @@ namespace AsadaLisboaBackend.Services.Emails
             );
 
             if (!response.Success)
+            {
+                _logger.LogError("Error al enviar el mensaje de contacto de {Email}. Response: {Response}", sendEmailRequestDTO.Email, response);
                 throw new SendEmailException("Error al enviar el mensaje de contacto.");
+            }
         }
 
         public async Task SendVerificationCode(string name, string email, string token)
@@ -102,7 +111,10 @@ namespace AsadaLisboaBackend.Services.Emails
             );
 
             if (!response.Success)
+            {
+                _logger.LogError("Error al enviar el token de confirmación de correo electrónico a {Email}. Response: {Response}", email, response);
                 throw new SendEmailException("Error al enviar el mensaje de contacto.");
+            }
         }
     }
 }

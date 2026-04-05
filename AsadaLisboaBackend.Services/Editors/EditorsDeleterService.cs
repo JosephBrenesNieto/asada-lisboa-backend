@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Microsoft.Extensions.Logging;
+using HtmlAgilityPack;
 using AsadaLisboaBackend.ServiceContracts.Editors;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 
@@ -7,15 +8,18 @@ namespace AsadaLisboaBackend.Services.Editors
     public class EditorsDeleterService : IEditorsDeleterService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly ILogger<EditorsDeleterService> _logger;
 
-        public EditorsDeleterService(IFileSystemsManager fileSystems)
+        public EditorsDeleterService(IFileSystemsManager fileSystems, ILogger<EditorsDeleterService> logger)
         {
+            _logger = logger;
             _fileSystems = fileSystems;
         }
 
         public async Task DeletePrincipalImage(string fileName)
         {
             await _fileSystems.DeleteAsync(fileName, "news");
+            _logger.LogInformation($"Imagen principal '{fileName}' eliminada correctamente.");
         }
 
         public async Task DeleteContentImages(string html)
@@ -38,6 +42,7 @@ namespace AsadaLisboaBackend.Services.Editors
             foreach (var fileName in fileNames)
             {
                 await _fileSystems.DeleteAsync(fileName, "news");
+                _logger.LogInformation($"Imagen de contenido '{fileName}' eliminada correctamente.");
             }
         }
 
@@ -73,6 +78,7 @@ namespace AsadaLisboaBackend.Services.Editors
             foreach (var fileName in notRelatedFileNames)
             {
                 await _fileSystems.DeleteAsync(fileName, "news");
+                _logger.LogInformation($"Imagen no utilizada '{fileName}' eliminada correctamente.");
             }
         }
     }

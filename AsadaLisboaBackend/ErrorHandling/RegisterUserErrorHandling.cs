@@ -6,10 +6,12 @@ namespace AsadaLisboaBackend.ErrorHandling
 {
     internal sealed class RegisterUserErrorHandling : IExceptionHandler
     {
+        private readonly ILogger<RegisterUserErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
 
-        public RegisterUserErrorHandling(IProblemDetailsService problemDetailsService)
+        public RegisterUserErrorHandling(IProblemDetailsService problemDetailsService, ILogger<RegisterUserErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -17,6 +19,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not RegisterUserException registerUserException)
                 return false;
+
+            _logger.LogError(exception, "Error Global - Error al registrar un usuario.");
 
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 

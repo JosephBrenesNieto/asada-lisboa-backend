@@ -1,4 +1,5 @@
-﻿using AsadaLisboaBackend.Services.Exceptions;
+﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.RepositoryContracts.Documents;
@@ -8,11 +9,13 @@ namespace AsadaLisboaBackend.Services.Documents
     public class DocumentsDeleterService: IDocumentsDeleterService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly ILogger<DocumentsDeleterService> _logger;
         private readonly IDocumentsGetterRepository _documentsGetterRespository;
         private readonly IDocumentsDeleterRepository _documentsDeleterRespository;
 
-      public DocumentsDeleterService(IFileSystemsManager fileSystems, IDocumentsDeleterRepository documentsDeleterRespository, IDocumentsGetterRepository documentsGetterRespository)
+      public DocumentsDeleterService(IFileSystemsManager fileSystems, ILogger<DocumentsDeleterService> logger, IDocumentsDeleterRepository documentsDeleterRespository, IDocumentsGetterRepository documentsGetterRespository)
         {
+            _logger = logger;
             _fileSystems = fileSystems;
             _documentsGetterRespository = documentsGetterRespository;
             _documentsDeleterRespository = documentsDeleterRespository;
@@ -29,6 +32,7 @@ namespace AsadaLisboaBackend.Services.Documents
                 await _fileSystems.DeleteAsync(document.FileName, "document");
 
             await _documentsDeleterRespository.DeleteDocument(id);
+            _logger.LogInformation("Documento con id {DocumentId} eliminado correctamente.", id);
         }
     }
 }

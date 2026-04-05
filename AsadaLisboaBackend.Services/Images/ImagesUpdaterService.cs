@@ -1,4 +1,5 @@
-﻿using AsadaLisboaBackend.Models.DTOs.Image;
+﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Models.DTOs.Image;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Utils.SlugGeneration;
 using AsadaLisboaBackend.Models.DatabaseContext;
@@ -12,12 +13,14 @@ namespace AsadaLisboaBackend.Services.Images
     public class ImagesUpdaterService : IImagesUpdaterService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly ILogger<ImagesUpdaterService> _logger;
         private readonly IImagesGetterRepository _imagesGetterRespository;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IImagesUpdaterRepository _imagesUpdaterRepository;
 
-        public ImagesUpdaterService(ApplicationDbContext applicationDbContext, IFileSystemsManager fileSystems, IImagesUpdaterRepository imagesUpdaterRepository, IImagesGetterRepository imagesGetterRespository, ICategoriesGetterService categoriesGetterService)
+        public ImagesUpdaterService(ApplicationDbContext applicationDbContext, IFileSystemsManager fileSystems, IImagesUpdaterRepository imagesUpdaterRepository, IImagesGetterRepository imagesGetterRespository, ICategoriesGetterService categoriesGetterService, ILogger<ImagesUpdaterService> logger)
         {
+            _logger = logger;
             _fileSystems = fileSystems;
             _categoriesGetterService = categoriesGetterService;
             _imagesUpdaterRepository = imagesUpdaterRepository;
@@ -66,11 +69,14 @@ namespace AsadaLisboaBackend.Services.Images
                     await _fileSystems.DeleteAsync(fileName, "images");
                 }
 
+                _logger.LogError("Error al actualizar la imagen con id {DocumentId}.", id);
                 throw new CreateObjectException("Error al actualizar la imagen.");
             }
 
-            return (await _imagesUpdaterRepository.UpdateImage(image))
-                .ToImageResponseDTO();
+            var imageUpdated = await _imagesUpdaterRepository.UpdateImage(image);
+            _logger.LogInformation("Imagen con id {DocumentId} actualizada correctamente.", imageUpdated.Id);
+
+            return imageUpdated.ToImageResponseDTO();
         }
     }
 }

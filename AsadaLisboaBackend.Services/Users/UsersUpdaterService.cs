@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
 using AsadaLisboaBackend.Models.DTOs.User;
 using AsadaLisboaBackend.Models.DTOs.Error;
 using AsadaLisboaBackend.Services.Exceptions;
@@ -10,12 +11,14 @@ namespace AsadaLisboaBackend.Services.Users
 {
     public class UsersUpdaterService : IUsersUpdaterService
     {
+        private readonly ILogger<UsersUpdaterService> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IChargesGetterRepository _chargesGetterRepository;
 
-        public UsersUpdaterService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IChargesGetterRepository chargesGetterRepository)
+        public UsersUpdaterService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IChargesGetterRepository chargesGetterRepository, ILogger<UsersUpdaterService> logger)
         {
+            _logger = logger;
             _userManager = userManager;
             _roleManager = roleManager;
             _chargesGetterRepository = chargesGetterRepository;
@@ -26,17 +29,26 @@ namespace AsadaLisboaBackend.Services.Users
             var user = await _userManager.FindByIdAsync(id.ToString());
 
             if (user is null)
+            {
+                _logger.LogError("Intento de actualización de usuario con id {UserId} no encontrado.", id);
                 throw new NotFoundException("Usuario inexistente.");
+            }
 
             var charge = await _chargesGetterRepository.GetCharge(userUpdateRequestDTO.ChargeId);
 
             if (charge is null)
+            {
+                _logger.LogError("Cargo seleccionado con id {ChargeId} no encontrado para el usuario {UserId}.", userUpdateRequestDTO.ChargeId, id);
                 throw new NotFoundException("Cargo seleccionado no encontrado.");
+            }
 
             var role = await _roleManager.FindByIdAsync(userUpdateRequestDTO.RoleId.ToString());
 
             if (role is null)
+            {
+                _logger.LogError("Rol seleccionado con id {RoleId} no encontrado para el usuario {UserId}.", userUpdateRequestDTO.RoleId, id);
                 throw new NotFoundException("Rol seleccionado no encontrado.");
+            }
 
             user.ChargeId = charge.Id;
             user.FirstName = userUpdateRequestDTO.FirstName;
@@ -47,11 +59,14 @@ namespace AsadaLisboaBackend.Services.Users
             var result = await _userManager.UpdateAsync(user);
 
             if (!result.Succeeded)
+            {
+                _logger.LogError("Error al actualizar usuario con id {UserId}. Errores: {Errors}", id, string.Join(", ", result.Errors.Select(e => $"{e.Code}: {e.Description}")));
                 throw new IdentityErrorException(
                     "Error al actualizar usuario.", 
                     result.Errors.Select(e => new ErrorDetailResponseDTO(e.Code, e.Description)
                     ).ToList()
                 );
+            }
 
             var currentRole = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 

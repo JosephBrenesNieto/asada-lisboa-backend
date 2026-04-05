@@ -1,4 +1,5 @@
-﻿using AsadaLisboaBackend.Models;
+﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DTOs.New;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.News;
@@ -13,6 +14,7 @@ namespace AsadaLisboaBackend.Services.News
     public class NewsUpdaterService : INewsUpdaterService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly ILogger<NewsUpdaterService> _logger;
         private readonly INewsGetterRepository _newsGetterRepository;
         private readonly IEditorsUpdaterService _editorsUpdaterService;
         private readonly IEditorsDeleterService _editorsDeleterService;
@@ -20,8 +22,9 @@ namespace AsadaLisboaBackend.Services.News
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
 
-        public NewsUpdaterService(INewsUpdaterRepository newsUpdaterRepository, INewsGetterRepository newsGetterRepository, IEditorsUpdaterService editorsUpdaterService, IEditorsDeleterService editorsDeleterService, IStatusesGetterRepository statusesGetterRepository, ICategoriesGetterService categoriesGetterService, IFileSystemsManager fileSystems)
+        public NewsUpdaterService(INewsUpdaterRepository newsUpdaterRepository, INewsGetterRepository newsGetterRepository, IEditorsUpdaterService editorsUpdaterService, IEditorsDeleterService editorsDeleterService, IStatusesGetterRepository statusesGetterRepository, ICategoriesGetterService categoriesGetterService, IFileSystemsManager fileSystems, ILogger<NewsUpdaterService> logger)
         {
+            _logger = logger;
             _fileSystems = fileSystems;
             _newsGetterRepository = newsGetterRepository;
             _editorsDeleterService = editorsDeleterService;
@@ -76,8 +79,12 @@ namespace AsadaLisboaBackend.Services.News
             var created = await _newsUpdaterRepository.UpdateNew(id, newModel);
 
             if (created is null)
+            {
+                _logger.LogError("Error al actualizar la noticia con id {Id}", id);
                 throw new CreateObjectException("Error al crear la noticia.");
+            }
 
+            _logger.LogInformation("Noticia con id {Id} actualizada correctamente", id);
             return created.ToNewResponseDTO();
         }
     }

@@ -6,10 +6,12 @@ namespace AsadaLisboaBackend.ErrorHandling
 {
     internal sealed class SendEmailErrorHandling : IExceptionHandler
     {
+        private readonly ILogger<SendEmailErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
 
-        public SendEmailErrorHandling(IProblemDetailsService problemDetailsService)
+        public SendEmailErrorHandling(IProblemDetailsService problemDetailsService, ILogger<SendEmailErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -17,6 +19,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not SendEmailException sendEmailException)
                 return false;
+
+            _logger.LogError(exception, "Error Global - Error al enviar un correo electrónico.");
 
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 

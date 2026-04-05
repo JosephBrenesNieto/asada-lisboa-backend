@@ -6,10 +6,12 @@ namespace AsadaLisboaBackend.ErrorHandling
 {
     internal sealed class SecurityTokenErrorHandling : IExceptionHandler
     {
+        private readonly ILogger<SecurityTokenErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
 
-        public SecurityTokenErrorHandling(IProblemDetailsService problemDetailsService)
+        public SecurityTokenErrorHandling(IProblemDetailsService problemDetailsService, ILogger<SecurityTokenErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -17,6 +19,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not SecurityTokenException securityTokenException) 
                 return false;
+
+            _logger.LogError(exception, "Error Global - Error al validar token de acceso.");
 
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
 

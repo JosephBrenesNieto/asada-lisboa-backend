@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using AsadaLisboaBackend.Services.Exceptions;
@@ -10,11 +11,13 @@ namespace AsadaLisboaBackend.Services.Accounts
 {
     public class VerificationCodeService : IVerificationCodeService
     {
+        private readonly ILogger<VerificationCodeService> _logger;
         private readonly IEmailsSenderService _emailsSenderService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public VerificationCodeService(UserManager<ApplicationUser> userManager, IEmailsSenderService emailsSenderService)
+        public VerificationCodeService(UserManager<ApplicationUser> userManager, IEmailsSenderService emailsSenderService, ILogger<VerificationCodeService> logger)
         {
+            _logger = logger;
             _userManager = userManager;
             _emailsSenderService = emailsSenderService;
         }
@@ -23,7 +26,10 @@ namespace AsadaLisboaBackend.Services.Accounts
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user is null)
+            {
+                _logger.LogError("Usuario no existente para generación de token de verificación.");
                 throw new NotFoundException("Usuario inexistente.");
+            }
 
             var generateToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(generateToken));
@@ -34,8 +40,12 @@ namespace AsadaLisboaBackend.Services.Accounts
         public async Task ConfirmEmailAsync(string email, string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
+
             if (user is null)
+            {
+                _logger.LogError("Usuario no existente para confirmación de email.");
                 throw new NotFoundException("Usuario inexistente.");
+            }
 
             var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
 
@@ -47,7 +57,10 @@ namespace AsadaLisboaBackend.Services.Accounts
             await _userManager.UpdateAsync(user);
 
             if (!result.Succeeded)
+            {
+                _logger.LogError("Error al confirmar el email del usuario.");
                 throw new UpdateObjectException("Error al actualizar el usuario.");
+            }
         }
     }
 }

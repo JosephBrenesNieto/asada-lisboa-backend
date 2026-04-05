@@ -5,10 +5,12 @@ namespace AsadaLisboaBackend.ErrorHandling
 {
     internal sealed class GlobalErrorHandling : IExceptionHandler
     {
+        private readonly ILogger<GlobalErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
 
-        public GlobalErrorHandling(IProblemDetailsService problemDetailsService)
+        public GlobalErrorHandling(IProblemDetailsService problemDetailsService, ILogger<GlobalErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -19,6 +21,8 @@ namespace AsadaLisboaBackend.ErrorHandling
                 ApplicationException => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError,
             };
+
+            _logger.LogError(exception, "Error Global - Error no controlado por el sistema.");
 
             await _problemDetailsService.TryWriteAsync(new ProblemDetailsContext()
             {

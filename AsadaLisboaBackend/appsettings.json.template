@@ -29,5 +29,26 @@
     "PASSWORD": "Password",
     "EMAIL": "email@example.com"
   },
-  "RESEND_API_TOKEN": "Resend Secret Token"
-}
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.File" ],
+    "MinimumLevel": "Information",
+    "WriteTo": [
+      {
+        "Name": "File",
+        "Args": {
+          "path": "logs/log-.txt",
+          "rollingInterval": "Day",
+          "fileSizeLimitBytes": 1048576,
+          "rollOnFileSizeLimit": true
+        }
+      }
+    ],
+    "Enrich": [
+      "FromLogContext"
+    ],
+    "Properties": {
+      "ApplicationName": "ASADA Lisboa - Web API"
+    }
+  },
+    "RESEND_API_TOKEN": "Resend Secret Token"
+  }

@@ -7,9 +7,11 @@ namespace AsadaLisboaBackend.ErrorHandling
     internal sealed class InvalidCredentialsErrorHandling : IExceptionHandler
     {
         private readonly IProblemDetailsService _problemDetailsService;
+        private readonly ILogger<InvalidCredentialsErrorHandling> _logger;
 
-        public InvalidCredentialsErrorHandling(IProblemDetailsService problemDetailsService)
+        public InvalidCredentialsErrorHandling(IProblemDetailsService problemDetailsService, ILogger<InvalidCredentialsErrorHandling> logger)
         {
+            _logger = logger;
             _problemDetailsService = problemDetailsService;
         }
 
@@ -17,6 +19,8 @@ namespace AsadaLisboaBackend.ErrorHandling
         {
             if (exception is not InvalidCredentialsException invalidCredentialsException) 
                 return false;
+
+            _logger.LogError(exception, "Error Global - Error en credenciales de acceso de un usuario.");
 
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
 

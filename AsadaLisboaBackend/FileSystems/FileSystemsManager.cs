@@ -1,14 +1,18 @@
 ﻿using AsadaLisboaBackend.ServiceContracts.FileSystems;
+using AsadaLisboaBackend.Services.Editors;
+using System.IO;
 
 namespace AsadaLisboaBackend.FileSystems
 {
     public class FileSystemsManager : IFileSystemsManager
     {
         private readonly IWebHostEnvironment _env;
+        private readonly ILogger<EditorsAdderService> _logger;
 
-        public FileSystemsManager(IWebHostEnvironment env)
+        public FileSystemsManager(IWebHostEnvironment env, ILogger<EditorsAdderService> logger)
         {
             _env = env;
+            _logger = logger;
         }
 
         public Task DeleteAsync(string fileName, string folder)
@@ -18,6 +22,7 @@ namespace AsadaLisboaBackend.FileSystems
             if(File.Exists(path))
                 File.Delete(path);
 
+            _logger.LogInformation("Archivo eliminado: {FilePath}", path);
             return Task.CompletedTask;
         }
 
@@ -44,6 +49,7 @@ namespace AsadaLisboaBackend.FileSystems
                 File.Delete(destinationPath);
 
             File.Move(sourcePath, destinationPath);
+            _logger.LogInformation("Archivo movido de: {SourcePath} a {DestinationPath}", sourcePath, destinationPath);
 
             return Task.CompletedTask;
         }
@@ -68,7 +74,10 @@ namespace AsadaLisboaBackend.FileSystems
                 await file.CopyToAsync(stream);
             }
 
-            return BuildUrl(folder, fileName);
+            var url = BuildUrl(folder, fileName);
+            _logger.LogInformation("Archivo almacenado en: {Url}", url);
+
+            return url;
         }
 
         private string GetPhysicalPath(string folder)

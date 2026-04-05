@@ -5,17 +5,20 @@ using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.Jwts;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Accounts;
+using Microsoft.Extensions.Logging;
 
 namespace AsadaLisboaBackend.Services.Accounts
 {
     public class LoginService : ILoginService
     {
         private readonly IJwtsService _jwtsService;
+        private readonly ILogger<LoginService> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public LoginService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtsService jwtsService)
+        public LoginService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtsService jwtsService, ILogger<LoginService> logger)
         {
+            _logger = logger;
             _jwtsService = jwtsService;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -26,12 +29,18 @@ namespace AsadaLisboaBackend.Services.Accounts
             var user = await _userManager.FindByEmailAsync(loginRequestDTO.Email);
 
             if (user is null)
+            {
+                _logger.LogError("Error al iniciar sesión: No existe un usuario con el correo {Email}.", loginRequestDTO.Email);
                 throw new NotFoundException("No existe un usuario con este correo electrónico.");
+            }
 
             var result = await _signInManager.PasswordSignInAsync(user, loginRequestDTO.Password, isPersistent: true, lockoutOnFailure: false);
 
             if (!result.Succeeded)
+            {
+                _logger.LogError("Error al iniciar sesión: Credenciales incorrectas para el correo {Email}.", loginRequestDTO.Email);
                 throw new InvalidCredentialsException("Correo electrónico y/o contraseña incorrectos.");
+            }
 
             var autenticationResponse = _jwtsService.GenerateToken(user);
 

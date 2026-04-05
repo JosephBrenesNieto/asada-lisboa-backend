@@ -1,18 +1,12 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using AsadaLisboaBackend.Conventions;
 using AsadaLisboaBackend.Middlewares;
 using AsadaLisboaBackend.ServicesExtension;
 using AsadaLisboaBackend.Utils.OptionsPattern;
-using AsadaLisboaBackend.Utils;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers(options =>
-{
-    options.Conventions.Add(new AuthorizationConvention());
-}).AddXmlSerializerFormatters();
+builder.Services.ControllerRegistration();
 
 builder.Services.SwaggerRegistration();
 builder.Services.VersioningRegistration();
@@ -36,13 +30,9 @@ builder.Services.AddContactRateLimiters();
 builder.Services.AddHttpClient();
 
 builder.Services.AuthenticationsRegistration(builder.Configuration);
+builder.Services.AuthorizationsRegistration();
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(Constants.ROLE_ADMINISTRADOR, p => p.RequireRole(Constants.ROLE_ADMINISTRADOR));
-    options.AddPolicy(Constants.ROLE_EDITOR, p => p.RequireRole(Constants.ROLE_EDITOR, Constants.ROLE_ADMINISTRADOR));
-    options.AddPolicy(Constants.ROLE_LECTOR, p => p.RequireRole(Constants.ROLE_LECTOR, Constants.ROLE_EDITOR, Constants.ROLE_ADMINISTRADOR));
-});
+builder.Services.SerilogRegistration(builder.Host);
 
 var app = builder.Build();
 
@@ -69,6 +59,8 @@ var config = app.Services
 
 if (config is not null && config.RUN)
     await app.Services.SeedAdminUserAsync();
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Microsoft.Extensions.Logging;
+using HtmlAgilityPack;
 using AsadaLisboaBackend.ServiceContracts.Editors;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 
@@ -7,9 +8,11 @@ namespace AsadaLisboaBackend.Services.Editors
     public class EditorsUpdaterService : IEditorsUpdaterService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly ILogger<EditorsUpdaterService> _logger;
 
-        public EditorsUpdaterService(IFileSystemsManager fileSystems)
+        public EditorsUpdaterService(IFileSystemsManager fileSystems, ILogger<EditorsUpdaterService> logger)
         {
+            _logger = logger;
             _fileSystems = fileSystems;
         }
 
@@ -38,6 +41,7 @@ namespace AsadaLisboaBackend.Services.Editors
                 node.SetAttributeValue("src", $"/news/{fileName}");
             }
 
+            _logger.LogInformation("Cambiando imágenes de carpeta 'temp' a 'news'");
             return doc.DocumentNode.OuterHtml;
         }
     }

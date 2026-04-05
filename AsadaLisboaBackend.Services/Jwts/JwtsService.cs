@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -17,12 +18,14 @@ namespace AsadaLisboaBackend.Services.Jwts
     public class JwtsService : IJwtsService
     {
         private readonly JwtOptions _jwtOptions;
+        private readonly ILogger<JwtsService> _logger;
         private readonly RefreshJwtOptions _refreshJwtOptions;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public JwtsService(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> jwtRefreshOptions, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
+        public JwtsService(IOptions<JwtOptions> jwtOptions, IOptions<RefreshJwtOptions> jwtRefreshOptions, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, ILogger<JwtsService> logger)
         {
+            _logger = logger;
             _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
             _httpContextAccessor = httpContextAccessor;
@@ -31,6 +34,8 @@ namespace AsadaLisboaBackend.Services.Jwts
 
         public AuthenticationResponseDTO GenerateToken(ApplicationUser user)
         {
+            _logger.LogInformation("Generando token JWT para el usuario con email: {Email}", user.Email);
+
             // Expiration dates to JWT and refresh token.
             DateTime expirationToken = DateTime.UtcNow.AddMinutes(_jwtOptions.EXPIRATION_MINUTES);
             DateTime expirationRefreshToken = DateTime.UtcNow.AddMinutes(_refreshJwtOptions.EXPIRATION_MINUTES);
@@ -76,6 +81,8 @@ namespace AsadaLisboaBackend.Services.Jwts
 
         public ClaimsPrincipal? GetClaimsPrincipal(string token)
         {
+            _logger.LogInformation("Validando token JWT para obtener ClaimsPrincipal.");
+
             var tokenValidationParameters = new TokenValidationParameters()
             {
                 ValidateAudience = true,
@@ -95,22 +102,33 @@ namespace AsadaLisboaBackend.Services.Jwts
             );
 
             if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                _logger.LogError("Token JWT inválido o con algoritmo de firma no permitido.");
                 throw new SecurityTokenException("Token dado es inválido o expirado.");
+            }
 
             return principal;
         }
 
         public async Task DeleteToken()
         {
+            _logger.LogInformation("Eliminando token JWT para el usuario autenticado.");
+
             Guid.TryParse(_httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid id);
 
             if(id == Guid.Empty)
+            {
+                _logger.LogError("No se pudo obtener el ID del usuario desde el token JWT.");
                 throw new NotFoundException("Error al cerrar sesión.");
+            }
 
             var user = await _userManager.FindByIdAsync(id.ToString());
 
             if (user is null)
+            {
+                _logger.LogError("Usuario con id {UserId} no encontrado para eliminar el token JWT.", id);
                 throw new NotFoundException("Error al cerrar sesión.");
+            }
 
             user.RefreshToken = null;
             user.RefreshTokenExpiration = DateTime.MinValue;
@@ -120,8 +138,13 @@ namespace AsadaLisboaBackend.Services.Jwts
 
         public async Task<AuthenticationResponseDTO> ValidateRefreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO)
         {
+            _logger.LogInformation("Validando token de refrescamiento para el usuario con email: {Email}", refreshTokenRequestDTO.Token);
+
             if (refreshTokenRequestDTO.Token is null || string.IsNullOrEmpty(refreshTokenRequestDTO.Token) || string.IsNullOrWhiteSpace(refreshTokenRequestDTO.Token))
+            {
+                _logger.LogError("Token de acceso proporcionado es nulo, vacío o solo espacios en blanco.");
                 throw new InvalidAccessTokenException("Token de acceso inválido.");
+            }
 
             string token = refreshTokenRequestDTO.Token;
             string? refreshToken = refreshTokenRequestDTO.RefreshToken;
@@ -129,20 +152,32 @@ namespace AsadaLisboaBackend.Services.Jwts
             var principal = GetClaimsPrincipal(token);
 
             if (principal is null)
+            {
+                _logger.LogError("No se pudo obtener ClaimsPrincipal del token de acceso proporcionado.");
                 throw new InvalidAccessTokenException("Token de acceso inválido.");
+            }
 
             string? email = principal.FindFirstValue(ClaimTypes.Email);
 
             if (email is null || string.IsNullOrEmpty(email) || string.IsNullOrWhiteSpace(email))
+            {
+                _logger.LogError("No se pudo obtener el email del usuario desde el token de acceso proporcionado.");
                 throw new InvalidAccessTokenException("Token de acceso inválido.");
+            }
 
             ApplicationUser? user = await _userManager.FindByEmailAsync(email);
 
             if (user is null)
+            {
+                _logger.LogError("Usuario con email {Email} no encontrado para validar el token de refrescamiento.", email);
                 throw new NotFoundException("Usuario inexistente.");
+            }
 
             if (user.RefreshToken != refreshToken || user.RefreshTokenExpiration < DateTime.UtcNow || string.IsNullOrEmpty(user.RefreshToken) || string.IsNullOrWhiteSpace(user.RefreshToken))
+            {
+                _logger.LogError("Token de refrescamiento inválido para el usuario con email {Email}.", email);
                 throw new InvalidRefreshTokenException("Token de refrescamiento inválido.");
+            }
 
             AuthenticationResponseDTO authenticationResponseDTO = GenerateToken(user);
 
@@ -156,6 +191,8 @@ namespace AsadaLisboaBackend.Services.Jwts
 
         private string GenerateRefreshToken()
         {
+            _logger.LogInformation("Generando token de refrescamiento.");
+
             Byte[] bytes = new Byte[64];
             var randomNumberGenerator = RandomNumberGenerator.Create();
 

@@ -1,4 +1,5 @@
-﻿using AsadaLisboaBackend.Models;
+﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DTOs.New;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Utils.SlugGeneration;
@@ -14,13 +15,15 @@ namespace AsadaLisboaBackend.Services.News
     public class NewsAdderService : INewsAdderService
     {
         private readonly IFileSystemsManager _fileSystems;
+        private readonly ILogger<NewsAdderService> _logger;
         private readonly INewsAdderRepository _newsAdderRepository;
         private readonly IEditorsUpdaterService _editorsUpdaterService;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
 
-        public NewsAdderService(INewsAdderRepository newsAdderRepository, IEditorsUpdaterService editorsUpdaterService, IStatusesGetterRepository statusesGetterRepository, ICategoriesGetterService categoriesGetterService, IFileSystemsManager fileSystems)
+        public NewsAdderService(INewsAdderRepository newsAdderRepository, IEditorsUpdaterService editorsUpdaterService, IStatusesGetterRepository statusesGetterRepository, ICategoriesGetterService categoriesGetterService, IFileSystemsManager fileSystems, ILogger<NewsAdderService> logger)
         {
+            _logger = logger;
             _fileSystems = fileSystems;
             _newsAdderRepository = newsAdderRepository;
             _editorsUpdaterService = editorsUpdaterService;
@@ -69,8 +72,12 @@ namespace AsadaLisboaBackend.Services.News
             var created = await _newsAdderRepository.CreateNew(newModel);
 
             if (created is null)
+            {
+                _logger.LogError("Error al crear la noticia con id {Id}.", id);
                 throw new CreateObjectException("Error al crear la noticia.");
+            }
 
+            _logger.LogInformation("Noticia con id {Id} creada exitosamente.", created.Id);
             return created.ToNewResponseDTO();
         }
     }

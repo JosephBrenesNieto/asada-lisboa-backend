@@ -1,17 +1,20 @@
-﻿using AsadaLisboaBackend.Models.DTOs.User;
-using AsadaLisboaBackend.Models.DTOs.Shared;
-using AsadaLisboaBackend.Services.Exceptions;
-using AsadaLisboaBackend.ServiceContracts.Users;
+﻿using AsadaLisboaBackend.Models.DTOs.Shared;
+using AsadaLisboaBackend.Models.DTOs.User;
 using AsadaLisboaBackend.RepositoryContracts.Users;
+using AsadaLisboaBackend.ServiceContracts.Users;
+using AsadaLisboaBackend.Services.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace AsadaLisboaBackend.Services.Users
 {
     public class UsersGetterService : IUsersGetterService
     {
+        private readonly ILogger<UsersGetterService> _logger;
         private readonly IUsersGetterRepository _usersGetterRepository;
 
-        public UsersGetterService(IUsersGetterRepository usersGetterRepository)
+        public UsersGetterService(IUsersGetterRepository usersGetterRepository, ILogger<UsersGetterService> logger)
         {
+            _logger = logger;
             _usersGetterRepository = usersGetterRepository;
         }
 
@@ -27,7 +30,10 @@ namespace AsadaLisboaBackend.Services.Users
             var user = await _usersGetterRepository.GetUser(id);
 
             if (user is null)
+            {
+                _logger.LogWarning("Usuario con id {UserId} no encontrado.", id);
                 throw new NotFoundException("Usuario inexistente.");
+            }
 
             return user;
         }
