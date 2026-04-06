@@ -36,6 +36,8 @@ builder.Services.AuthorizationsRegistration();
 
 builder.Services.SerilogRegistration(builder.Host);
 
+builder.Services.ElasticSearchRegistration(builder.Configuration);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
