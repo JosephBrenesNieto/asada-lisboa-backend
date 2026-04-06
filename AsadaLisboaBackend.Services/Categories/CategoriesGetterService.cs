@@ -1,30 +1,42 @@
-﻿using AsadaLisboaBackend.Models;
+﻿using AsadaLisboaBackend.Utils;
+using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DTOs.Category;
 using AsadaLisboaBackend.ServiceContracts.Categories;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 using AsadaLisboaBackend.RepositoryContracts.Categories;
 
 namespace AsadaLisboaBackend.Services.Categories
 {
     public class CategoriesGetterService : ICategoriesGetterService
     {
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly ICategoriesAdderRepository _categoriesAdderRepository;
         private readonly ICategoriesGetterRepository _categoriesGetterRepository;
 
-        public CategoriesGetterService(ICategoriesGetterRepository categoriesGetterRepository, ICategoriesAdderRepository categoriesAdderRepository)
+        public CategoriesGetterService(ICategoriesGetterRepository categoriesGetterRepository, ICategoriesAdderRepository categoriesAdderRepository, IMemoryCachesService memoryCachesService)
         {
+            _memoryCachesService = memoryCachesService;
             _categoriesAdderRepository = categoriesAdderRepository;
             _categoriesGetterRepository = categoriesGetterRepository;
         }
 
         public async Task<List<CategoryResponseDTO>> GetCategories()
         {
-            return await _categoriesGetterRepository.GetCategories();
+            return await _memoryCachesService.GetOrCreateCache<List<CategoryResponseDTO>>(
+                key: Constants.CACHE_CATEGORIES,
+                create: () => _categoriesGetterRepository.GetCategories(),
+                time: TimeSpan.FromMinutes(2));
         }
 
         public async Task<List<CategoryResponseDTO>> SearchCategories(string search)
         {
             search = search.Trim().ToLower();
-            return await _categoriesGetterRepository.SearchCategories(search);
+
+            return await _memoryCachesService.GetOrCreateCacheList<List<CategoryResponseDTO>>(
+                resource: Constants.CACHE_CATEGORIES,
+                request: search,
+                create: () => _categoriesGetterRepository.SearchCategories(search),
+                time: TimeSpan.FromMinutes(5));
         }
 
         public async Task<List<Category>> ToCreateCategories(List<CategoryRequestDTO> categories)

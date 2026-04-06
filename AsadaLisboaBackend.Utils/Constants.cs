@@ -14,5 +14,17 @@
         public const string ROLE_LECTOR = "Lector";
         public const string ROLE_EDITOR = "Editor";
         public const string ROLE_ADMINISTRADOR = "Administrador";
+        
+        public const string CACHE_NEWS = "news";
+        public const string CACHE_USERS = "users";
+        public const string CACHE_IMAGES = "images";
+        public const string CACHE_CHARGES = "charges";
+        public const string CACHE_ABOUT_US = "about_us";
+        public const string CACHE_STATUSES = "statuses";
+        public const string CACHE_CONTACTS = "contacts";
+        public const string CACHE_DOCUMENTS = "documents";
+        public const string CACHE_PRINCIPALS = "principals";
+        public const string CACHE_CATEGORIES = "categories";
+        public const string CACHE_CONFIGURATIONS = "configurations";
     }
 }

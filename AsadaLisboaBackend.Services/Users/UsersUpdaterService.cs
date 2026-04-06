@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
+using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Models.DTOs.User;
 using AsadaLisboaBackend.Models.DTOs.Error;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Users;
 using AsadaLisboaBackend.RepositoryContracts.Charges;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 
 namespace AsadaLisboaBackend.Services.Users
 {
@@ -14,13 +16,15 @@ namespace AsadaLisboaBackend.Services.Users
         private readonly ILogger<UsersUpdaterService> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly IChargesGetterRepository _chargesGetterRepository;
 
-        public UsersUpdaterService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IChargesGetterRepository chargesGetterRepository, ILogger<UsersUpdaterService> logger)
+        public UsersUpdaterService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IChargesGetterRepository chargesGetterRepository, ILogger<UsersUpdaterService> logger, IMemoryCachesService memoryCachesService)
         {
             _logger = logger;
             _userManager = userManager;
             _roleManager = roleManager;
+            _memoryCachesService = memoryCachesService;
             _chargesGetterRepository = chargesGetterRepository;
         }
 
@@ -77,6 +81,9 @@ namespace AsadaLisboaBackend.Services.Users
             }
 
             await _userManager.AddToRoleAsync(user, role.Name!);
+
+            _memoryCachesService.RemoveById(Constants.CACHE_USERS, user.Id);
+            _memoryCachesService.ChangeVersion(Constants.CACHE_USERS);
         }
     }
 }

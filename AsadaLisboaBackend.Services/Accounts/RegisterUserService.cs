@@ -3,7 +3,10 @@ using AsadaLisboaBackend.Models.DTOs.User;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.RepositoryContracts.Charges;
 using AsadaLisboaBackend.ServiceContracts.Accounts;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 using AsadaLisboaBackend.Services.Exceptions;
+using AsadaLisboaBackend.Services.MemoryCaches;
+using AsadaLisboaBackend.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
@@ -13,16 +16,18 @@ namespace AsadaLisboaBackend.Services.Accounts
     {
 
         private readonly ILogger<RegisterUserService> _logger;
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IChargesGetterRepository _chargesGetterRepository;
         private readonly IVerificationCodeService _verificationCodeService;
 
-        public RegisterUserService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IVerificationCodeService verificationCodeService, IChargesGetterRepository chargesGetterRepository, ILogger<RegisterUserService> logger)
+        public RegisterUserService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IVerificationCodeService verificationCodeService, IChargesGetterRepository chargesGetterRepository, ILogger<RegisterUserService> logger, IMemoryCachesService memoryCachesService)
         {
             _logger = logger;
             _userManager = userManager;
             _roleManager = roleManager;
+            _memoryCachesService = memoryCachesService;
             _chargesGetterRepository = chargesGetterRepository;
             _verificationCodeService = verificationCodeService;
         }
@@ -83,6 +88,8 @@ namespace AsadaLisboaBackend.Services.Accounts
             }
 
             await _verificationCodeService.GenerateCode(user.Email);
+
+            _memoryCachesService.ChangeVersion(Constants.CACHE_USERS);
         }
     }
 }

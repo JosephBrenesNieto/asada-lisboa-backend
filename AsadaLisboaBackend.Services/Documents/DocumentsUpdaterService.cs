@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.DTOs.Document;
 using AsadaLisboaBackend.Utils.SlugGeneration;
@@ -6,6 +7,7 @@ using AsadaLisboaBackend.ServiceContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.RepositoryContracts.Documents;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 using AsadaLisboaBackend.RepositoryContracts.DocumentTypes;
 
 namespace AsadaLisboaBackend.Services.Documents
@@ -14,15 +16,17 @@ namespace AsadaLisboaBackend.Services.Documents
     {
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<DocumentsUpdaterService> _logger;
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IDocumentsGetterRepository _documentGetterRepository;
         private readonly IDocumentsUpdaterRepository _documentUpdateRespository;
         private readonly IDocumentTypesGetterRepository _documentTypesGetterRepository;
 
-        public DocumentsUpdaterService(IFileSystemsManager fileSystems, IDocumentsGetterRepository documentGetterRepository, IDocumentsUpdaterRepository documentUpdateRespository, ICategoriesGetterService categoriesGetterService, IDocumentTypesGetterRepository documentTypesGetterRepository, ILogger<DocumentsUpdaterService> logger)
+        public DocumentsUpdaterService(IFileSystemsManager fileSystems, IDocumentsGetterRepository documentGetterRepository, IDocumentsUpdaterRepository documentUpdateRespository, ICategoriesGetterService categoriesGetterService, IDocumentTypesGetterRepository documentTypesGetterRepository, ILogger<DocumentsUpdaterService> logger, IMemoryCachesService memoryCachesService)
         {
             _logger = logger;
             _fileSystems = fileSystems;
+            _memoryCachesService = memoryCachesService;
             _categoriesGetterService = categoriesGetterService;
             _documentGetterRepository = documentGetterRepository;
             _documentUpdateRespository = documentUpdateRespository;
@@ -34,7 +38,10 @@ namespace AsadaLisboaBackend.Services.Documents
             var document = await _documentGetterRepository.GetDocument(id);
 
             if (document is null)
+            {
+                _logger.LogError("Documento con id {DocumentId} no encontrado para actualizar.", id);
                 throw new NotFoundException("Documento no encontrado.");
+            }
 
             document.Title = documentUpdateRequestDTO.Title;
             document.StatusId = documentUpdateRequestDTO.StatusId;
@@ -45,7 +52,10 @@ namespace AsadaLisboaBackend.Services.Documents
             document.Categories = await _categoriesGetterService.ToCreateCategories(documentUpdateRequestDTO.Categories);
 
             if (documentUpdateRequestDTO.File is null || documentUpdateRequestDTO.File.Length <= 0)
+            {
+                _logger.LogError("Archivo no proporcionado para actualizar el documento con id {DocumentId}.", id);
                 throw new NotFoundException("Error al actualizar el documento.");
+            }
 
             string? newUrl = string.Empty;
 
@@ -84,6 +94,10 @@ namespace AsadaLisboaBackend.Services.Documents
             document.DocumentTypeId = documentTypeId.Value;
 
             var documentUpdated = await _documentUpdateRespository.UpdateDocument(document);
+
+            _memoryCachesService.RemoveById(Constants.CACHE_DOCUMENTS, documentUpdated.Id);
+            _memoryCachesService.ChangeVersion(Constants.CACHE_DOCUMENTS);
+
             _logger.LogInformation("Documento con id {DocumentId} actualizado correctamente.", documentUpdated.Id);
 
             return documentUpdated.ToDocumentResponseDTO();

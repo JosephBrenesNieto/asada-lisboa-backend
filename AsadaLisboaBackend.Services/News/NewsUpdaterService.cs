@@ -8,6 +8,8 @@ using AsadaLisboaBackend.ServiceContracts.Editors;
 using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
+using AsadaLisboaBackend.Utils;
 
 namespace AsadaLisboaBackend.Services.News
 {
@@ -15,6 +17,7 @@ namespace AsadaLisboaBackend.Services.News
     {
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<NewsUpdaterService> _logger;
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly INewsGetterRepository _newsGetterRepository;
         private readonly IEditorsUpdaterService _editorsUpdaterService;
         private readonly IEditorsDeleterService _editorsDeleterService;
@@ -22,10 +25,11 @@ namespace AsadaLisboaBackend.Services.News
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
 
-        public NewsUpdaterService(INewsUpdaterRepository newsUpdaterRepository, INewsGetterRepository newsGetterRepository, IEditorsUpdaterService editorsUpdaterService, IEditorsDeleterService editorsDeleterService, IStatusesGetterRepository statusesGetterRepository, ICategoriesGetterService categoriesGetterService, IFileSystemsManager fileSystems, ILogger<NewsUpdaterService> logger)
+        public NewsUpdaterService(INewsUpdaterRepository newsUpdaterRepository, INewsGetterRepository newsGetterRepository, IEditorsUpdaterService editorsUpdaterService, IEditorsDeleterService editorsDeleterService, IStatusesGetterRepository statusesGetterRepository, ICategoriesGetterService categoriesGetterService, IFileSystemsManager fileSystems, ILogger<NewsUpdaterService> logger, IMemoryCachesService memoryCachesService)
         {
             _logger = logger;
             _fileSystems = fileSystems;
+            _memoryCachesService = memoryCachesService;
             _newsGetterRepository = newsGetterRepository;
             _editorsDeleterService = editorsDeleterService;
             _editorsUpdaterService = editorsUpdaterService;
@@ -84,7 +88,11 @@ namespace AsadaLisboaBackend.Services.News
                 throw new CreateObjectException("Error al crear la noticia.");
             }
 
-            _logger.LogInformation("Noticia con id {Id} actualizada correctamente", id);
+            _logger.LogInformation("Noticia con id {Id} actualizada correctamente", created.Id);
+
+            _memoryCachesService.RemoveById(Constants.CACHE_NEWS, created.Id);
+            _memoryCachesService.ChangeVersion(Constants.CACHE_NEWS);
+
             return created.ToNewResponseDTO();
         }
     }

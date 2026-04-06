@@ -1,20 +1,24 @@
-﻿using AsadaLisboaBackend.Models.DTOs.Shared;
+﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Models.DTOs.User;
-using AsadaLisboaBackend.RepositoryContracts.Users;
-using AsadaLisboaBackend.ServiceContracts.Users;
+using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.Services.Exceptions;
-using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.ServiceContracts.Users;
+using AsadaLisboaBackend.RepositoryContracts.Users;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 
 namespace AsadaLisboaBackend.Services.Users
 {
     public class UsersGetterService : IUsersGetterService
     {
         private readonly ILogger<UsersGetterService> _logger;
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly IUsersGetterRepository _usersGetterRepository;
 
-        public UsersGetterService(IUsersGetterRepository usersGetterRepository, ILogger<UsersGetterService> logger)
+        public UsersGetterService(IUsersGetterRepository usersGetterRepository, ILogger<UsersGetterService> logger, IMemoryCachesService memoryCachesService)
         {
             _logger = logger;
+            _memoryCachesService = memoryCachesService;
             _usersGetterRepository = usersGetterRepository;
         }
 
@@ -22,12 +26,19 @@ namespace AsadaLisboaBackend.Services.Users
         {
             searchSortRequestDTO.Offset = (Math.Max(searchSortRequestDTO.Page, 1) - 1) * searchSortRequestDTO.Take;
 
-            return await _usersGetterRepository.GetUsers(searchSortRequestDTO);
+            return await _memoryCachesService.GetOrCreateCacheList<PageResponseDTO<UserResponseDTO>>(
+                resource: Constants.CACHE_USERS,
+                request: searchSortRequestDTO,
+                create: () => _usersGetterRepository.GetUsers(searchSortRequestDTO),
+                time: TimeSpan.FromMinutes(5));
         }
 
         public async Task<UserDetailResponseDTO?> GetUser(Guid id)
         {
-            var user = await _usersGetterRepository.GetUser(id);
+            var user = await _memoryCachesService.GetOrCreateCache<UserDetailResponseDTO?>(
+                key: $"{Constants.CACHE_USERS}_{id}",
+                create: () => _usersGetterRepository.GetUser(id),
+                time: TimeSpan.FromMinutes(5));
 
             if (user is null)
             {

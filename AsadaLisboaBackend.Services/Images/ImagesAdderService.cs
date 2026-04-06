@@ -7,6 +7,8 @@ using AsadaLisboaBackend.RepositoryContracts.Images;
 using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
+using AsadaLisboaBackend.Utils;
 
 namespace AsadaLisboaBackend.Services.Images
 {
@@ -14,14 +16,16 @@ namespace AsadaLisboaBackend.Services.Images
     {
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<ImagesAdderService> _logger;
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly IImagesAdderRepository _imagesAdderRepository;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
 
-        public ImagesAdderService(IImagesAdderRepository imagesAdderRepository, IFileSystemsManager fileSystems, ICategoriesGetterService categoriesGetterService, IStatusesGetterRepository statusesGetterRepository, ILogger<ImagesAdderService> logger)
+        public ImagesAdderService(IImagesAdderRepository imagesAdderRepository, IFileSystemsManager fileSystems, ICategoriesGetterService categoriesGetterService, IStatusesGetterRepository statusesGetterRepository, ILogger<ImagesAdderService> logger, IMemoryCachesService memoryCachesService)
         {
             _logger = logger;
             _fileSystems = fileSystems;
+            _memoryCachesService = memoryCachesService;
             _imagesAdderRepository = imagesAdderRepository;
             _categoriesGetterService = categoriesGetterService;
             _statusesGetterRepository = statusesGetterRepository;
@@ -30,7 +34,10 @@ namespace AsadaLisboaBackend.Services.Images
         public async Task<ImageResponseDTO> CreateImage(ImageRequestDTO imageRequestDTO)
         {
             if (imageRequestDTO.File is null || imageRequestDTO.File.Length == 0)
+            {
+                _logger.LogError("Archivo inválido. No se proporcionó un archivo o el archivo está vacío.");
                 throw new ArgumentException("Archivo inválido.");
+            }
 
             var imageId = Guid.NewGuid();
 
@@ -66,6 +73,8 @@ namespace AsadaLisboaBackend.Services.Images
 
                 var imageCreated = await _imagesAdderRepository.CreateImage(image);
                 _logger.LogInformation("Imagen creada exitosamente con id: {ImageId}", imageCreated.Id);
+
+                _memoryCachesService.ChangeVersion(Constants.CACHE_IMAGES);
 
                 return imageCreated.ToImageResponseDTO();
             }

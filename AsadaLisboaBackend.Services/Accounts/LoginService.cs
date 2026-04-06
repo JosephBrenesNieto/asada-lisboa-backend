@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
 using AsadaLisboaBackend.Models.DTOs.Jwt;
 using AsadaLisboaBackend.Models.DTOs.Account;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.Jwts;
 using AsadaLisboaBackend.Models.IdentityModels;
 using AsadaLisboaBackend.ServiceContracts.Accounts;
-using Microsoft.Extensions.Logging;
 
 namespace AsadaLisboaBackend.Services.Accounts
 {

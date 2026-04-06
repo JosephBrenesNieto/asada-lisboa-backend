@@ -34,11 +34,6 @@ namespace AsadaLisboaBackend.Services.MemoryCaches
             return await GetOrCreateCache(key, create, time);
         }
 
-        public void Remove(string key)
-        {
-            _memoryCache.Remove(key);
-        }
-
         public void RemoveById(string resource, object id)
         {
             var key = $"{resource}_{id}";
@@ -68,12 +63,22 @@ namespace AsadaLisboaBackend.Services.MemoryCaches
 
         private string HashGenerator(object request)
         {
+            if (request is string str)
+                return NormalizeString(str);
+
             var json = JsonSerializer.Serialize(request);
 
             using var sha256 = System.Security.Cryptography.SHA256.Create();
             var hashBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(json));
 
-            return Convert.ToBase64String(hashBytes);
+            return Convert.ToHexString(hashBytes);
+        }
+
+        private string NormalizeString(string input)
+        {
+            return input
+                .Trim()
+                .ToLowerInvariant();
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.RepositoryContracts.Documents;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 
 namespace AsadaLisboaBackend.Services.Documents
 {
@@ -10,13 +12,15 @@ namespace AsadaLisboaBackend.Services.Documents
     {
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<DocumentsDeleterService> _logger;
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly IDocumentsGetterRepository _documentsGetterRespository;
         private readonly IDocumentsDeleterRepository _documentsDeleterRespository;
 
-      public DocumentsDeleterService(IFileSystemsManager fileSystems, ILogger<DocumentsDeleterService> logger, IDocumentsDeleterRepository documentsDeleterRespository, IDocumentsGetterRepository documentsGetterRespository)
+      public DocumentsDeleterService(IFileSystemsManager fileSystems, ILogger<DocumentsDeleterService> logger, IDocumentsDeleterRepository documentsDeleterRespository, IDocumentsGetterRepository documentsGetterRespository, IMemoryCachesService memoryCachesService)
         {
             _logger = logger;
             _fileSystems = fileSystems;
+            _memoryCachesService = memoryCachesService;
             _documentsGetterRespository = documentsGetterRespository;
             _documentsDeleterRespository = documentsDeleterRespository;
         }
@@ -32,6 +36,10 @@ namespace AsadaLisboaBackend.Services.Documents
                 await _fileSystems.DeleteAsync(document.FileName, "document");
 
             await _documentsDeleterRespository.DeleteDocument(id);
+
+            _memoryCachesService.RemoveById(Constants.CACHE_DOCUMENTS, document.Id);
+            _memoryCachesService.ChangeVersion(Constants.CACHE_DOCUMENTS);
+
             _logger.LogInformation("Documento con id {DocumentId} eliminado correctamente.", id);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Models.DTOs.Image;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Utils.SlugGeneration;
@@ -7,6 +8,7 @@ using AsadaLisboaBackend.ServiceContracts.Images;
 using AsadaLisboaBackend.RepositoryContracts.Images;
 using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 
 namespace AsadaLisboaBackend.Services.Images
 {
@@ -14,14 +16,16 @@ namespace AsadaLisboaBackend.Services.Images
     {
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<ImagesUpdaterService> _logger;
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly IImagesGetterRepository _imagesGetterRespository;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IImagesUpdaterRepository _imagesUpdaterRepository;
 
-        public ImagesUpdaterService(ApplicationDbContext applicationDbContext, IFileSystemsManager fileSystems, IImagesUpdaterRepository imagesUpdaterRepository, IImagesGetterRepository imagesGetterRespository, ICategoriesGetterService categoriesGetterService, ILogger<ImagesUpdaterService> logger)
+        public ImagesUpdaterService(ApplicationDbContext applicationDbContext, IFileSystemsManager fileSystems, IImagesUpdaterRepository imagesUpdaterRepository, IImagesGetterRepository imagesGetterRespository, ICategoriesGetterService categoriesGetterService, ILogger<ImagesUpdaterService> logger, IMemoryCachesService memoryCachesService)
         {
             _logger = logger;
             _fileSystems = fileSystems;
+            _memoryCachesService = memoryCachesService;
             _categoriesGetterService = categoriesGetterService;
             _imagesUpdaterRepository = imagesUpdaterRepository;
             _imagesGetterRespository = imagesGetterRespository;
@@ -75,6 +79,9 @@ namespace AsadaLisboaBackend.Services.Images
 
             var imageUpdated = await _imagesUpdaterRepository.UpdateImage(image);
             _logger.LogInformation("Imagen con id {DocumentId} actualizada correctamente.", imageUpdated.Id);
+
+            _memoryCachesService.RemoveById(Constants.CACHE_IMAGES, imageUpdated.Id);
+            _memoryCachesService.ChangeVersion(Constants.CACHE_IMAGES);
 
             return imageUpdated.ToImageResponseDTO();
         }

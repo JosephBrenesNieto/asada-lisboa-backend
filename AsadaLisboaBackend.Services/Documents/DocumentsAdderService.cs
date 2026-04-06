@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.DTOs.Document;
 using AsadaLisboaBackend.Utils.SlugGeneration;
@@ -7,6 +8,7 @@ using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.RepositoryContracts.Documents;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 using AsadaLisboaBackend.RepositoryContracts.DocumentTypes;
 
 namespace AsadaLisboaBackend.Services.Documents
@@ -15,15 +17,17 @@ namespace AsadaLisboaBackend.Services.Documents
     {
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<DocumentsAdderService> _logger;
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IDocumentsAdderRepository _documentAdderRepository;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
         private readonly IDocumentTypesGetterRepository _documentTypesGetterRepository;
 
-        public DocumentsAdderService(ICategoriesGetterService categoriesGetterService, IDocumentsAdderRepository documentAdderRepository, IStatusesGetterRepository statusesGetterRepository, IDocumentTypesGetterRepository documentTypesGetterRepository, IFileSystemsManager fileSystems, ILogger<DocumentsAdderService> logger)
+        public DocumentsAdderService(ICategoriesGetterService categoriesGetterService, IDocumentsAdderRepository documentAdderRepository, IStatusesGetterRepository statusesGetterRepository, IDocumentTypesGetterRepository documentTypesGetterRepository, IFileSystemsManager fileSystems, ILogger<DocumentsAdderService> logger, IMemoryCachesService memoryCachesService)
         {
             _logger = logger;
             _fileSystems = fileSystems;
+            _memoryCachesService = memoryCachesService;
             _categoriesGetterService = categoriesGetterService;
             _documentAdderRepository = documentAdderRepository;
             _statusesGetterRepository = statusesGetterRepository;
@@ -76,6 +80,8 @@ namespace AsadaLisboaBackend.Services.Documents
 
                 var documentCreated = await _documentAdderRepository.CreateDocument(document);
                 _logger.LogInformation("Documento creado exitosamente con id: {DocumentId}", documentCreated.Id);
+
+                _memoryCachesService.ChangeVersion(Constants.CACHE_DOCUMENTS);
 
                 return documentCreated.ToDocumentResponseDTO();
             }

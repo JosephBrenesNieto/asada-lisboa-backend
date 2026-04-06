@@ -9,6 +9,8 @@ using AsadaLisboaBackend.ServiceContracts.Editors;
 using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
+using AsadaLisboaBackend.Utils;
 
 namespace AsadaLisboaBackend.Services.News
 {
@@ -16,15 +18,17 @@ namespace AsadaLisboaBackend.Services.News
     {
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<NewsAdderService> _logger;
+        private readonly IMemoryCachesService _memoryCachesService;
         private readonly INewsAdderRepository _newsAdderRepository;
         private readonly IEditorsUpdaterService _editorsUpdaterService;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
 
-        public NewsAdderService(INewsAdderRepository newsAdderRepository, IEditorsUpdaterService editorsUpdaterService, IStatusesGetterRepository statusesGetterRepository, ICategoriesGetterService categoriesGetterService, IFileSystemsManager fileSystems, ILogger<NewsAdderService> logger)
+        public NewsAdderService(INewsAdderRepository newsAdderRepository, IEditorsUpdaterService editorsUpdaterService, IStatusesGetterRepository statusesGetterRepository, ICategoriesGetterService categoriesGetterService, IFileSystemsManager fileSystems, ILogger<NewsAdderService> logger, IMemoryCachesService memoryCachesService)
         {
             _logger = logger;
             _fileSystems = fileSystems;
+            _memoryCachesService = memoryCachesService;
             _newsAdderRepository = newsAdderRepository;
             _editorsUpdaterService = editorsUpdaterService;
             _categoriesGetterService = categoriesGetterService;
@@ -78,6 +82,9 @@ namespace AsadaLisboaBackend.Services.News
             }
 
             _logger.LogInformation("Noticia con id {Id} creada exitosamente.", created.Id);
+
+            _memoryCachesService.ChangeVersion(Constants.CACHE_NEWS);
+
             return created.ToNewResponseDTO();
         }
     }
