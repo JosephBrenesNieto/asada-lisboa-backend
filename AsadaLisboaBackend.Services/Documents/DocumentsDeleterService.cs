@@ -1,10 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using AsadaLisboaBackend.Utils;
-using AsadaLisboaBackend.Services.Exceptions;
+﻿using AsadaLisboaBackend.RepositoryContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
-using AsadaLisboaBackend.RepositoryContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
+using AsadaLisboaBackend.Services.Exceptions;
+using AsadaLisboaBackend.Utils;
+using Elastic.Clients.Elasticsearch;
+using Microsoft.Extensions.Logging;
+using System.Net;
+using AsadaLisboaBackend.Models;
 
 namespace AsadaLisboaBackend.Services.Documents
 {
@@ -15,14 +18,16 @@ namespace AsadaLisboaBackend.Services.Documents
         private readonly IMemoryCachesService _memoryCachesService;
         private readonly IDocumentsGetterRepository _documentsGetterRespository;
         private readonly IDocumentsDeleterRepository _documentsDeleterRespository;
+        private readonly ElasticsearchClient _elastic;
 
-      public DocumentsDeleterService(IFileSystemsManager fileSystems, ILogger<DocumentsDeleterService> logger, IDocumentsDeleterRepository documentsDeleterRespository, IDocumentsGetterRepository documentsGetterRespository, IMemoryCachesService memoryCachesService)
+        public DocumentsDeleterService(IFileSystemsManager fileSystems, ILogger<DocumentsDeleterService> logger, IDocumentsDeleterRepository documentsDeleterRespository, IDocumentsGetterRepository documentsGetterRespository, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
             _fileSystems = fileSystems;
             _memoryCachesService = memoryCachesService;
             _documentsGetterRespository = documentsGetterRespository;
             _documentsDeleterRespository = documentsDeleterRespository;
+            _elastic = elastic;
         }
 
         public async Task DeleterDocument(Guid id)
@@ -36,6 +41,9 @@ namespace AsadaLisboaBackend.Services.Documents
                 await _fileSystems.DeleteAsync(document.FileName, "document");
 
             await _documentsDeleterRespository.DeleteDocument(id);
+
+            await _elastic.DeleteAsync<Document>(id, d => d.Index("documentos"));
+
 
             _memoryCachesService.RemoveById(Constants.CACHE_DOCUMENTS, document.Id);
             _memoryCachesService.ChangeVersion(Constants.CACHE_DOCUMENTS);
