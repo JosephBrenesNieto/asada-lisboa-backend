@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Elastic.Clients.Elasticsearch;
 using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.DTOs.Document;
@@ -10,12 +11,12 @@ using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.RepositoryContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 using AsadaLisboaBackend.RepositoryContracts.DocumentTypes;
-using Elastic.Clients.Elasticsearch;
 
 namespace AsadaLisboaBackend.Services.Documents
 {
     public class DocumentsAdderService: IDocumentsAdderService
     {
+        private readonly ElasticsearchClient _elastic;
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<DocumentsAdderService> _logger;
         private readonly IMemoryCachesService _memoryCachesService;
@@ -23,18 +24,17 @@ namespace AsadaLisboaBackend.Services.Documents
         private readonly IDocumentsAdderRepository _documentAdderRepository;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
         private readonly IDocumentTypesGetterRepository _documentTypesGetterRepository;
-        private readonly ElasticsearchClient _elastic;
 
         public DocumentsAdderService(ICategoriesGetterService categoriesGetterService, IDocumentsAdderRepository documentAdderRepository, IStatusesGetterRepository statusesGetterRepository, IDocumentTypesGetterRepository documentTypesGetterRepository, IFileSystemsManager fileSystems, ILogger<DocumentsAdderService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
+            _elastic = elastic;
             _fileSystems = fileSystems;
             _memoryCachesService = memoryCachesService;
             _categoriesGetterService = categoriesGetterService;
             _documentAdderRepository = documentAdderRepository;
             _statusesGetterRepository = statusesGetterRepository;
             _documentTypesGetterRepository = documentTypesGetterRepository;
-            _elastic = elastic;
         }
 
         public async Task<DocumentResponseDTO> CreateDocument(DocumentRequestDTO documentRequestDTO)

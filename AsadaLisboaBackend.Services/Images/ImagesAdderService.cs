@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using Elastic.Clients.Elasticsearch;
+using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Models.DTOs.Image;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Utils.SlugGeneration;
@@ -8,30 +10,28 @@ using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
-using AsadaLisboaBackend.Utils;
-using Elastic.Clients.Elasticsearch;
 
 namespace AsadaLisboaBackend.Services.Images
 {
     public class ImagesAdderService : IImagesAdderService
     {
+        private readonly ElasticsearchClient _elastic;
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<ImagesAdderService> _logger;
         private readonly IMemoryCachesService _memoryCachesService;
         private readonly IImagesAdderRepository _imagesAdderRepository;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
-        private readonly ElasticsearchClient _elastic;
 
         public ImagesAdderService(IImagesAdderRepository imagesAdderRepository, IFileSystemsManager fileSystems, ICategoriesGetterService categoriesGetterService, IStatusesGetterRepository statusesGetterRepository, ILogger<ImagesAdderService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
+            _elastic = elastic;
             _fileSystems = fileSystems;
             _memoryCachesService = memoryCachesService;
             _imagesAdderRepository = imagesAdderRepository;
             _categoriesGetterService = categoriesGetterService;
             _statusesGetterRepository = statusesGetterRepository;
-            _elastic = elastic;
         }
 
         public async Task<ImageResponseDTO> CreateImage(ImageRequestDTO imageRequestDTO)

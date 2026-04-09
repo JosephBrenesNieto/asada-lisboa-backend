@@ -1,33 +1,32 @@
-﻿using AsadaLisboaBackend.RepositoryContracts.Documents;
+﻿using Microsoft.Extensions.Logging;
+using Elastic.Clients.Elasticsearch;
+using AsadaLisboaBackend.Utils;
+using AsadaLisboaBackend.Models;
+using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
-using AsadaLisboaBackend.Services.Exceptions;
-using AsadaLisboaBackend.Utils;
-using Elastic.Clients.Elasticsearch;
-using Microsoft.Extensions.Logging;
-using System.Net;
-using AsadaLisboaBackend.Models;
+using AsadaLisboaBackend.RepositoryContracts.Documents;
 
 namespace AsadaLisboaBackend.Services.Documents
 {
     public class DocumentsDeleterService: IDocumentsDeleterService
     {
+        private readonly ElasticsearchClient _elastic;
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<DocumentsDeleterService> _logger;
         private readonly IMemoryCachesService _memoryCachesService;
         private readonly IDocumentsGetterRepository _documentsGetterRespository;
         private readonly IDocumentsDeleterRepository _documentsDeleterRespository;
-        private readonly ElasticsearchClient _elastic;
 
         public DocumentsDeleterService(IFileSystemsManager fileSystems, ILogger<DocumentsDeleterService> logger, IDocumentsDeleterRepository documentsDeleterRespository, IDocumentsGetterRepository documentsGetterRespository, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
+            _elastic = elastic;
             _fileSystems = fileSystems;
             _memoryCachesService = memoryCachesService;
             _documentsGetterRespository = documentsGetterRespository;
             _documentsDeleterRespository = documentsDeleterRespository;
-            _elastic = elastic;
         }
 
         public async Task DeleterDocument(Guid id)

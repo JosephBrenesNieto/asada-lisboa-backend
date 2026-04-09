@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using Elastic.Clients.Elasticsearch;
+using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DTOs.New;
 using AsadaLisboaBackend.Services.Exceptions;
@@ -10,8 +12,6 @@ using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
-using AsadaLisboaBackend.Utils;
-using Elastic.Clients.Elasticsearch;
 
 namespace AsadaLisboaBackend.Services.News
 {
@@ -29,13 +29,13 @@ namespace AsadaLisboaBackend.Services.News
         public NewsAdderService(INewsAdderRepository newsAdderRepository, IEditorsUpdaterService editorsUpdaterService, IStatusesGetterRepository statusesGetterRepository, ICategoriesGetterService categoriesGetterService, IFileSystemsManager fileSystems, ILogger<NewsAdderService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
+            _elastic = elastic;
             _fileSystems = fileSystems;
             _memoryCachesService = memoryCachesService;
             _newsAdderRepository = newsAdderRepository;
             _editorsUpdaterService = editorsUpdaterService;
             _categoriesGetterService = categoriesGetterService;
             _statusesGetterRepository = statusesGetterRepository;
-            _elastic = elastic;
         }
 
         public async Task<NewResponseDTO> CreateNew(NewRequestDTO newRequestDTO)

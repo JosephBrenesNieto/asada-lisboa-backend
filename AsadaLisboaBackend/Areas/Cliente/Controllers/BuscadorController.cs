@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Asp.Versioning;
 using AsadaLisboaBackend.ServiceContracts.SearchGlobal;
 
 namespace AsadaLisboaBackend.Areas.Cliente.Controllers
@@ -9,11 +8,11 @@ namespace AsadaLisboaBackend.Areas.Cliente.Controllers
     [ApiVersion("1.0")]
     [Route("api/[area]/[controller]")]
     [ApiController]
-    public class BusquedaGlobalController : ControllerBase
+    public class BuscadorController : ControllerBase
     {
         private readonly ISearchGlobalService _searchGlobal;
 
-        public BusquedaGlobalController(ISearchGlobalService searchGlobal)
+        public BuscadorController(ISearchGlobalService searchGlobal)
         {
             _searchGlobal = searchGlobal;
         }

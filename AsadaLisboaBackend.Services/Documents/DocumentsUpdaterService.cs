@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Elastic.Clients.Elasticsearch;
 using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.DTOs.Document;
@@ -9,12 +10,12 @@ using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.RepositoryContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 using AsadaLisboaBackend.RepositoryContracts.DocumentTypes;
-using Elastic.Clients.Elasticsearch;
 
 namespace AsadaLisboaBackend.Services.Documents
 {
     public class DocumentsUpdaterService : IDocumentsUpdaterService
     {
+        private readonly ElasticsearchClient _elastic;
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<DocumentsUpdaterService> _logger;
         private readonly IMemoryCachesService _memoryCachesService;
@@ -22,18 +23,17 @@ namespace AsadaLisboaBackend.Services.Documents
         private readonly IDocumentsGetterRepository _documentGetterRepository;
         private readonly IDocumentsUpdaterRepository _documentUpdateRespository;
         private readonly IDocumentTypesGetterRepository _documentTypesGetterRepository;
-        private readonly ElasticsearchClient _elastic;
 
         public DocumentsUpdaterService(IFileSystemsManager fileSystems, IDocumentsGetterRepository documentGetterRepository, IDocumentsUpdaterRepository documentUpdateRespository, ICategoriesGetterService categoriesGetterService, IDocumentTypesGetterRepository documentTypesGetterRepository, ILogger<DocumentsUpdaterService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
+            _elastic = elastic;
             _fileSystems = fileSystems;
             _memoryCachesService = memoryCachesService;
             _categoriesGetterService = categoriesGetterService;
             _documentGetterRepository = documentGetterRepository;
             _documentUpdateRespository = documentUpdateRespository;
             _documentTypesGetterRepository = documentTypesGetterRepository;
-            _elastic = elastic;
         }
 
         public async Task<DocumentResponseDTO> UpdateDocument(Guid id, DocumentUpdateRequestDTO documentUpdateRequestDTO)

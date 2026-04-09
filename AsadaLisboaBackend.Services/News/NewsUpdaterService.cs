@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using Elastic.Clients.Elasticsearch;
+using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DTOs.New;
 using AsadaLisboaBackend.Services.Exceptions;
@@ -9,13 +11,12 @@ using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
-using AsadaLisboaBackend.Utils;
-using Elastic.Clients.Elasticsearch;
 
 namespace AsadaLisboaBackend.Services.News
 {
     public class NewsUpdaterService : INewsUpdaterService
     {
+        private readonly ElasticsearchClient _elastic;
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<NewsUpdaterService> _logger;
         private readonly IMemoryCachesService _memoryCachesService;
@@ -25,11 +26,11 @@ namespace AsadaLisboaBackend.Services.News
         private readonly INewsUpdaterRepository _newsUpdaterRepository;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IStatusesGetterRepository _statusesGetterRepository;
-         private readonly ElasticsearchClient _elastic;
 
         public NewsUpdaterService(INewsUpdaterRepository newsUpdaterRepository, INewsGetterRepository newsGetterRepository, IEditorsUpdaterService editorsUpdaterService, IEditorsDeleterService editorsDeleterService, IStatusesGetterRepository statusesGetterRepository, ICategoriesGetterService categoriesGetterService, IFileSystemsManager fileSystems, ILogger<NewsUpdaterService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
+            _elastic = elastic;
             _fileSystems = fileSystems;
             _memoryCachesService = memoryCachesService;
             _newsGetterRepository = newsGetterRepository;
@@ -38,7 +39,6 @@ namespace AsadaLisboaBackend.Services.News
             _newsUpdaterRepository = newsUpdaterRepository;
             _categoriesGetterService = categoriesGetterService;
             _statusesGetterRepository = statusesGetterRepository;
-            _elastic = elastic;
         }
 
         public async Task<NewResponseDTO> UpdateNew(Guid id, NewRequestDTO newRequestDTO)

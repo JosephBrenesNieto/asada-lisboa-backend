@@ -1,32 +1,32 @@
 ﻿using Microsoft.Extensions.Logging;
+using Elastic.Clients.Elasticsearch;
 using AsadaLisboaBackend.Utils;
+using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.ServiceContracts.News;
 using AsadaLisboaBackend.ServiceContracts.Editors;
 using AsadaLisboaBackend.RepositoryContracts.News;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
-using Elastic.Clients.Elasticsearch;
-using AsadaLisboaBackend.Models;
 
 namespace AsadaLisboaBackend.Services.News
 {
     public class NewsDeleterService : INewsDeleterService
     {
+        private readonly ElasticsearchClient _elastic;
         private readonly ILogger<NewsDeleterService> _logger;
         private readonly IMemoryCachesService _memoryCachesService;
         private readonly INewsGetterRepository _newsGetterRepository;
         private readonly INewsDeleterRepository _newsDeleterRepository;
         private readonly IEditorsDeleterService _editorsDeleterService;
-        private readonly ElasticsearchClient _elastic;
 
         public NewsDeleterService(INewsDeleterRepository newsDeleterRepository, IEditorsDeleterService editorsDeleterService, INewsGetterRepository newsGetterRepository, ILogger<NewsDeleterService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
+            _elastic = elastic;
             _memoryCachesService = memoryCachesService;
             _newsGetterRepository = newsGetterRepository;
             _editorsDeleterService = editorsDeleterService;
             _newsDeleterRepository = newsDeleterRepository;
-            _elastic = elastic;
         }
 
         public async Task DeleteNew(Guid id)

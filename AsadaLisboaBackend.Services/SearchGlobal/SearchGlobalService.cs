@@ -1,6 +1,6 @@
-﻿using AsadaLisboaBackend.Models.DTOs.SearchGlobal;
+﻿using Elastic.Clients.Elasticsearch;
+using AsadaLisboaBackend.Models.DTOs.SearchGlobal;
 using AsadaLisboaBackend.ServiceContracts.SearchGlobal;
-using Elastic.Clients.Elasticsearch;
 
 namespace AsadaLisboaBackend.Services.SearchGlobal
 {
@@ -13,19 +13,18 @@ namespace AsadaLisboaBackend.Services.SearchGlobal
             _client = client;
         }
 
-
         public async Task<List<SearchGlobalDocument>> SearchAsync(string query)
         {
             var response = await _client.SearchAsync<SearchGlobalDocument>(s => s
-            .Indices(new[] { "Documento", "Imagen", "Noticias" })
-            .Query(q => q
-                .MultiMatch(mm => mm
-                    .Fields(new[] { "title^3", "description^2" })
-                    .Query(query)
-                    .Fuzziness("AUTO")
-                )
-            )
-            );
+                .Indices(new[] { "Documento", "Imagen", "Noticias" })
+                .Query(q => q
+                    .MultiMatch(mm => mm
+                        .Fields(new[] { "title^3", "description^2" })
+                        .Query(query)
+                        .Fuzziness("AUTO")
+                    )
+                ));
+
             return response.Documents.ToList();
         }
     }

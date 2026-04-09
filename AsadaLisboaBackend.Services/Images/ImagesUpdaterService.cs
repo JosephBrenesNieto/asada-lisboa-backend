@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Elastic.Clients.Elasticsearch;
 using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Models.DTOs.Image;
 using AsadaLisboaBackend.Services.Exceptions;
@@ -9,29 +10,28 @@ using AsadaLisboaBackend.RepositoryContracts.Images;
 using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
-using Elastic.Clients.Elasticsearch;
 
 namespace AsadaLisboaBackend.Services.Images
 {
     public class ImagesUpdaterService : IImagesUpdaterService
     {
+        private readonly ElasticsearchClient _elastic;
         private readonly IFileSystemsManager _fileSystems;
         private readonly ILogger<ImagesUpdaterService> _logger;
         private readonly IMemoryCachesService _memoryCachesService;
         private readonly IImagesGetterRepository _imagesGetterRespository;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IImagesUpdaterRepository _imagesUpdaterRepository;
-        private readonly ElasticsearchClient _elastic;
 
         public ImagesUpdaterService(ApplicationDbContext applicationDbContext, IFileSystemsManager fileSystems, IImagesUpdaterRepository imagesUpdaterRepository, IImagesGetterRepository imagesGetterRespository, ICategoriesGetterService categoriesGetterService, ILogger<ImagesUpdaterService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
+            _elastic = elastic;
             _fileSystems = fileSystems;
             _memoryCachesService = memoryCachesService;
             _categoriesGetterService = categoriesGetterService;
             _imagesUpdaterRepository = imagesUpdaterRepository;
             _imagesGetterRespository = imagesGetterRespository;
-            _elastic = elastic;
         }
 
         public async Task<ImageResponseDTO> UpdateImage(Guid id, ImageUpdateRequestDTO imageUpdateRequestDTO)

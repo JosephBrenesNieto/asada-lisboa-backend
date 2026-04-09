@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Elastic.Clients.Elasticsearch;
-using Elastic.Transport;
+﻿using Elastic.Clients.Elasticsearch;
 
 namespace AsadaLisboaBackend.ServicesExtension
 {
