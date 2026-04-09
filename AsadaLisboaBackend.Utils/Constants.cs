@@ -15,7 +15,7 @@
         public const string ROLE_LECTOR = "Lector";
         public const string ROLE_EDITOR = "Editor";
         public const string ROLE_ADMINISTRADOR = "Administrador";
-        
+
         public const string CACHE_NEWS = "news";
         public const string CACHE_USERS = "users";
         public const string CACHE_IMAGES = "images";
@@ -27,5 +27,8 @@
         public const string CACHE_PRINCIPALS = "principals";
         public const string CACHE_CATEGORIES = "categories";
         public const string CACHE_CONFIGURATIONS = "configurations";
+
+        public static readonly string[] ALLOWED_HTTP_METHODS = new string[] { "GET", "POST", "PUT", "DELETE", "PATCH" };
+        public static readonly string[] ALLOWED_HTTP_HEADERS = new string[] { "Content-Type", "Authorization", "x-version", "Accept", "Origin", "X-Requested-With" };
     }
 }

@@ -36,6 +36,8 @@ builder.Services.AuthorizationsRegistration();
 
 builder.Services.SerilogRegistration(builder.Host);
 
+builder.Services.CorsRegistration();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,7 +45,6 @@ app.UseRateLimiter();
 
 app.UseExceptionHandler();
 
-app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
 {
@@ -64,7 +65,12 @@ if (config is not null && config.RUN)
 
 app.UseSerilogRequestLogging();
 
+app.UseHsts();
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
