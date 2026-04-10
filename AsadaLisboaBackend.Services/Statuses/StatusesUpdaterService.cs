@@ -2,6 +2,8 @@
 using AsadaLisboaBackend.ServiceContracts.Statuses;
 using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using Microsoft.Extensions.Logging;
+using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
+using AsadaLisboaBackend.Utils;
 
 namespace AsadaLisboaBackend.Services.Statuses
 {
@@ -10,12 +12,14 @@ namespace AsadaLisboaBackend.Services.Statuses
         private readonly IStatusesGetterRepository _statusesGetterRepository;
         private readonly IStatusesUpdaterRepository _statusesUpdaterRepository;
         private readonly ILogger<StatusesUpdaterService> _logger;
+        private readonly IMemoryCachesService _memoryCachesService;
 
-        public StatusesUpdaterService(IStatusesGetterRepository statusesGetterRepository, IStatusesUpdaterRepository statusesUpdaterRepository, ILogger<StatusesUpdaterService> logger)
+        public StatusesUpdaterService(IStatusesGetterRepository statusesGetterRepository, IStatusesUpdaterRepository statusesUpdaterRepository, ILogger<StatusesUpdaterService> logger, IMemoryCachesService memoryCachesService)
         {
             _statusesGetterRepository = statusesGetterRepository;
             _statusesUpdaterRepository = statusesUpdaterRepository;
             _logger = logger;
+            _memoryCachesService = memoryCachesService;
         }
 
         public async Task ChangeStatus(Guid objectId, Guid statusId, ObjectTypeEnum objectType)
@@ -43,6 +47,9 @@ namespace AsadaLisboaBackend.Services.Statuses
                     status.Id,
                     objectType
                 );
+
+                _memoryCachesService.RemoveById(Constants.CACHE_STATUSES, objectId);
+                _memoryCachesService.ChangeVersion(Constants.CACHE_STATUSES);
             }
             catch (Exception ex)
             {
