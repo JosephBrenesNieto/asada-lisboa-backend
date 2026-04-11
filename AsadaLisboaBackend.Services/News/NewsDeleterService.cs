@@ -34,7 +34,10 @@ namespace AsadaLisboaBackend.Services.News
             var existingNew = await _newsGetterRepository.GetNew(id);
 
             if (existingNew is null)
+            {
+                _logger.LogError("Noticia con id: {Id} no encontrada.", id);
                 throw new NotFoundException("La noticia no fue encontrada.");
+            }
 
             await _editorsDeleterService.DeletePrincipalImage(existingNew.FileName);
 
