@@ -36,7 +36,7 @@ namespace AsadaLisboaBackend.Areas.Admin.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of contacts based on the provided search and sort parameters. This endpoint allows admin users to search, filter, paginate, and sort the contacts in the system.
+        /// Retrieves a list of contacts based on the provided search and sort parameters.
         /// </summary>
         /// <param name="searchSortRequestDTO">An object containing search filters, sorting options, and pagination parameters to apply to the
         /// contact query. Cannot be null.</param>
