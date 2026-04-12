@@ -4,7 +4,7 @@ using AsadaLisboaBackend.Services.Exceptions;
 
 namespace AsadaLisboaBackend.ErrorHandling
 {
-    public class InUsedErrorHandling : IExceptionHandler
+    internal sealed class InUsedErrorHandling : IExceptionHandler
     {
         private readonly ILogger<InUsedErrorHandling> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
