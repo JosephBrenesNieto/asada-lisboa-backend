@@ -9,7 +9,7 @@ namespace AsadaLisboaBackend.Models.DTOs.AboutUs
         public string SectionType { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El contenido de la sección es requerido.")]
-        [StringLength(500, MinimumLength = 50, ErrorMessage = "El contenido de la sección debe ser entre {1} y {0} caracteres.")]
+        [StringLength(2500, MinimumLength = 50, ErrorMessage = "El contenido de la sección debe ser entre {1} y {0} caracteres.")]
         public string Content { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "El orden de la sección es requerido.")]
