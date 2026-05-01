@@ -15,6 +15,7 @@ namespace AsadaLisboaBackend.Models.DTOs.New
         public string FileName { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
 
+        public Guid StatusId { get; set; }
         public string StatusName { get; set; } = string.Empty;
         public List<string> Categories { get; set; } = new();
     }
@@ -26,6 +27,7 @@ namespace AsadaLisboaBackend.Models.DTOs.New
             return newModel => new NewResponseDTO
             {
                 Id = newModel.Id,
+                StatusId = newModel.StatusId,
                 Slug = newModel.Slug,
                 Title = newModel.Title,
                 ImageUrl = newModel.ImageUrl,
@@ -46,6 +48,7 @@ namespace AsadaLisboaBackend.Models.DTOs.New
             return new NewResponseDTO()
             {
                 Id = newModel.Id,
+                StatusId = newModel.StatusId,
                 Slug = newModel.Slug,
                 Title = newModel.Title,
                 ImageUrl = newModel.ImageUrl,
@@ -54,7 +57,7 @@ namespace AsadaLisboaBackend.Models.DTOs.New
                 Description = newModel.Description,
                 PublicationDate = newModel.PublicationDate,
                 LastEditionDate = newModel.LastEditionDate,
-                StatusName = newModel.Status!.Name ?? "",
+                StatusName = newModel.Status?.Name ?? "",
                 Categories = newModel.Categories
                     .Select(c => c.Name)
                     .ToList(),

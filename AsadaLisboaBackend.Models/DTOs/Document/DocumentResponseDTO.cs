@@ -11,6 +11,8 @@ namespace AsadaLisboaBackend.Models.DTOs.Document
 
         public long FileSize { get; set; }
         public DateTime PublicationDate { get; set; }
+
+        public Guid StatusId { get; set; }
         public string StatusName { get; set; } = string.Empty;
         public string DocumentTypeName { get; set; } = string.Empty;
         public List<string> Categories { get; set; } = new();
@@ -23,11 +25,12 @@ namespace AsadaLisboaBackend.Models.DTOs.Document
             return document => new DocumentResponseDTO
             {
                 Id = document.Id,
-                PublicationDate = document.PublicationDate,                
+                StatusId = document.StatusId,
                 Slug = document.Slug,
                 Title = document.Title,
-                Description = document.Description,
                 FileSize = document.FileSize,
+                Description = document.Description,
+                PublicationDate = document.PublicationDate,                
                 StatusName = document.Status!.Name ?? "",
                 DocumentTypeName = document.DocumentType!.Name ?? "",
                 Categories = document.Categories
@@ -41,13 +44,14 @@ namespace AsadaLisboaBackend.Models.DTOs.Document
             return new DocumentResponseDTO()
             {
                 Id = document.Id,
-                PublicationDate = document.PublicationDate,               
+                StatusId = document.StatusId,
                 Slug = document.Slug,
                 Title = document.Title,
-                Description = document.Description,
                 FileSize = document.FileSize,
-                StatusName = document.Status!.Name ?? "",
-                DocumentTypeName = document.DocumentType!.Name ?? "",
+                Description = document.Description,
+                PublicationDate = document.PublicationDate,               
+                StatusName = document.Status?.Name ?? "",
+                DocumentTypeName = document.DocumentType?.Name ?? "",
                 Categories = document.Categories
                     .Select(c => c.Name)
                     .ToList(),

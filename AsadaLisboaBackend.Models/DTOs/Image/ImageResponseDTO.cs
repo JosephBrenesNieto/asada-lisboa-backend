@@ -15,6 +15,7 @@ namespace AsadaLisboaBackend.Models.DTOs.Image
 
         public long FileSize { get; set; }
 
+        public Guid StatusId { get; set; }
         public string StatusName { get; set; } = string.Empty;
         public List<string> Categories { get; set; } = new();
     }
@@ -26,6 +27,7 @@ namespace AsadaLisboaBackend.Models.DTOs.Image
             return image => new ImageResponseDTO
             {
                 Id = image.Id,
+                StatusId = image.StatusId,
                 Url = image.Url,
                 Slug = image.Slug,
                 Title = image.Title,
@@ -34,7 +36,7 @@ namespace AsadaLisboaBackend.Models.DTOs.Image
                 FileSize = image.FileSize,
                 Description = image.Description,
                 PublicationDate = image.PublicationDate,
-                StatusName = image.Status!.Name ?? "Pending",
+                StatusName = image.Status!.Name ?? "",
                 Categories = image.Categories
                     .Select(c => c.Name)
                     .ToList(),
@@ -46,6 +48,7 @@ namespace AsadaLisboaBackend.Models.DTOs.Image
             return new ImageResponseDTO()
             {
                 Id = image.Id,
+                StatusId = image.StatusId,
                 Url = image.Url,
                 Slug = image.Slug,
                 Title = image.Title,
@@ -54,7 +57,7 @@ namespace AsadaLisboaBackend.Models.DTOs.Image
                 FileSize = image.FileSize,
                 Description = image.Description,
                 PublicationDate = image.PublicationDate,
-                StatusName = image.Status?.Name ?? "Pending",
+                StatusName = image.Status?.Name ?? "",
                 Categories = image.Categories
                     .Select(c => c.Name)
                     .ToList(),
