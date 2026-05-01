@@ -31,6 +31,8 @@ builder.Services.AddContactRateLimiters();
 
 builder.Services.AddHttpClient();
 
+builder.Services.ReceiptsServicesRegistration(builder.Configuration);
+
 builder.Services.AuthenticationsRegistration(builder.Configuration);
 builder.Services.AuthorizationsRegistration();
 
