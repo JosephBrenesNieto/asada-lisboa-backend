@@ -22,6 +22,7 @@
 
         public const string CACHE_NEWS = "news";
         public const string CACHE_USERS = "users";
+        public const string CACHE_ROLES = "roles";
         public const string CACHE_IMAGES = "images";
         public const string CACHE_CHARGES = "charges";
         public const string CACHE_ABOUT_US = "about_us";

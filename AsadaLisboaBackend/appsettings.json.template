@@ -15,6 +15,9 @@
   "RefreshJwtOptions": {
     "EXPIRATION_MINUTES": 1440
   },
+  "ReceiptOptions": {
+    "DOMAIN_RECEIPTS": "receipts url"
+  },
   "ConnectionStrings": {
     "AsadaLisboaDB": "Server=localhost;Database=AsadaLisboaDB;User Id=sa;Password=your_password;"
   },
@@ -50,5 +53,5 @@
       "ApplicationName": "ASADA Lisboa - Web API"
     }
   },
-    "RESEND_API_TOKEN": "Resend Secret Token"
-  }
+  "RESEND_API_TOKEN": "Resend Secret Token"
+}

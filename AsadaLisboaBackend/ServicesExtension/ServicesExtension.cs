@@ -10,6 +10,7 @@ using AsadaLisboaBackend.RepositoryContracts.Contacts;
 using AsadaLisboaBackend.RepositoryContracts.Charges;
 using AsadaLisboaBackend.RepositoryContracts.Images;
 using AsadaLisboaBackend.RepositoryContracts.Users;
+using AsadaLisboaBackend.RepositoryContracts.Roles;
 using AsadaLisboaBackend.RepositoryContracts.News;
 using AsadaLisboaBackend.ServiceContracts.AboutUsSections;
 using AsadaLisboaBackend.ServiceContracts.Configurations;
@@ -26,6 +27,7 @@ using AsadaLisboaBackend.ServiceContracts.Charges;
 using AsadaLisboaBackend.ServiceContracts.Editors;
 using AsadaLisboaBackend.ServiceContracts.Images;
 using AsadaLisboaBackend.ServiceContracts.Emails;
+using AsadaLisboaBackend.ServiceContracts.Roles;
 using AsadaLisboaBackend.ServiceContracts.Users;
 using AsadaLisboaBackend.ServiceContracts.News;
 using AsadaLisboaBackend.ServiceContracts.Jwts;
@@ -38,6 +40,7 @@ using AsadaLisboaBackend.Repositories.Contacts;
 using AsadaLisboaBackend.Repositories.Statuses;
 using AsadaLisboaBackend.Repositories.Charges;
 using AsadaLisboaBackend.Repositories.Images;
+using AsadaLisboaBackend.Repositories.Roles;
 using AsadaLisboaBackend.Repositories.Users;
 using AsadaLisboaBackend.Repositories.News;
 using AsadaLisboaBackend.Services.AboutUsSections;
@@ -56,6 +59,7 @@ using AsadaLisboaBackend.Services.Editors;
 using AsadaLisboaBackend.Services.Emails;
 using AsadaLisboaBackend.Services.Images;
 using AsadaLisboaBackend.Services.Users;
+using AsadaLisboaBackend.Services.Roles;
 using AsadaLisboaBackend.Services.News;
 using AsadaLisboaBackend.Services.Jwts;
 
@@ -193,6 +197,11 @@ namespace AsadaLisboaBackend.ServicesExtension
             services.AddScoped<IResetPasswordService, ResetPasswordService>();
             services.AddScoped<IVerificationCodeService, VerificationCodeService>();
 
+            // Roles
+            services.AddScoped<IRolesGetterRepository, RolesGetterRepository>();
+
+            services.AddScoped<IRolesGetterService, RolesGetterService>();
+            
             // Users
             services.AddScoped<IUsersGetterService, UsersGetterService>();
             services.AddScoped<IUsersUpdaterService, UsersUpdaterService>();
