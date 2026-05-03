@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AsadaLisboaBackend.Models.DTOs.User;
+﻿using AsadaLisboaBackend.Models.DatabaseContext;
+using AsadaLisboaBackend.Models.DTOs.Role;
 using AsadaLisboaBackend.Models.DTOs.Shared;
+using AsadaLisboaBackend.Models.DTOs.User;
 using AsadaLisboaBackend.Models.IdentityModels;
-using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.RepositoryContracts.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace AsadaLisboaBackend.Repositories.Users
 {
@@ -71,12 +72,28 @@ namespace AsadaLisboaBackend.Repositories.Users
 
         public async Task<UserDetailResponseDTO?> GetUser(Guid id)
         {
-            return await _context.Users
+            var user = await _context.Users
                 .AsNoTracking()
                 .Include(u => u.Charge)
                 .Where(u => u.Id == id)
                 .Select(UserExtensions.MapUserDetailResponseDTO())
                 .FirstOrDefaultAsync();
+
+            if (user is null) 
+                return null;
+
+            user.Roles = await _context.UserRoles
+                .Where(ur => ur.UserId == id)
+                .Join(
+                    _context.Roles,
+                    ur => ur.RoleId,
+                    r => r.Id,
+                    (ur, r) => r
+                )
+                .Select(RoleExtensions.MapRoleResponseDTO())
+                .ToListAsync();
+
+            return user;
         }
     }
 }

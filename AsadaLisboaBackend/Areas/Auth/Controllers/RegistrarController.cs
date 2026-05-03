@@ -1,8 +1,9 @@
 ﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Models.DTOs.Account;
 using AsadaLisboaBackend.ServiceContracts.Accounts;
-using Microsoft.AspNetCore.Authorization;
 
 namespace AsadaLisboaBackend.Areas.Auth.Controllers
 {
@@ -34,7 +35,7 @@ namespace AsadaLisboaBackend.Areas.Auth.Controllers
         /// </summary>
         /// <param name="registerRequestDTO">An object containing the details of the user to be created. Cannot be null.</param>
         /// <returns>Create confirmation.</returns>
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Policy = Constants.ROLE_ADMINISTRADOR)]
         [HttpPost("")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterRequestDTO registerRequestDTO)
         {

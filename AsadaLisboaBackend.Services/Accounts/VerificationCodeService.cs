@@ -47,6 +47,12 @@ namespace AsadaLisboaBackend.Services.Accounts
                 throw new NotFoundException("Usuario inexistente.");
             }
 
+            if(user.EmailConfirmed)
+            {
+                _logger.LogError("El email del usuario ya ha sido confirmado.");
+                throw new UpdateObjectException("El email del usuario ya ha sido confirmado.");
+            }
+
             var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
 
             var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
