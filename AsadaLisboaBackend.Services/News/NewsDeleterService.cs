@@ -45,8 +45,11 @@ namespace AsadaLisboaBackend.Services.News
 
             await _newsDeleterRepository.DeleteNew(id);
 
-            // Eliminar del índice
-            await _elastic.DeleteAsync<New>(id, d => d.Index("noticias"));
+            // Delete from index
+            await _elastic.DeleteAsync<New>(id, d => d
+                .Index("noticias")
+                .Refresh(Refresh.True)
+            );
 
             _memoryCachesService.RemoveById(Constants.CACHE_NEWS, existingNew.Id);
             _memoryCachesService.ChangeVersion(Constants.CACHE_NEWS);

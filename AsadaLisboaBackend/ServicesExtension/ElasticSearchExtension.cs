@@ -15,14 +15,15 @@ namespace AsadaLisboaBackend.ServicesExtension
         /// <returns>List of registered services.</returns>
         public static IServiceCollection ElasticSearchRegistration(this IServiceCollection services, IConfiguration configuration)
         {
-            var url = configuration["Elasticsearch:Url"];
+            services.AddSingleton(sp =>
+            {
+                var settings = new ElasticsearchClientSettings(
+                    new Uri(configuration["ElasticSearch:Url"]!));
 
-            var settings = new ElasticsearchClientSettings(new Uri(url!))            
-            .DefaultIndex("contenido");
+                return new ElasticsearchClient(settings);
+            });
 
-            var client = new ElasticsearchClient(settings);
-
-            return services.AddSingleton(client);
+            return services;
         }
 
     }
