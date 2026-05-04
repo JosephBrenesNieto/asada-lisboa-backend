@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Elastic.Clients.Elasticsearch;
 using AsadaLisboaBackend.Utils;
+using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DTOs.Image;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Utils.SlugGeneration;
@@ -8,6 +9,7 @@ using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.ServiceContracts.Images;
 using AsadaLisboaBackend.RepositoryContracts.Images;
 using AsadaLisboaBackend.ServiceContracts.Categories;
+using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 
@@ -22,8 +24,9 @@ namespace AsadaLisboaBackend.Services.Images
         private readonly IImagesGetterRepository _imagesGetterRespository;
         private readonly ICategoriesGetterService _categoriesGetterService;
         private readonly IImagesUpdaterRepository _imagesUpdaterRepository;
+        private readonly IStatusesGetterRepository _statusesGetterRepository;
 
-        public ImagesUpdaterService(ApplicationDbContext applicationDbContext, IFileSystemsManager fileSystems, IImagesUpdaterRepository imagesUpdaterRepository, IImagesGetterRepository imagesGetterRespository, ICategoriesGetterService categoriesGetterService, ILogger<ImagesUpdaterService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
+        public ImagesUpdaterService(ApplicationDbContext applicationDbContext, IFileSystemsManager fileSystems, IImagesUpdaterRepository imagesUpdaterRepository, IImagesGetterRepository imagesGetterRespository, ICategoriesGetterService categoriesGetterService, IStatusesGetterRepository statusesGetterRepository, ILogger<ImagesUpdaterService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
             _elastic = elastic;
@@ -32,6 +35,7 @@ namespace AsadaLisboaBackend.Services.Images
             _categoriesGetterService = categoriesGetterService;
             _imagesUpdaterRepository = imagesUpdaterRepository;
             _imagesGetterRespository = imagesGetterRespository;
+            _statusesGetterRepository = statusesGetterRepository;
         }
 
         public async Task<ImageResponseDTO> UpdateImage(Guid id, ImageUpdateRequestDTO imageUpdateRequestDTO)
@@ -45,7 +49,10 @@ namespace AsadaLisboaBackend.Services.Images
             }
 
             image.Title = imageUpdateRequestDTO.Title;
-            image.StatusId = imageUpdateRequestDTO.StatusId;
+
+            var status = await _statusesGetterRepository.GetStatus(imageUpdateRequestDTO.StatusId);
+
+            image.StatusId = status.Id;
             image.Description = imageUpdateRequestDTO.Description;
 
             image.Slug = GenerateSlug.New(imageUpdateRequestDTO.Title, image.Id);
@@ -92,16 +99,29 @@ namespace AsadaLisboaBackend.Services.Images
             _memoryCachesService.RemoveById(Constants.CACHE_IMAGES, imageUpdated.Id);
             _memoryCachesService.ChangeVersion(Constants.CACHE_IMAGES);
 
-            //Add to ElasticSearch
-            var imag = new Models.DTOs.SearchGlobal.SearchGlobalResponseDTO
+            // Update to ElasticSearch
+            if (status.Name.Trim().ToLower() == "publicado")
             {
-                Type = "Imagen",
-                Id = imageUpdated.Id,
-                Slug = imageUpdated.Slug,
-                Title = imageUpdated.Title,
-                Description = imageUpdated.Description,
-            };
-            await _elastic.IndexAsync(imag);
+                var imag = new Models.DTOs.SearchGlobal.SearchGlobalResponseDTO
+                {
+                    Type = "Imagen",
+                    Id = imageUpdated.Id,
+                    Slug = imageUpdated.Slug,
+                    Title = imageUpdated.Title,
+                    Description = imageUpdated.Description,
+                };
+
+                await _elastic.IndexAsync(imag, i => i
+                    .Index("imagenes")
+                    .Id(imag.Id)
+                    .Refresh(Refresh.True)
+                );
+            } else {
+                await _elastic.DeleteAsync<New>(id, d => d
+                    .Index("imagenes")
+                    .Refresh(Refresh.True)
+                );
+            }
 
             return imageUpdated.ToImageResponseDTO();
         }

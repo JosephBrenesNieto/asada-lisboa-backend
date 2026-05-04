@@ -1,12 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using Elastic.Clients.Elasticsearch;
 using AsadaLisboaBackend.Utils;
+using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.DTOs.Document;
 using AsadaLisboaBackend.Utils.SlugGeneration;
 using AsadaLisboaBackend.ServiceContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
+using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using AsadaLisboaBackend.RepositoryContracts.Documents;
 using AsadaLisboaBackend.ServiceContracts.MemoryCaches;
 using AsadaLisboaBackend.RepositoryContracts.DocumentTypes;
@@ -20,11 +22,12 @@ namespace AsadaLisboaBackend.Services.Documents
         private readonly ILogger<DocumentsUpdaterService> _logger;
         private readonly IMemoryCachesService _memoryCachesService;
         private readonly ICategoriesGetterService _categoriesGetterService;
+        private readonly IStatusesGetterRepository _statusesGetterRepository;
         private readonly IDocumentsGetterRepository _documentGetterRepository;
         private readonly IDocumentsUpdaterRepository _documentUpdateRespository;
         private readonly IDocumentTypesGetterRepository _documentTypesGetterRepository;
 
-        public DocumentsUpdaterService(IFileSystemsManager fileSystems, IDocumentsGetterRepository documentGetterRepository, IDocumentsUpdaterRepository documentUpdateRespository, ICategoriesGetterService categoriesGetterService, IDocumentTypesGetterRepository documentTypesGetterRepository, ILogger<DocumentsUpdaterService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
+        public DocumentsUpdaterService(IFileSystemsManager fileSystems, IDocumentsGetterRepository documentGetterRepository, IDocumentsUpdaterRepository documentUpdateRespository, ICategoriesGetterService categoriesGetterService, IDocumentTypesGetterRepository documentTypesGetterRepository, IStatusesGetterRepository statusesGetterRepository, ILogger<DocumentsUpdaterService> logger, IMemoryCachesService memoryCachesService, ElasticsearchClient elastic)
         {
             _logger = logger;
             _elastic = elastic;
@@ -32,6 +35,7 @@ namespace AsadaLisboaBackend.Services.Documents
             _memoryCachesService = memoryCachesService;
             _categoriesGetterService = categoriesGetterService;
             _documentGetterRepository = documentGetterRepository;
+            _statusesGetterRepository = statusesGetterRepository;
             _documentUpdateRespository = documentUpdateRespository;
             _documentTypesGetterRepository = documentTypesGetterRepository;
         }
@@ -47,6 +51,9 @@ namespace AsadaLisboaBackend.Services.Documents
             }
 
             document.Title = documentUpdateRequestDTO.Title;
+
+            var status = await _statusesGetterRepository.GetStatus(documentUpdateRequestDTO.StatusId);
+
             document.StatusId = documentUpdateRequestDTO.StatusId;
             document.Description = documentUpdateRequestDTO.Description;
 
@@ -103,16 +110,29 @@ namespace AsadaLisboaBackend.Services.Documents
 
             _logger.LogInformation("Documento con id {DocumentId} actualizado correctamente.", documentUpdated.Id);
 
-            var doc = new Models.DTOs.SearchGlobal.SearchGlobalResponseDTO
+            if (status.Name.Trim().ToLower() == "publicado")
             {
-                Type = "Documento",
-                Id = documentUpdated.Id,
-                Slug = documentUpdated.Slug,
-                Title = documentUpdated.Title,
-                Description = documentUpdated.Description,
+                var doc = new Models.DTOs.SearchGlobal.SearchGlobalResponseDTO
+                {
+                    Type = "Documento",
+                    Id = documentUpdated.Id,
+                    Slug = documentUpdated.Slug,
+                    Title = documentUpdated.Title,
+                    Description = documentUpdated.Description,
 
-            };
-            await _elastic.IndexAsync(doc);
+                };
+
+                await _elastic.IndexAsync(doc, i => i
+                    .Index("documentos")
+                    .Id(doc.Id)
+                    .Refresh(Refresh.True)
+                );
+            } else {
+                await _elastic.DeleteAsync<New>(id, d => d
+                    .Index("documentos")
+                    .Refresh(Refresh.True)
+                );
+            }
 
             return documentUpdated.ToDocumentResponseDTO();
         }

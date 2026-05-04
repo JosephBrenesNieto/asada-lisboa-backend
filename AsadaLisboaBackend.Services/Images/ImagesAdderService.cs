@@ -79,15 +79,23 @@ namespace AsadaLisboaBackend.Services.Images
                 _memoryCachesService.ChangeVersion(Constants.CACHE_IMAGES);
 
                 //Add to ElasticSearch
-                var imag = new Models.DTOs.SearchGlobal.SearchGlobalResponseDTO
+                if (status.Name.Trim().ToLower() == "publicado")
                 {
-                    Type = "Imagen",
-                    Id = imageCreated.Id,
-                    Slug = imageCreated.Slug,
-                    Title = imageCreated.Title,
-                    Description = imageCreated.Description,
-                };
-                await _elastic.IndexAsync(imag);
+                    var imag = new Models.DTOs.SearchGlobal.SearchGlobalResponseDTO
+                    {
+                        Type = "Imagen",
+                        Id = imageCreated.Id,
+                        Slug = imageCreated.Slug,
+                        Title = imageCreated.Title,
+                        Description = imageCreated.Description,
+                    };
+
+                    await _elastic.IndexAsync(imag, i => i
+                        .Index("imagenes")
+                        .Id(imag.Id)
+                        .Refresh(Refresh.True)
+                    );
+                }
 
                 return imageCreated.ToImageResponseDTO();
             }

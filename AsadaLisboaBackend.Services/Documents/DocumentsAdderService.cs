@@ -91,17 +91,25 @@ namespace AsadaLisboaBackend.Services.Documents
 
                 _memoryCachesService.ChangeVersion(Constants.CACHE_DOCUMENTS);
 
-                //Add to ElasticSearch
-                var doc = new Models.DTOs.SearchGlobal.SearchGlobalResponseDTO                   
+                // Add to ElasticSearch
+                if (status.Name.Trim().ToLower() == "publicado")
                 {
-                    Type = "Documento",
-                    Id = documentCreated.Id,
-                    Slug = documentCreated.Slug,
-                    Title = documentCreated.Title,
-                    Description = documentCreated.Description,
-                    
-                };
-                await _elastic.IndexAsync(doc);
+                    var doc = new Models.DTOs.SearchGlobal.SearchGlobalResponseDTO
+                    {
+                        Type = "Documento",
+                        Id = documentCreated.Id,
+                        Slug = documentCreated.Slug,
+                        Title = documentCreated.Title,
+                        Description = documentCreated.Description,
+
+                    };
+
+                    await _elastic.IndexAsync(doc, i => i
+                        .Index("documentos")
+                        .Id(doc.Id)
+                        .Refresh(Refresh.True)
+                    );
+                }
 
                 return documentCreated.ToDocumentResponseDTO();
             }
