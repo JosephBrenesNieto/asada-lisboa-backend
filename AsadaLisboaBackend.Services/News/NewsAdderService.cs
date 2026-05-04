@@ -4,10 +4,11 @@ using AsadaLisboaBackend.Utils;
 using AsadaLisboaBackend.Models;
 using AsadaLisboaBackend.Models.DTOs.New;
 using AsadaLisboaBackend.Services.Exceptions;
+using AsadaLisboaBackend.Utils.HtmlSanitizer;
 using AsadaLisboaBackend.Utils.SlugGeneration;
 using AsadaLisboaBackend.ServiceContracts.News;
-using AsadaLisboaBackend.RepositoryContracts.News;
 using AsadaLisboaBackend.ServiceContracts.Editors;
+using AsadaLisboaBackend.RepositoryContracts.News;
 using AsadaLisboaBackend.ServiceContracts.Categories;
 using AsadaLisboaBackend.RepositoryContracts.Statuses;
 using AsadaLisboaBackend.ServiceContracts.FileSystems;
@@ -57,7 +58,10 @@ namespace AsadaLisboaBackend.Services.News
             if(!string.IsNullOrEmpty(imageUrl) && !string.IsNullOrWhiteSpace(imageUrl) && !string.IsNullOrEmpty(fileName) && !string.IsNullOrWhiteSpace(fileName))
                 filePath = $"noticias/{fileName}";
 
-            var content = await _editorsUpdaterService.ChangeHtmlImagesFolder(newRequestDTO.Description);
+            var sanitizer = HtmlSanitizerFactory.Create();
+            var cleanHtml = sanitizer.Sanitize(newRequestDTO.Description);
+
+            var content = await _editorsUpdaterService.ChangeHtmlImagesFolder(cleanHtml);
 
             var categories = await _categoriesGetterService.ToCreateCategories(newRequestDTO.Categories);
 
@@ -90,16 +94,24 @@ namespace AsadaLisboaBackend.Services.News
 
             _memoryCachesService.ChangeVersion(Constants.CACHE_NEWS);
 
-            //Add to ElasticSearch
-            var news = new Models.DTOs.SearchGlobal.SearchGlobalResponseDTO
+            // Add to ElasticSearch
+            if(status.Name.Trim().ToLower() == "publicado")
             {
-                Id = created.Id,
-                Type = "Noticias",
-                Slug = created.Slug,
-                Title = created.Title,
-                Description = created.Description,
-            };
-            await _elastic.IndexAsync(news);
+                var news = new Models.DTOs.SearchGlobal.SearchGlobalResponseDTO
+                {
+                    Id = created.Id,
+                    Type = "Noticia",
+                    Slug = created.Slug,
+                    Title = created.Title,
+                    Description = created.Description,
+                };
+
+                await _elastic.IndexAsync(news, i => i
+                    .Index("noticias")
+                    .Id(news.Id)
+                    .Refresh(Refresh.True)
+                );
+            }
 
             return created.ToNewResponseDTO();
         }
