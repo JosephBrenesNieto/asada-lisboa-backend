@@ -109,10 +109,10 @@ namespace AsadaLisboaBackend.Repositories.Documents
                     .Include(d => d.DocumentType)
                     .FirstOrDefaultAsync(d => d.Slug == slug);
 
-            if (document is null)
-                throw new NotFoundException("El documento seleccionada no existe.");
+            if(document?.Status != null && document.Status.Name.Trim().ToLower() == "publicado")
+                return document;
 
-            return document;
+            throw new NotFoundException("El documento seleccionada no existe.");
         }
     }
 }

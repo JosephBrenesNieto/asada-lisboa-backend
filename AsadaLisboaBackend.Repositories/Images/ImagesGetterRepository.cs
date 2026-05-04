@@ -101,10 +101,10 @@ namespace AsadaLisboaBackend.Repositories.Images
                 .Include(i => i.Categories)
                 .FirstOrDefaultAsync(i => i.Slug == slug);
 
-            if (image is null)
-                throw new NotFoundException("La imagen seleccionada no existe.");
+            if (image?.Status != null && image.Status.Name.Trim().ToLower() == "publicado")
+                return image;
 
-            return image;
+            throw new NotFoundException("La imagen seleccionada no existe.");
         }
     }
 }

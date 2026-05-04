@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AsadaLisboaBackend.Models;
+﻿using AsadaLisboaBackend.Models;
+using Microsoft.EntityFrameworkCore;
 using AsadaLisboaBackend.Models.DTOs.New;
 using AsadaLisboaBackend.Models.DTOs.Shared;
 using AsadaLisboaBackend.Services.Exceptions;
 using AsadaLisboaBackend.Models.DatabaseContext;
 using AsadaLisboaBackend.RepositoryContracts.News;
+using AsadaLisboaBackend.Utils;
 
 namespace AsadaLisboaBackend.Repositories.News
 {
@@ -39,10 +40,10 @@ namespace AsadaLisboaBackend.Repositories.News
                 .Include(n => n.Categories)
                 .FirstOrDefaultAsync(n => n.Slug == slug);
 
-            if (newModel is null)
-                throw new NotFoundException("La noticia seleccionada no existe.");
+            if (newModel?.Status != null && newModel.Status.Name.Trim().ToLower() == "publicado")
+                return newModel.ToNewResponseDTO();
 
-            return newModel.ToNewResponseDTO();
+            throw new NotFoundException("La noticia seleccionada no existe.");
         }
 
         public async Task<PageResponseDTO<NewMinimalResponseDTO>> GetNews(SearchSortRequestDTO searchSortRequestDTO)
@@ -115,7 +116,7 @@ namespace AsadaLisboaBackend.Repositories.News
             if (newData is null)
                 throw new NotFoundException("Error al obtener noticia.");
 
-            var take = 8;
+            var take = Constants.PAGINATION_SIZE;
 
             var categoriesIds = await _context.News
                 .Where(n => n.Id == newData.Id)
