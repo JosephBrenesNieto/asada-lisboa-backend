@@ -5,5 +5,7 @@ namespace AsadaLisboaBackend.ServiceContracts.SearchGlobal
     public interface ISearchGlobalService
     {
         public Task<List<SearchGlobalResponseDTO>> Search(SearchGlobalRequestDTO request);
+       
+       public Task<SearchGlobalDocument> GetBySlug(string slug);
     }
 }
