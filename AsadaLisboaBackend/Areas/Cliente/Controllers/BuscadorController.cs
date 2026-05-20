@@ -36,5 +36,17 @@ namespace AsadaLisboaBackend.Areas.Cliente.Controllers
             return Ok(await _searchGlobalService.Search(request));
         }
 
+        /// <summary>
+        /// Retrieve a search item identified by the specified slug.
+        /// </summary>
+        /// <param name="slug">The unique slug that identifies the news item to retrieve. Cannot be null or empty.</param>
+        /// <returns>An ActionResult of NewResponse containing the search item.</returns>
+        [HttpGet("{slug}")]
+        public async Task<ActionResult<SearchGlobalDocument>> GetDetailBySlug(string slug)
+        {          
+           return Ok(await _searchGlobalService.GetBySlug(slug));
+
+        }
+
     }
 }
