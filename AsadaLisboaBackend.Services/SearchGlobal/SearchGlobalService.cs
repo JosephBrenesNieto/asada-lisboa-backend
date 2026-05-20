@@ -58,6 +58,23 @@ namespace AsadaLisboaBackend.Services.SearchGlobal
 
             return results;
         }
+
+        public async Task<SearchGlobalDocument> GetBySlug(string slug)
+        {
+            var response = await _client.SearchAsync<SearchGlobalDocument>(s => s
+                .Indices(new[] { "documentos", "imagenes", "noticias" })
+                .Query(q => q
+                    .Term(t => t
+                        .Field(f => f.Slug.Suffix("keyword")) // Búsqueda exacta
+                        .Value(slug)
+                    )
+                )
+                .Size(1) // Solo necesitas el primer resultado
+            );
+
+            return response.Documents.FirstOrDefault();
+        }
+
     }
 }
 
